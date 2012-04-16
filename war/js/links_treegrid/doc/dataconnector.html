@@ -1,0 +1,472 @@
+<html>
+
+<head>
+  <title>DataConnector documentation</title>
+  <link rel='stylesheet' href='default.css' type='text/css'>
+
+  <link href="prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="prettify/prettify.js"></script>
+  <script src="smoothscroll.js" type="text/javascript"></script>
+</head>
+
+<body onload="prettyPrint();">
+
+<h1>DataConnector documentation</h1>
+<p>
+By: Jos de Jong, Almende B.V.<br>
+Homepage: <a href="http://www.almende.com" target="_blank">http://www.almende.com</a><br>
+License: <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License, Version 2.0</a>
+</p>
+
+<h2><a name="Contents" id="Contents"></a>Contents</h2>
+<ul>
+  <li><a href="#Overview">Overview</a></li> 
+  <li><a href="#Example">Example</a></li> 
+  <li><a href="#Loading">Loading</a></li> 
+  <li><a href="#Configuration_Options">Configuration Options</a></li> 
+  <li><a href="#Methods">Methods</a></li> 
+  <li><a href="#Events">Events</a></li> 
+  <li><a href="#Creating_a_DataConnector">Creating_a_DataConnector</a></li> 
+  <li><a href="#Data_Policy">Data Policy</a></li> 
+</ul>
+
+<h2><a name="Overview" id="Overview"></a>Overview</h2>
+<p>
+The TreeGrid supports data connectors for data manipulation and lazy loading.
+
+There are a couple of DataConnectors provided by default,
+such as the <code>DataTable</code>. New data connectors can be created for 
+other data sources, such as a RESTful web service or a database connection.
+All dataconnectors inherit from the prototype <code>DataConnector</code>
+</p>
+
+
+<h2><a name="Example" id="Example"></a>Example</h2>
+<p>
+The example below shows how to create a dataconnector and asynchronously
+retrieve data. 
+</p>
+<p>
+More examples can be found in the <a href="../examples">examples</a> directory. 
+</p>
+
+<iframe src="dataconnector_example.html" style="border:none; width:400px; height:400px;"></iframe>
+
+<pre class="prettyprint lang-html">
+&lt;!DOCTYPE HTML&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;DataConnector example&lt;/title&gt;
+
+    &lt;script type="text/javascript" src="../treegrid.js"&gt;&lt;/script&gt;
+    &lt;link rel="stylesheet" type="text/css" href="../treegrid.css"&gt;
+    
+    &lt;script type="text/javascript"&gt;
+      // Called when the page is loaded
+      function draw() {
+        // generate some random data
+        var data = [];
+        for (var i = 0; i &lt; 100; i++) {
+          data.push({
+            '_id': i,
+            'name': 'Item ' + i,
+            'description': 'A random item'
+          })
+        }
+        
+        var options = {
+          // options go here...
+        };
+        
+        var table = new links.DataTable(data, options);
+        
+        function callback (resp) {
+          var itemCount = resp.totalItems;
+          var items = resp.items;
+          document.getElementById('data').innerHTML = JSON.stringify(items, null, 2);
+        }
+          
+        function errback(err) {
+          document.getElementById('data').innerHTML = 'Error: ' + err;
+        }
+        
+        // retrieve 4 items, starting at index 20
+        var index = 20;
+        var num = 4;
+        table.getItems(index, num, callback, errback);
+      }
+   &lt;/script&gt;
+  &lt;/head&gt;
+
+  &lt;body onload="draw();"&gt;
+    &lt;pre id="data"&gt;&lt;/pre&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+
+<h2><a name="Loading" id="Loading"></a>Loading</h2>
+
+<p>
+The class name of the DataConnector is <code>links.DataConnector</code>. 
+The DataConnector itself is an abstract prototype which must be implemented
+by a prototype containing actual data or linking to actual data. 
+This is typically a DataConnector linking to a RESTful webservice.
+</p>
+<p>
+There is a data connector <code>DataTable</code> provided to handle plain JSON data.
+The <code>DataTable</code> can be instantiated as
+</p>
+
+<pre class="prettyprint lang-js">
+var data = [
+  {"firstname": "John", "lastname": "Smith", "age": 15, "class": "B10"},
+  {"firstname": "Susan", "lastname": "Brown", "age": 16, "class": "B10"},
+  {"firstname": "David", "lastname": "Harris", "age": 14, "class": "B10"}
+];
+var options = {
+  // options go here...
+};
+var table = new links.DataTable(data, options);
+</pre>
+
+<p>
+Data can be retrieved asynchronously via:
+</p>
+<pre class="prettyprint lang-js">
+function callback (resp) {
+  var itemCount = resp.totalItems;
+  var items = resp.items;
+  console.log(items);
+}
+  
+function errback(err) {
+  console.log('Error: ', err);
+}
+  
+var index = 0;
+var num = 10;
+table.getItems(index, num, callback, errback);
+</pre>
+
+<p>
+In the case of the DataTable the data is returned immediately via the callback
+function. But in most cases the data needs to be retrieved from a server,
+and it will take some time before the response is retrieved.
+</p>
+
+
+<!-- TODO
+
+<p>
+The TreeGrid supports two data types: a JSON Array or a DataConnector.
+The items in an array or dataconnector can contain pointers to other arrays
+or dataconnectors, and the two data types can be mixed together.
+</p>
+
+<h3><a name="Array" id="Array"></a>Array</h3>
+<p>
+The TreeGrid supports a JSON Array as data format. 
+The data from an array will be loaded once, and is usable for static data.
+The array must contain objects, with an arbitrary set of fields.
+</p>
+
+<p>
+A table is constructed as:
+</p>
+
+<pre class="prettyprint lang-js">
+var data = [
+  {"firstname": "John", "lastname": "Smith", "age": 15, "class": "B10"},
+  {"firstname": "Susan", "lastname": "Brown", "age": 16, "class": "B10"},
+  {"firstname": "David", "lastname": "Harris", "age": 14, "class": "B10"}
+];
+</pre>
+-->
+
+<h2><a name="Configuration_Options" id="Configuration_Options"></a>Configuration Options</h2>
+
+<p>
+Options can be used to customize the dataconnector. Options are defined as a JSON object.
+</p>
+
+<pre class="prettyprint lang-js">
+var options = {
+  'columns': [
+    {'name': 'name', 'text': 'Name', 'title': 'Name of the files'},
+    {'name': 'size', 'text': 'Size', 'title': 'Size of the files in kB (kilo bytes)'},
+    {'name': 'date', 'text': 'Date', 'title': 'Date the file is last updated'}
+  ],
+  'dataTransfer' : {
+    'allowedEffect': 'move',
+    'dropEffect': 'none'
+  }
+}
+</pre>
+
+<p>
+The following options are available.
+</p>
+
+<table>
+  <tr> 
+    <th>Name</th> 
+    <th>Type</th> 
+    <th>Default</th> 
+    <th>Description</th> 
+  </tr> 
+  <tr> 
+    <td>columns</td> 
+    <td>Array with Objects</td> 
+    <td>undefined</td> 
+    <td>Specify which fields are shown and in which order. 
+      Also specify alternative text and title for the fields.
+      The objects can have the following properties:
+      <ul>
+        <li><code>name</code> Must correspond with the actual field name in the items (Required).</li>
+        <li><code>text</code> The text being displayed in the header.</li>
+        <li><code>title</code> Description displayed when hovering over this column header.</li>
+      </ul>
+    </td> 
+  </tr>
+
+  <tr> 
+    <td>dataTransfer.allowedEffect</td> 
+    <td>String</td> 
+    <td>'none'</td> 
+    <td>Specify which drag operations are allowed for the items in this
+    dataconnector. Available values are 'copy', 'move', 'link', 'copyLink', 
+    'copyMove', 'linkMove', 'all', 'none'.</td> 
+  </tr>
+  
+  <tr> 
+    <td>dataTransfer.dropEffect</td> 
+    <td>String</td> 
+    <td>'none'</td> 
+    <td>Specify which drop operations are allowed for the items in this
+    dataconnector. Available values are 'copy', 'move', 'link', 'none'.</td> 
+  </tr>
+
+</table>
+
+
+
+<h2><a name="Methods" id="Methods"></a>Methods</h2>
+
+<p>
+A DataConnector contains the following methods. Most methods are asynchronously,
+as they are supposed to retrieve data from a server. 
+</p>
+
+<table>
+  <colgroup>
+    <col width="250px"></col>
+    <col width="250px"></col>
+    <col width="100px"></col>
+  </colgroup>
+    
+  <tr> 
+    <th>Method</th> 
+    <th>Parameters</th> 
+    <th>Return type</th> 
+    <th>Description</th> 
+  </tr> 
+
+  <tr>
+    <td>appendItems (items, callback, errback)</td>
+    <td>
+      <ul>
+        <li><span class="parameterType">{Array with Objects}</span> items</li>
+        <li><span class="parameterType">{function}</span> callback</li>
+        <li><span class="parameterType">{function}</span> errback</li>
+      </ul>
+    </td>
+    <td>none</td>
+    <td>
+      Append items to the data connector.
+    </td>
+  </tr>
+
+  <tr> 
+    <td>getChanges(index, num, items, callback, errback)</td> 
+    <td>
+      <ul>
+        <li><span class="parameterType">{Number}</span> index</li>
+        <li><span class="parameterType">{Number}</span> num</li>
+        <li><span class="parameterType">{Array with Objects}</span> items</li>
+        <li><span class="parameterType">{function}</span> callback</li>
+        <li><span class="parameterType">{function}</span> errback</li>
+      </ul>
+    </td>
+    <td>none</td> 
+    <td>
+      Check for changes in a range. Provided is the range and a list with the 
+      current version of the items.
+      The callback returns the changed items. 
+      These items are not yet updated, but need to be updated via <code>getItems</code>.
+    </td> 
+  </tr> 
+
+  <tr> 
+    <td>getItems(index, num, callback, errback)</td> 
+    <td>
+      <ul>
+        <li><span class="parameterType">{Number}</span> index</li>
+        <li><span class="parameterType">{Number}</span> num</li>
+        <li><span class="parameterType">{function}</span> callback</li>
+        <li><span class="parameterType">{function}</span> errback</li>
+      </ul>
+    </td>
+    <td>none</td> 
+    <td>Retrieve a set of items.</td>
+  </tr> 
+
+  <tr> 
+    <td>insertItemsBefore(items, beforeItem, callback, errback)</td> 
+    <td>
+      <ul>
+        <li><span class="parameterType">{Array of Objects}</span> items</li>
+        <li><span class="parameterType">{Object}</span> beforeItem</li>
+        <li><span class="parameterType">{function}</span> callback</li>
+        <li><span class="parameterType">{function}</span> errback</li>
+      </ul>
+    </td>
+    <td>none</td> 
+    <td>Insert a number of items before a given item.</td>
+  </tr> 
+
+  <tr> 
+    <td>linkItems(sourceItem, targetItem, callback, errback)</td> 
+    <td>
+      <ul>
+        <li><span class="parameterType">{Object}</span> sourceItem</li>
+        <li><span class="parameterType">{Object}</span> targetItem</li>
+        <li><span class="parameterType">{function}</span> callback</li>
+        <li><span class="parameterType">{function}</span> errback</li>
+      </ul>
+    </td>
+    <td>none</td> 
+    <td>Link an item to another item. 
+      The meaning of this is dependent on the application</td> 
+  </tr> 
+
+  <tr> 
+    <td>moveItems(items, beforeItem, callback, errback)</td> 
+    <td>
+      <ul>
+        <li><span class="parameterType">{Array of Objects}</span> items</li>
+        <li><span class="parameterType">{Object}</span> beforeItem</li>
+        <li><span class="parameterType">{function}</span> callback</li>
+        <li><span class="parameterType">{function}</span> errback</li>
+      </ul>
+    </td>
+    <td>none</td> 
+    <td>Move a list of items before a given item. 
+      If <code>beforeItem</code> is undefined, the items are moved to the end 
+      of the data.</td> 
+  </tr> 
+
+  <tr> 
+    <td>onEvent(event, params)</td> 
+    <td>
+      <ul>
+        <li><span class="parameterType">{String}</span> event</li>
+        <li><span class="parameterType">{Object}</span> params (optional)</li>
+      </ul>
+    </td>
+    <td>none</td> 
+    <td>The <code>onEvent</code> method can be overwritten for each instance
+    of a dataconnector, in order to catch events from this dataconnector.
+    Listening for events can also be achieved by registering an 
+    <a href="#Events">event listener</a>.</td> 
+  </tr> 
+
+  <tr> 
+    <td>removeItems(items, callback, errback)</td> 
+    <td>
+      <ul>
+        <li><span class="parameterType">{Array of Objects}</span> items</li>
+        <li><span class="parameterType">{function}</span> callback</li>
+        <li><span class="parameterType">{function}</span> errback</li>
+      </ul>
+    </td>
+    <td>none</td> 
+    <td>Remove items from the data connector.
+      The removed items are returned in the callback.</td> 
+  </tr> 
+  <!-- TODO: setFilters and setOptions
+  <tr> 
+    <td>setFilters(filters)</td> 
+    <td></td> 
+    <td></td> 
+    <td></td> 
+  </tr> 
+  
+  <tr> 
+    <td>setOptions(options)</td> 
+    <td></td> 
+    <td></td> 
+    <td></td> 
+  </tr> 
+  -->
+  
+  <tr> 
+    <td>updateItems(items, callback, errback)</td> 
+    <td>
+      <ul>
+        <li><span class="parameterType">{Array of Objects}</span> items</li>
+        <li><span class="parameterType">{function}</span> callback</li>
+        <li><span class="parameterType">{function}</span> errback</li>
+      </ul>
+    </td>
+    <td>none</td> 
+    <td>Update a list of items. The updated items are returned in the callback.</td> 
+  </tr> 
+
+</table>
+
+
+<p>
+The asynchronous methods
+return a callback on success, or an errback on failure:
+</p>
+
+<ul>
+  <li>
+    <span class="parameterType">{function}</span> 
+    <b>callback</b><br>
+    On success, the callback function is called with one Object as parameter, containing fields:
+    <ul>
+      <li><span class="parameterType">{Number}</span> totalItems</li>
+      <li><span class="parameterType">{Array with Objects}</span> items</li>
+    </ul>
+  </li>
+  <li>
+    <span class="parameterType">{function}</span> 
+    <b>errback</b><br>
+    On failure, the errback function is called with one String as parameter.
+    The string contains an error message.
+  </li>
+</ul>
+
+
+
+<h2><a name="Events" id="Events"></a>Events</h2>
+
+
+<span style="background: yellow; font-weight: bold;">TODO...</span>
+
+
+<h2><a name="Creating_a_DataConnector" id="Creating_a_DataConnector"></a>Creating a DataConnector</h2>
+
+
+<span style="background: yellow; font-weight: bold;">TODO...</span>
+
+
+<h2><a name="Data_Policy" id="Data_Policy"></a>Data Policy</h2>
+<p>
+All code and data are processed and rendered in the browser. No data is sent to any server.
+</p>
+
+</body>
+</html>

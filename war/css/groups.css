@@ -1,0 +1,5 @@
+.treegrid-frame{ background-color:#fff; font-family:arial; font-size:10px; border:none; border-color:blue }
+.treegrid-header{ display:none; }
+.treegrid-item{ border:none }
+.treegrid-item-selected{ background-color:#eeb }
+.treegrid-item-dragover { background-color:#beb; }

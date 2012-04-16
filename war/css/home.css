@@ -1,0 +1,21 @@
+div.timeline-frame {
+  border-color: #D3D9F0;
+  background-color: white;  
+}
+div.timeline-axis-text
+{
+    font-family:verdana;
+    color:#7F83BE;
+}
+
+div.timeline-event 
+{
+    font-family:verdana;
+    color:White;
+    background-color:#8083BA;
+}
+
+div.timeline-event-dot
+{
+    border-color:#7F83BE;
+}

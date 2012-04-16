@@ -1,0 +1,401 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<script type="text/javascript" src="js/jquery/jquery-1.6.4.min.js"></script>
+<script type="text/javascript" src="js/md5.js"></script>
+<script type="text/javascript" src="js/webpaige.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/groups.css">
+<script type="text/javascript" src="js/groups.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/home.css">
+<script type="text/javascript" src="js/home.js"></script>
+
+<link rel="stylesheet" type="text/css" href="js/links_treegrid/treegrid.css">
+<script type="text/javascript" src="js/links_treegrid/treegrid.js"></script>
+
+<script type="text/javascript" src="js/links_timeline/timeline.js"></script>
+<link rel="stylesheet" type="text/css" href="js/links_timeline/timeline.css">
+
+<style>
+body{background-color:gray;}
+</style>
+<script>
+var menui=-1;
+function menu_set(index)
+{
+	var unselected = [ 'home','messages','groups','tasks','appointments','alarm','orders','deliveries','states'	];
+	
+	if(menui==index)return;
+	if( menui >=0 && menui < unselected.length )
+	{
+		document.getElementById('menu'+menui).style.backgroundImage = 'url("./img/'+unselected[menui]+'.png")';
+	}
+	if( index >=0 && index < unselected.length )
+	{
+		document.getElementById('menu'+index).style.backgroundImage = 'url("./img/'+unselected[index]+'_H.png")';
+	}
+	menui=index;
+
+    var content = document.getElementById('content');
+    switch(index)
+    {
+        case 0: content.innerHTML = document.getElementById('page_home').innerHTML; homePage_init(); break;
+        case 1: content.innerHTML = 'TODO: messages';   break;
+        case 2: content.innerHTML = document.getElementById('page_groups').innerHTML;    groupsPage_init();    break;
+        case 3: content.innerHTML = 'TODO: tasks';   break;
+        case 4: content.innerHTML = 'TODO: appointments';   break;
+        case 5: content.innerHTML = 'TODO: alarm';   break;
+        case 6: content.innerHTML = 'TODO: orders';   break;
+        case 7: content.innerHTML = 'TODO: deliveries';   break;
+        case 8: content.innerHTML = 'TODO: states';   break;
+        default:
+            content.innerHTML = 'page'+(index+1);
+    }
+
+    var menu = document.getElementById('menu_content');
+    switch( index )
+    {
+        case 0: menu.innerHTML = document.getElementById('page_menu_home').innerHTML;   break;
+        case 2: menu.innerHTML = document.getElementById('page_menu_groups').innerHTML;   break;
+        default:
+            menu.innerHTML = '&nbsp;';
+    }
+}
+
+
+
+
+
+//shortcuts to 'greybox'
+function modal_login() {
+
+    var div2 = modal_in(document.getElementById('page_modal_login').innerHTML);
+    var inputs = div2.getElementsByTagName('input');
+    inputs[0].value = '943a73ee-cae8-102f-aed6-005056bc7e66';
+    
+ }
+function modal_newContact(){modal_in( document.getElementById('page_modal_newContact').innerHTML );}
+function modal_importContacts() { modal_in(document.getElementById('page_modal_importContacts').innerHTML); }
+
+function modal_newGroup(){modal_in( document.getElementById('page_modal_newGroup').innerHTML );}
+function modal_editGroup( uid ) {
+    console.log("edit ", uid, node_list[uid]);
+    var div2 = modal_in(document.getElementById('page_modal_editGroup').innerHTML);
+    var spans = div2.getElementsByTagName('span');
+    spans[0].innerHTML =  node_list[uid]['name'];
+}
+
+</script>
+</head>
+<body onload='global_init(); menu_set(0);' >
+
+<div align=center>
+
+
+
+<!-- header div -->
+<div style='min-width:1000px; max-width:1500px; height:93px; background-color:#5D5E94; background-image:url("./img/Paige_logo.png"); background-repeat:no-repeat; background-size:186px 93px;  '   >
+
+	<!-- icons added in reversed order.. -->
+	<div id='menu8' onClick='global_update("selectedPage",8);' style='float:right; width:60px; height: 93px; background-image:url("./img/states.png"); background-size:100% ' ></div>
+	<div id='menu7' onClick='global_update("selectedPage",7);' style='float:right; width:60px; height: 93px; background-image:url("./img/deliveries.png"); background-size:100%'  ></div>
+	<div id='menu6' onClick='global_update("selectedPage",6);' style='float:right; width:60px; height: 93px; background-image:url("./img/orders.png"); background-size:100%'  ></div>
+	<div id='menu5' onClick='global_update("selectedPage",5);' style='float:right; width:60px; height: 93px; background-image:url("./img/alarm.png"); background-size:100%'  ></div>
+	<div id='menu4' onClick='global_update("selectedPage",4);' style='float:right; width:60px; height: 93px; background-image:url("./img/appointments.png"); background-size:100%'  ></div>
+	<div id='menu3' onClick='global_update("selectedPage",3);' style='float:right; width:60px; height: 93px; background-image:url("./img/tasks.png"); background-size:100%'  ></div>
+	<div id='menu2' onClick='global_update("selectedPage",2);' style='float:right; width:60px; height: 93px; background-image:url("./img/groups.png");  background-size:100% '></div>
+	<div id='menu1' onClick='global_update("selectedPage",1);' style='float:right; width:60px; height: 93px; background-image:url("./img/messages.png"); background-size:100%' ></div>
+	<div id='menu0' onClick='global_update("selectedPage",0);' style='float:right; width:60px; height: 93px; background-image:url("./img/home.png"); background-size:100%' ></div>
+    <script>        global_register('selectedPage', function (value) { menu_set(value); })</script>
+
+	<div style='float:right; width:60px; height: 93px; background-image:url("./img/golfje.png"); background-size:100%' ></div>
+	
+    <!-- dropdown menu -->
+    <div id='menu_content' style='float:right; height:30px; padding-top:65px; color:white; font-family:verdana' ></div>
+   
+</div>
+
+<!-- content div -->
+<div id='content' style='min-width:1000px; max-width:1500px; padding-bottom:30px; background-image:url("./img/fabric-pattern.png"); color:#5d5e94; font-family:"Cooper"; ' >
+</div>
+
+
+</div>
+
+
+<!--
+ +----------------------------------+
+ | additional modal pages n stuff   |
+ +----------------------------------+
+--->
+
+<div id='page_menu_home' style='display:anone' >
+    
+        Settings 
+        Help 
+        <span id='menu_login_name' onClick='modal_login()' style='border:solid' >not logged in &#x25BC;</span>
+        <script>            global_register('user', function (value) { document.getElementById('menu_login_name').innerHTML = value + ' &#x25BC;'; })</script>
+</div>
+
+<div id='page_menu_groups' style='display:anone' >
+    <script>
+        function menu_groups_dd_up() {
+            var dd = document.getElementById("menu_groups_dd");
+            dd.style.display = "none";
+            var dh = document.getElementById("menu_groups_dh");
+            dh.style.backgroundColor = "#5d5e94";
+            dh.innerHTML = "New &#x25BC";
+        }
+        function menu_groups_dd_down() {
+            var dd = document.getElementById("menu_groups_dd");
+            dd.style.display = "inline";
+            var dh = document.getElementById("menu_groups_dh");
+            dh.style.backgroundColor = "#d5dcf1";
+            dh.innerHTML = "New";
+        }
+    </script>
+    <div id='menu_groups_dh' onclick=' 
+            if( document.getElementById("menu_groups_dd").style.display == "none" )menu_groups_dd_down();
+            else menu_groups_dd_up(); '
+        align=left style=' width:150px;height:28px; ' >New &#x25BC</div>
+    <div style='display:none' id='menu_groups_dd' >
+        <div    onmouseover='this.style.backgroundColor="#d5dcf1";' 
+                onmouseout='this.style.backgroundColor="#5d5e94";' 
+                onclick='this.style.backgroundColor="#5d5e94"; menu_groups_dd_up(); modal_newContact(); '
+                align=left style='padding:5px; background-color:#5d5e94;' >New contact</div>
+        <div    onmouseover='this.style.backgroundColor="#d5dcf1";' 
+                onmouseout='this.style.backgroundColor="#5d5e94";'
+                onclick='this.style.backgroundColor="#5d5e94"; menu_groups_dd_up(); modal_newGroup(); '
+                align=left style='padding:5px; background-color:#5d5e94; '>New group</div>
+        <div    onmouseover='this.style.backgroundColor="#d5dcf1";' 
+                onmouseout='this.style.backgroundColor="#5d5e94";' 
+                onclick='this.style.backgroundColor="#5d5e94"; menu_groups_dd_up(); modal_importContacts(); '
+                align=left style='padding:5px; background-color:#5d5e94; '>Import contacts</div>
+    </div>
+</div>
+
+<div id='page_modal_login' style='display:anone' >
+    <table style="background-color:#E6E7E6; color:#5D5F95" border=0 cellspacing=0 >
+    <tr>
+        <td align=center colspan=2 style='color:white; background-color:#434477; width:480px;height:36px' >
+        <div style='float:right;padding:4px'><img onClick="modal_out();" border=0 src='img/widget_button_close.png' /></div>
+            login</td>
+    </tr>
+    <tr>
+        <td colspan=2 align='left' style='font-weight:bold' >LOGIN</td>
+    </tr>
+    <tr>
+        <td align='right' >name : </td>
+        <td><input name="login_name" style='border:none' value='' > <br/>
+    </tr>
+    <tr>
+        <td align='right' >passphrase : </td>
+        <td><input type="password" name="login_pass" style='border:none' value='1234' ></td>
+    </tr>
+    <tr><td colspan='2' align='center'> <div style='background-color:#5D5F95;height:2px;width:95%' ></div></td></tr>    <!-- ruler -->
+    <tr><td colspan='2' align='right' style='height:54px;padding-right:16px' >
+        <img src='img/widget_button_save.png' onClick="
+            var inputs = this.parentNode.parentNode.parentNode.getElementsByTagName('input');   // img->td->tr->tablebody->*inputs
+            var inputValues = new Object();
+            for(var i in inputs )
+                if( inputs[i].name && inputs[i].value )
+                        inputValues[ inputs[i].name ] = inputs[i].value;
+            modal_out(); 
+            if( inputValues.login_name && inputValues.login_pass )
+                ask_login( inputValues.login_name,inputValues.login_pass );" />
+    </td></tr>
+    </table>
+</div>
+
+
+<div id='page_modal_newContact' style='display:anone' >
+    <table style="background-color:#E6E7E6; color:#5D5F95" border=0 cellspacing=0 >
+    <tr>
+        <td align=center colspan=2 style='color:white; background-color:#434477; width:480px; height:36px; font-weight:bold' >
+        <div style='float:right;padding:4px'><img onClick="modal_out();" border=0 src='img/widget_button_close.png' /></div>
+            New Contact</td>
+    </tr>
+    <tr><td style='font-weight:bold'>Information</td></tr>
+    <tr><td>
+        <div style=' height:150px;overflow-y:scroll; ' >
+        <table border=0 style='color:#5D5F95;font-family:verdana; ' >
+        <tr><td>Full name</td><td><input name='fullname' style='border:none' /></td></tr>
+        <tr></td><td>Job title:</td><td><input name='job' style='border:none' /></td></tr>
+        <tr><td>Company:</td><td><input name='company' style='border:none' /></td></tr>
+        <tr><td>Websites:</td><td><input name='website' value='http://' style='border:none' /></td></tr>
+        <tr><td>phone number:</td><td><input name='phone_' value='+31' style='border:none' /></td></tr>
+        <tr><td>E-mail:</td><td><input name='mail_' value='@' style='border:none' /></td></tr>
+        <tr><td colspan=2>etc..</td></tr>
+        </table>
+        </div>
+    </td></tr>
+    <tr><td colspan='2' align='center'> <div style='background-color:#5D5F95;height:2px;width:95%' ></div></td></tr>    <!-- ruler -->
+    <tr><td colspan='2' align='right' style='height:54px;padding-right:16px' >
+        <img src='img/widget_button_save.png' onClick="
+            //find local children
+            var inputs = this.parentNode.parentNode.parentNode.getElementsByTagName('input');   // img->td->tr->tablebody->*inputs
+            var inputValues = new Object();
+            for(var i in inputs )
+                if( inputs[i].name && inputs[i].value )
+                        inputValues[ inputs[i].name ] = inputs[i].value;
+            modal_out(); 
+            console.log('TODO: new contact',inputValues );
+            " />
+    </td></tr>
+    </table>
+</div>
+
+<div id='page_modal_newGroup' style='display:anone' >
+    <table style="background-color:#E6E7E6; color:#5D5F95" border=0 cellspacing=0 >
+    <tr>
+        <td align=center colspan=2 style='color:white; background-color:#434477; width:480px; height:36px; font-weight:bold' >
+        <div style='float:right;padding:4px'><img onClick="modal_out();" border=0 src='img/widget_button_close.png' /></div>
+            New group</td>
+    </tr>
+    <tr valign=bottom ><td style='font-weight:bold;height:40px;padding-left:20px'>Information</td></tr>
+    <tr><td>
+        <div style=' height:150px;overflow-y:scroll; ' >
+        <table border=0 style='color:#5D5F95;font-family:verdana; ' >
+        <tr><td>Group name</td><td><input name='groupName' style='border:none' /></td></tr>
+        <tr></td><td >Description:</td><td><input name='description' style='border:none' /></td></tr>
+        <tr><td colspan=2 style='font-weight:bold; font-family:serif' >Public group</td></tr>
+        </table>
+</div>
+    </td></tr>
+    <tr><td colspan='2' align='center'> <div style='background-color:#5D5F95;height:2px;width:95%' ></div></td></tr>    <!-- ruler -->
+    <tr><td colspan='2' align='right' style='height:54px;padding-right:16px' >
+        <img src='img/widget_button_save.png' onClick="
+            //find local children
+            var inputs = this.parentNode.parentNode.parentNode.getElementsByTagName('input');   // img->td->tr->tablebody->*inputs
+            var inputValues = new Object();
+            for(var i in inputs )
+                if( inputs[i].name && inputs[i].value )
+                        inputValues[ inputs[i].name ] = inputs[i].value;
+            modal_out(); 
+            groups_createGroup(inputValues);
+            " />
+    </td></tr>
+    </table>
+</div>
+
+
+<div id='page_modal_importContacts' style='display:anone' >
+    <table style="background-color:#E6E7E6; color:#5D5F95" border=0 cellspacing=0 >
+    <tr>
+        <td align=center colspan=2 style='color:white; background-color:#434477; width:480px; height:36px; font-weight:bold' >
+        <div style='float:right;padding:4px'><img onClick="modal_out();" border=0 src='img/widget_button_close.png' /></div>
+            Import contacts</td>
+    </tr>
+    <tr><td colspan=2>TODO..</td></tr>
+    </table>
+</div>
+
+
+<div id='page_modal_editGroup' style='display:anone' >
+    <table style="background-color:#E6E7E6; color:#5D5F95" border=0 cellspacing=0 >
+    <tr>
+        <td align=center colspan=2 style='color:white; background-color:#434477; width:480px; height:36px; font-weight:bold' >
+        <div style='float:right;padding:4px'><img onClick="modal_out();" border=0 src='img/widget_button_close.png' /></div>
+            <span name='caption' >edit Group</span> </td>
+    </tr>
+    <tr>
+        <td style="background-color:#D7DBF0; color:#5D5F95; text-align:center" >
+            | man| V | network | field |
+        </td>
+    </tr>
+    <tr><td>
+        <div style=' height:150px;overflow-y:scroll; ' >
+        <table border=0 style='color:#5D5F95;font-family:verdana; ' >
+        <tr><td colspan=2 style='font-weight:bold' >Information</td></tr>
+        <tr><td>Group name:</td><td><input /></td></tr>
+        <tr><td>Description:</td><td><input /></td></tr>
+        <tr><td colspan=2 style='font-weight:bold' >Public group</td></tr>
+        <tr><td colspan=2 >[-] public group in facebook</td></tr>
+        <tr><td colspan=2 >[+] create group in linkedin</td></tr>
+        <tr><td colspan=2 >[+] create group in google</td></tr>
+        </table>
+         </div>     
+       </td></tr>
+       <tr><td colspan='2' align='center'> <div style='background-color:#5D5F95;height:2px;width:95%' ></div></td></tr>    <!-- ruler -->
+       <tr><td colspan='2' align='right' style='height:54px;padding-right:16px' >
+        <img src='img/widget_button_save.png' onClick="
+            //do stuff
+            modal_out();
+        " />
+     </td></tr>
+    </table>
+</div>
+
+<div id='page_home' style='display:anone'>
+    <div align=center  style='padding-top:20px; margin-left:50px; margin-right:50px; font-family:Verdana ' >
+        Upcoming events
+        <div id="mytimeline"></div>
+    </div>
+    <div align=center style=' float:left; margin-left:100px; padding-top:20px; font-family:Verdana  '  >
+        Your states
+        <div style='border:solid; background-color:White; border-color:#D3D9F0; padding:30px' >
+        <table border=0 >
+        <tr>
+        <td>Activity</td> <td>Social</td> <td>Availabilty</td> <td>Location</td>
+        </tr>
+        <tr >
+        <td><img align=top style='width:80px; height:80px' src='img/tymon_activity.png' border=0 />&#x25BC;</td>
+        <td><img align=top style='width:80px; height:80px' src='img/tymon_activity.png' border=0 />&#x25BC;</td>
+        <td><img align=top style='width:80px; height:80px' src='img/tymon_activity.png' border=0 />&#x25BC;</td>
+        <td><img align=top style='width:80px; height:80px' src='img/tymon_activity.png' border=0 />&#x25BC;</td>
+        </tr>
+        </table>
+        
+        </div>
+    </div>
+
+    <div style=' float:right; margin-right:100px; padding-top:20px; font-family:Verdana' >
+        Last Messages
+        <div border=1 style='width:400px; border:solid; background-color:White; border-color:#D3D9F0;'>
+           <img align=right border=1 alt='x'/>
+           You have a request to postpone your meeting with Kees to friday the 12th of april. Do you accept this request?
+        </div>
+            |/<br />
+        <div style='color:white; background-color:#7E82BE'>no | Go to appointment | yes</div>
+    </div>
+    <br style='clear:both'/>
+
+
+    </div>
+
+<div id='page_groups' style='display:anone'>
+
+    <div style='height:120px'>&nbsp;</div>
+
+    <div style='float:left; margin-left:40px;  height:32px; width:450px; background-color:#7F83BE; color:white;' >
+        Paige Groups
+    </div>
+    <div style='float:right; margin-right:40px; height:32px; width:450px; background-color:#7F83BE; color:white;' >paige contacts</div>
+    <br style='clear:both' />
+
+    <div style='float:left; margin-left:40px; height:32px; width:450px; background-color:#D6DCF1; color:#5D5F95;' >
+        <table><tr>
+        <td> Search<input style='border:none' disabled  value='TODO' /> </td>
+        <td> Sort<input style='border:none' disabled value='TODO' /> </td>
+        </tr></table>
+    </div>
+    <div style='float:right; margin-right:40px; height:32px; width:450px; background-color:#D6DCF1; color:#5D5F95;' >search[] sort[]</div>
+
+    <br style='clear:both' />
+    <div style='float:left; margin-left:40px; ' id="mytreegrid"></div>
+    <div style='float:right; margin-right:40px;' id="mytreegrid2"></div>
+
+    <br style='clear:both'/>
+
+</div>
+
+
+<button onclick="
+    console.log( node_list );
+    console.log( edge_list );
+">debug</button>
+    
+
+
+</body>
