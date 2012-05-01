@@ -1,21 +1,39 @@
+
 div.timeline-frame {
-  border-color: #D3D9F0;
+  border-color: black;
   background-color: white;  
 }
+
 div.timeline-axis-text
 {
-    font-family:verdana;
-    color:#7F83BE;
+    font-family:arial;
+	font-size:11px;
+    color:green;
 }
+
+/* ------------------------------------ */
 
 div.timeline-event 
 {
-    font-family:verdana;
-    color:White;
-    background-color:#8083BA;
 }
+
+div.timeline-event-selected
+{
+	color:white;
+	background-color:black;
+} 
 
 div.timeline-event-dot
 {
-    border-color:#7F83BE;
+}
+
+div.timeline-event-range 
+{
+	border-right-color:black;
+	border-bottom-color:black;
+	border-radius:0px;
+}
+
+div.timeline-event-content
+{
 }

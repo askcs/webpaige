@@ -1,80 +1,87 @@
 
+
 function homePage_init()
 {
     jos_timeline();
+
+	home_getLocation();
 }
 
+var timeline;
+var timeline_data = [];
 function jos_timeline() {
 
-    var data = [];
-    var timeline;
+	timeline_data = [];
 
-    data.push({
-        'start': new Date(2012, 4, 1),
-        //'end': new Date(2012, 2, 1),  // end is optional
-        'content': 'fool'
-        // Optional: a fourth parameter 'group'
-    });
-/*
-    data = [
-          {
-              'start': new Date(2010, 7, 23),
-              'content': 'Conversation<br><img src="img/comments-icon.png" style="width:32px; height:32px;">'
-          },
-          {
-              'start': new Date(2010, 7, 23, 23, 0, 0),
-              'content': 'Mail from boss<br><img src="img/mail-icon.png" style="width:32px; height:32px;">'
-          },
-          {
-              'start': new Date(2010, 7, 24, 16, 0, 0),
-              'content': 'Report'
-          },
-          {
-              'start': new Date(2010, 7, 26),
-              'end': new Date(2010, 8, 2),
-              'content': 'Traject A'
-          },
-          {
-              'start': new Date(2010, 7, 28),
-              'content': 'Memo<br><img src="img/notes-edit-icon.png" style="width:48px; height:48px;">'
-          },
-          {
-              'start': new Date(2010, 7, 29),
-              'content': 'Phone call<br><img src="img/Hardware-Mobile-Phone-icon.png" style="width:32px; height:32px;">'
-          },
-          {
-              'start': new Date(2010, 7, 31),
-              'end': new Date(2010, 8, 3),
-              'content': 'Traject B'
-          },
-          {
-              'start': new Date(2010, 8, 4, 12, 0, 0),
-              'content': 'Report<br><img src="img/attachment-icon.png" style="width:32px; height:32px;">'
-          }
-        ];
- */
     // specify options
     var options = {
         'width': '100%',
         'height': '300px',
-        'editable': false,   // enable dragging and editing events 
+        'editable': true,   // enable dragging and editing events 
         'style': 'box'
     };
 
     timeline = new links.Timeline(document.getElementById('mytimeline'));
+
+	// Add event listeners
+	google.visualization.events.addListener(timeline, 'edit', timeline_onEdit);
+
     //var newStartDate = new Date(document.getElementById('startDate').value);
     //var newEndDate = new Date(document.getElementById('endDate').value);
     //timeline.setVisibleChartRange(newStartDate, newEndDate);     
 
-    // attach an event listener using the links events handler
+    /* attach an event listener using the links events handler
     function onRangeChanged(properties) {
         console.log(properties);
     }
     links.events.addListener(timeline, 'rangechanged', onRangeChanged);
+	*/
 
-    timeline.draw(data, options);
+    timeline.draw(timeline_data, options);
+
+	/*
+	timeline_data.push({
+        'start': new Date(),
+        //'end': new Date(2012, 2, 1),  // end is optional
+        'content': 'created'
+        // Optional: a fourth parameter 'group'
+    });
+	timeline.draw(timeline_data, options);
+	*/
+
+	
+	//add event listening
+	global_register('location', timeline_locationEvent);
+
+
+	//get us some timeslots
+	ask_getPlanning();
 }
 
+function timeline_locationEvent(data, prevData )
+{
+	//dont show initial event?
+	if( !prevData )return;
+		
+	timeline_data.push({
+        'start': new Date(),
+        //'end': new Date(2012, 2, 1),  // end is optional
+        'content':  'set location <br/>' +data[0]+" , "+data[1],
+        // Optional: a fourth parameter 'group'
+    });
+	timeline.draw(timeline_data, options);
+}
+function timeline_onEdit()
+{
+	var sel = timeline.getSelection();
+	var row = sel[0].row;   
+	var content = timeline_data.getValue(row, 2);
+    var newContent = prompt("Enter content", content);
+    if (newContent != undefined) {
+		timeline_data.setValue(row, 2, newContent);
+	}
+    timeline.redraw();
+}
 
 //////////////////
 
@@ -83,9 +90,9 @@ function ask_login(user, pass) {
     //debugging.. (remove this line)
     if( pass!='1234') pass = MD5(pass);
     
-    var host = 'http://localhost:8888/ns_tymon';
+	var ask_host = global_get('host');
 
-    var xhr = $.ajax({ url: host + '/login?uuid=' + user + '&pass=' + pass,
+    var xhr = $.ajax({ url: ask_host + '/login?uuid=' + user + '&pass=' + pass,
         /*
         //dataType: 'jsonp',
         statusCode: {
@@ -126,4 +133,114 @@ function ask_login(user, pass) {
     });
 	 
 
+}
+
+
+
+function home_setLocation(data)
+{
+
+	if( !data['lati'] || !data['longi'] )return;
+	
+	var ask_host = global_get('host');
+	var ask_user = global_get('user');
+	var ask_key  = global_get('sessionID');
+    
+	//ajax
+	
+    var resman = ask_host+'/rev1/node/'+ ask_user +'/timeline/latlong_final';
+
+    var state = '[' + data['lati'] + ',' + data['longi'] +']';
+	var now = parseInt( new Date().getTime() /1000 );
+    var json = '{"data":{"value":'+state+',"date":'+now+'}}';
+
+	console.log( resman, json );
+    
+    var noCookie = { "X-SESSION_ID": ask_key };
+    document.cookie= 'X-SESSION_ID='+ask_key+'; path=/';    //does not work cross domain..
+    $.ajax({
+        url: resman, type: 'POST',
+        data: json, contentType: 'application/json',
+        xhrFields: {   withCredentials: true   },
+        headers: noCookie,
+        success: function(jsonData)
+        {
+            console.log("success!", jsonData );
+			global_update("location" , [ data['lati'],data['longi'] ] );
+        }
+    });
+
+}
+
+
+function home_getLocation()
+{
+	var ask_host = global_get('host');
+	var ask_user = global_get('user');
+	var ask_key  = global_get('sessionID');
+    
+	var resman = ask_host+'/rev1/node/'+ ask_user +'/timeline/latlong';
+
+    $.ajax({
+        url: resman,
+        type: 'GET',
+        xhrFields: {   withCredentials: true   },
+        success: function(jdata){
+            var data = JSON.parse(jdata);
+            data =data.data; //silly level
+			global_update("location" , data['value'] );
+        }
+    });
+
+}
+
+
+function ask_getPlanning()
+{
+
+	var ask_host = global_get('host');
+	var ask_user = global_get('user');
+	var ask_key  = global_get('sessionID');
+
+	var now = parseInt( new Date().getTime() /1000 );
+    
+	var resman = ask_host+'/askatars/'+ ask_user +'/slots';
+
+	var json = {"start":(now-86400*7), "end":(now+86400*7) };
+
+    $.ajax({
+        url: resman, type: 'GET',
+		data: json, contentType: 'application/json',
+        xhrFields: {   withCredentials: true   },
+		statusCode: {
+            403: function () { alert("no session??"); }
+			},
+        success: function(jdata){
+			var slots = JSON.parse(jdata);
+
+			timeline_data = new google.visualization.DataTable();
+			timeline_data.addColumn('datetime', 'start');
+	        timeline_data.addColumn('datetime', 'end');
+		    timeline_data.addColumn('string', 'content');
+			timeline_data.addColumn('string', 'groups');
+
+			//timeline_data = [];
+			for(var i in slots )
+			{
+				var content = "<div style='color:red;'>" + slots[i].text +"</div>";
+				if( slots[i].text == 'ask.state.13' )
+					content = "<div style=''>" + 'busy' +"</div>";
+
+				timeline_data.addRow( [
+					new Date( slots[i].start *1000),
+					new Date( slots[i].end *1000), 
+					content,
+					slots[i].recursive?'reoc':'plan' ] );
+			}
+			console.log("new planboard: ", timeline_data );
+			timeline.draw(timeline_data, options);
+        }
+    });
+
+	
 }

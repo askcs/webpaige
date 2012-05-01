@@ -8,16 +8,21 @@
 <link rel="stylesheet" type="text/css" href="css/groups.css">
 <script type="text/javascript" src="js/groups.js"></script>
 
-<link rel="stylesheet" type="text/css" href="css/home.css">
-<script type="text/javascript" src="js/home.js"></script>
 
 <link rel="stylesheet" type="text/css" href="js/links_treegrid/treegrid.css">
 <script type="text/javascript" src="js/links_treegrid/treegrid.js"></script>
 
+ <!-- what happens here? -->
+  <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+  <script>google.load("visualization", "1");</script>
+    
 <script type="text/javascript" src="js/links_timeline/timeline.js"></script>
 <link rel="stylesheet" type="text/css" href="js/links_timeline/timeline.css">
 
-<style>
+<link rel="stylesheet" type="text/css" href="css/home.css">
+<script type="text/javascript" src="js/home.js"></script>
+
+    <style>
 body{background-color:gray;}
 </style>
 <script>
@@ -61,32 +66,40 @@ function menu_set(index)
         default:
             menu.innerHTML = '&nbsp;';
     }
-}
+    }
 
 
 
-
-
-//shortcuts to 'greybox'
-function modal_login() {
+    //shortcuts to 'greybox'
+    function modal_login() {
 
     var div2 = modal_in(document.getElementById('page_modal_login').innerHTML);
     var inputs = div2.getElementsByTagName('input');
-    inputs[0].value = '943a73ee-cae8-102f-aed6-005056bc7e66';
+    inputs[0].value = global_get('user');
+    }
     
- }
-function modal_newContact(){modal_in( document.getElementById('page_modal_newContact').innerHTML );}
-function modal_importContacts() { modal_in(document.getElementById('page_modal_importContacts').innerHTML); }
+    function modal_newContact(){modal_in( document.getElementById('page_modal_newContact').innerHTML );}
+    function modal_importContacts() { modal_in(document.getElementById('page_modal_importContacts').innerHTML); }
 
-function modal_newGroup(){modal_in( document.getElementById('page_modal_newGroup').innerHTML );}
-function modal_editGroup( uid ) {
+    function modal_newGroup(){modal_in( document.getElementById('page_modal_newGroup').innerHTML );}
+    function modal_editGroup( uid ) {
     console.log("edit ", uid, node_list[uid]);
     var div2 = modal_in(document.getElementById('page_modal_editGroup').innerHTML);
     var spans = div2.getElementsByTagName('span');
     spans[0].innerHTML =  node_list[uid]['name'];
-}
+    }
 
-</script>
+    function modal_setLocation()
+    {
+    var div2 = modal_in(document.getElementById('page_modal_setLocation').innerHTML);
+    var inputs = div2.getElementsByTagName('input');
+    var location = global_get('location');
+    inputs[0].value = location[0];
+    inputs[1].value = location[1];
+    div2.style.display = 'inline';
+    }
+
+  </script>
 </head>
 <body onload='global_init(); menu_set(0);' >
 
@@ -128,7 +141,7 @@ function modal_editGroup( uid ) {
  +----------------------------------+
  | additional modal pages n stuff   |
  +----------------------------------+
---->
+-->
 
 <div id='page_menu_home' style='display:anone' >
     
@@ -175,7 +188,37 @@ function modal_editGroup( uid ) {
     </div>
 </div>
 
-<div id='page_modal_login' style='display:anone' >
+  <div id='page_modal_setLocation' style='display:anone' >
+    <table style="background-color:#E6E7E6; color:#5D5F95" border="1" cellspacing="0" >
+      <tr>
+        <td align="center" colspan="2" style='color:white; background-color:#434477; width:480px; height:36px; font-weight:bold' >
+          <div style='float:right;padding:4px'>
+            <img onClick="modal_out();" border="0" src='img/widget_button_close.png' />
+          </div>
+          Set location
+        </td>
+      </tr>
+      <tr>
+        <td colspan='2'>
+          TODO: googlemap ..<br/>
+          latitude<input name='lati' value='51.93' /><br/>
+          longitude<input name='longi' value='4.479' /><br/>
+          <button onClick="
+              var inputs = this.parentNode.parentNode.parentNode.getElementsByTagName('input');   // img->td->tr->tablebody->*inputs
+              var inputValues = new Object();
+              for(var i in inputs )
+                if( inputs[i].name && inputs[i].value )
+                        inputValues[ inputs[i].name ] = inputs[i].value;
+                  modal_out();
+                  home_setLocation(inputValues);
+          " >set</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+
+  <div id='page_modal_login' style='display:anone' >
     <table style="background-color:#E6E7E6; color:#5D5F95" border=0 cellspacing=0 >
     <tr>
         <td align=center colspan=2 style='color:white; background-color:#434477; width:480px;height:36px' >
@@ -343,7 +386,7 @@ function modal_editGroup( uid ) {
         <td><img align=top style='width:80px; height:80px' src='img/tymon_activity.png' border=0 />&#x25BC;</td>
         <td><img align=top style='width:80px; height:80px' src='img/tymon_activity.png' border=0 />&#x25BC;</td>
         <td><img align=top style='width:80px; height:80px' src='img/tymon_activity.png' border=0 />&#x25BC;</td>
-        <td><img align=top style='width:80px; height:80px' src='img/tymon_activity.png' border=0 />&#x25BC;</td>
+        <td><img align=top style='width:80px; height:80px' src='img/tymon_location.png' onClick='modal_setLocation();' border=0 />&#x25BC;</td>
         </tr>
         </table>
         

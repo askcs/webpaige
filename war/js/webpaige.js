@@ -3,9 +3,11 @@ var global_data = new Array();
 var global_callback = new Array();
 
 function global_init() {
-    global_data['user'] = '';
+
+	global_data['user'] = '';
     global_data['sessionID'] = '';
     global_data['selectedPage'] = 0;
+	global_data['host'] = 'http://localhost:8888/ns_tymon';
 
     var cookies = document.cookie.split(';');
     //console.log("init",cookies);
@@ -22,6 +24,8 @@ function global_init() {
 
     if (global_data['sessionID'] != '')
         console.log("test if session is valid?");
+
+	
 }
 
 function global_register(key, callback) {
@@ -29,9 +33,20 @@ function global_register(key, callback) {
     global_callback[key].push(callback);
 }
 function global_update(key, value) {
-    global_data[key] = value;
-    console.log("update: ", key, ' = ', value);
 
+	// not an update?
+	if( global_data[key] == value )return;
+	if( JSON.stringify(global_data[key]) == JSON.stringify(value) )return; //expensive compare?
+
+	console.log("update: ", key, ' = ', value);
+
+	//run key callbacks
+    if (global_callback[key])
+        for (var i in global_callback[key])
+            global_callback[key][i](value, global_data[key] );
+
+    global_data[key] = value;
+    
     //persist some
     switch(key)
     {
@@ -43,10 +58,7 @@ function global_update(key, value) {
         break;
     }
 
-    //run key callbacks
-    if (global_callback[key])
-        for (var i in global_callback[key])
-            global_callback[key][i](value);
+    
 }
 
 function global_get(key)
