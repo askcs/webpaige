@@ -21,6 +21,7 @@ div.timeline-event-selected
 {
 	color:white;
 	background-color:black;
+	font-size:9px;
 } 
 
 div.timeline-event-dot
@@ -32,6 +33,7 @@ div.timeline-event-range
 	border-right-color:black;
 	border-bottom-color:black;
 	border-radius:0px;
+	font-size:9px;
 }
 
 div.timeline-event-content

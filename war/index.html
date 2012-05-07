@@ -89,15 +89,26 @@ function menu_set(index)
     spans[0].innerHTML =  node_list[uid]['name'];
     }
 
-    function modal_setLocation()
-    {
-    var div2 = modal_in(document.getElementById('page_modal_setLocation').innerHTML);
-    var inputs = div2.getElementsByTagName('input');
-    var location = global_get('location');
-    inputs[0].value = location[0];
-    inputs[1].value = location[1];
-    div2.style.display = 'inline';
-    }
+	function modal_setLocation()
+	{
+		var div2 = modal_in(document.getElementById('page_modal_setLocation').innerHTML);
+		var inputs = div2.getElementsByTagName('input');
+		var location = global_get('location');
+		inputs[0].value = location[0];
+		inputs[1].value = location[1];
+		div2.style.display = 'inline';
+	}
+
+	function modal_addSlot( from ,till,type ,value )
+	{
+		var div2 = modal_in(document.getElementById('page_modal_addSlot').innerHTML);
+		var inputs = div2.getElementsByTagName('input');
+		inputs[0].value = from/1000;
+		inputs[1].value = till/1000;
+		inputs[2].value = type;
+		inputs[3].value = value;
+		div2.style.display = 'inline';
+	}
 
   </script>
 </head>
@@ -142,16 +153,19 @@ function menu_set(index)
  | additional modal pages n stuff   |
  +----------------------------------+
 -->
+<div id='pageContainer' style='border:solid;background-color:#123; display:none' >
 
-<div id='page_menu_home' style='display:anone' >
+
+<div id='page_menu_home' styl='display:none' >
     
         Settings 
         Help 
-        <span id='menu_login_name' onClick='modal_login()' style='border:solid' >not logged in &#x25BC;</span>
-        <script>            global_register('user', function (value) { document.getElementById('menu_login_name').innerHTML = value + ' &#x25BC;'; })</script>
+        <span id='menu_login_name' onClick='modal_login()' style='border:solid' >not logged in &#x25BC;</span> &#x25BC;
+        <script>global_register('user', function (value) { document.getElementById('menu_login_name').innerHTML = value + ' &#x25BC;'; })</script>
 </div>
 
-<div id='page_menu_groups' style='display:anone' >
+
+<div id='page_menu_groups' >
     <script>
         function menu_groups_dd_up() {
             var dd = document.getElementById("menu_groups_dd");
@@ -188,7 +202,41 @@ function menu_set(index)
     </div>
 </div>
 
-  <div id='page_modal_setLocation' style='display:anone' >
+
+<div id='page_modal_addSlot' >
+    <table style="background-color:#E6E7E6; color:#5D5F95" border="1" cellspacing="0" >
+      <tr>
+        <td align="center" colspan="2" style='color:white; background-color:#434477; width:480px; height:36px; font-weight:bold' >
+          <div style='float:right;padding:4px'>
+            <img onClick="modal_out();" border="0" src='img/widget_button_close.png' />
+          </div>
+          add slot
+        </td>
+      </tr>
+	<tr>	
+	<td>
+		from<input name='from' /><br/>
+		till<input name='till' /><br/>
+		type<input name='type' /><br/>
+		value<input name='value' />
+	</td>
+	</tr>
+       <tr><td colspan='2' align='right' style='height:54px;padding-right:16px' >
+        <img src='img/widget_button_save.png' onClick="
+	var inputs = this.parentNode.parentNode.parentNode.getElementsByTagName('input');   // img->td->tr->tablebody->*inputs
+        var inputValues = new Object();
+        for(var i in inputs )
+        if( inputs[i].name && inputs[i].value )
+        	inputValues[ inputs[i].name ] = inputs[i].value;
+	ask_slots_add(inputValues.from, inputValues.till, inputValues.type, inputValues.value );
+	modal_out();
+        " />
+     </td></tr>
+	</table>
+</div>
+
+
+  <div id='page_modal_setLocation' >
     <table style="background-color:#E6E7E6; color:#5D5F95" border="1" cellspacing="0" >
       <tr>
         <td align="center" colspan="2" style='color:white; background-color:#434477; width:480px; height:36px; font-weight:bold' >
@@ -200,7 +248,7 @@ function menu_set(index)
       </tr>
       <tr>
         <td colspan='2'>
-          TODO: googlemap ..<br/>
+          TODO: googlemap? ..<br/>
           latitude<input name='lati' value='51.93' /><br/>
           longitude<input name='longi' value='4.479' /><br/>
           <button onClick="
@@ -218,7 +266,7 @@ function menu_set(index)
   </div>
 
 
-  <div id='page_modal_login' style='display:anone' >
+  <div id='page_modal_login' >
     <table style="background-color:#E6E7E6; color:#5D5F95" border=0 cellspacing=0 >
     <tr>
         <td align=center colspan=2 style='color:white; background-color:#434477; width:480px;height:36px' >
@@ -252,7 +300,7 @@ function menu_set(index)
 </div>
 
 
-<div id='page_modal_newContact' style='display:anone' >
+<div id='page_modal_newContact' >
     <table style="background-color:#E6E7E6; color:#5D5F95" border=0 cellspacing=0 >
     <tr>
         <td align=center colspan=2 style='color:white; background-color:#434477; width:480px; height:36px; font-weight:bold' >
@@ -289,7 +337,7 @@ function menu_set(index)
     </table>
 </div>
 
-<div id='page_modal_newGroup' style='display:anone' >
+<div id='page_modal_newGroup' >
     <table style="background-color:#E6E7E6; color:#5D5F95" border=0 cellspacing=0 >
     <tr>
         <td align=center colspan=2 style='color:white; background-color:#434477; width:480px; height:36px; font-weight:bold' >
@@ -323,7 +371,7 @@ function menu_set(index)
 </div>
 
 
-<div id='page_modal_importContacts' style='display:anone' >
+<div id='page_modal_importContacts' >
     <table style="background-color:#E6E7E6; color:#5D5F95" border=0 cellspacing=0 >
     <tr>
         <td align=center colspan=2 style='color:white; background-color:#434477; width:480px; height:36px; font-weight:bold' >
@@ -335,7 +383,7 @@ function menu_set(index)
 </div>
 
 
-<div id='page_modal_editGroup' style='display:anone' >
+<div id='page_modal_editGroup' >
     <table style="background-color:#E6E7E6; color:#5D5F95" border=0 cellspacing=0 >
     <tr>
         <td align=center colspan=2 style='color:white; background-color:#434477; width:480px; height:36px; font-weight:bold' >
@@ -370,7 +418,7 @@ function menu_set(index)
     </table>
 </div>
 
-<div id='page_home' style='display:anone'>
+<div id='page_home' >
     <div align=center  style='padding-top:20px; margin-left:50px; margin-right:50px; font-family:Verdana ' >
         Upcoming events
         <div id="mytimeline"></div>
@@ -407,7 +455,7 @@ function menu_set(index)
 
     </div>
 
-<div id='page_groups' style='display:anone'>
+<div id='page_groups' >
 
     <div style='height:120px'>&nbsp;</div>
 
@@ -434,11 +482,6 @@ function menu_set(index)
 </div>
 
 
-<button onclick="
-    console.log( node_list );
-    console.log( edge_list );
-">debug</button>
-    
-
+</div><button onClick='document.getElementById("pageContainer").style.display="block";'>elements</button>
 
 </body>
