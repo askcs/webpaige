@@ -27,6 +27,8 @@ function jos_timeline() {
 	google.visualization.events.addListener(timeline, 'edit', timeline_onEdit);
 	google.visualization.events.addListener(timeline, 'add', timeline_onAdd );
 	google.visualization.events.addListener(timeline, 'delete', timeline_onDelete );
+	google.visualization.events.addListener(timeline, 'change', timeline_onChange );
+	google.visualization.events.addListener(timeline, 'select', timeline_onSelect );
 
     //var newStartDate = new Date(document.getElementById('startDate').value);
     //var newEndDate = new Date(document.getElementById('endDate').value);
@@ -81,16 +83,46 @@ function timeline_locationEvent(data, prevData )
     });
 	timeline.draw(timeline_data, options);
 }
+
+var state_map = { 
+	'ask.state.13' : ['x','red'], 
+	'ask.state.14' : ['y','green'] };
+
+function timeline_helper_html2state(content)
+{
+	var state = content.split('>')[1].split('<')[0] ;
+	//reverse map search..
+	for(var i in state_map )
+	{
+		if( state == state_map[i][0] )return i;
+	}
+	return state;
+}
+function timeline_helper_state2html(state)
+{
+	var content = '?';
+
+	if( state_map[ state ] )return '<div style="background-color:'+state_map[ state ][1]+'">' + state_map[ state ][0] + '</div>';
+	return "<div style='color:black;'>" + state +"</div>";
+}
+
+
 function timeline_onEdit()
 {
 	var sel = timeline.getSelection();
 	var row = sel[0].row;   
+	var curItem = timeline.getItem( row );
 	var content = timeline_data.getValue(row, 2);
+
+	modal_editSlot( curItem.start, curItem.end, curItem.group, timeline_helper_html2state( content ) );
+/*
     var newContent = prompt("Enter content", content);
     if (newContent != undefined) {
 		timeline_data.setValue(row, 2, newContent);
 	}
     timeline.redraw();
+*/
+	//timeline.cancelEdit(); //doesnt exist
 }
 function timeline_onAdd()
 {
@@ -98,10 +130,11 @@ function timeline_onAdd()
 	var row = sel[0].row;   
 	var newItem = timeline.getItem( row );
 
-	//ignore newItem.content 
-	modal_addSlot( newItem.start, newItem.end, newItem.group, 'ask.state.13' );
-
 	timeline.cancelAdd();	//let the redraw do the adding
+
+	//ignore newItem.content 
+	modal_addSlot( newItem.start, newItem.end, newItem.group, 'unknown_state_id' );
+
 }
 
 function timeline_onDelete()
@@ -110,11 +143,29 @@ function timeline_onDelete()
 	var row = sel[0].row;   
 	var oldItem = timeline.getItem( row );
 
-	ask_slots_delete( oldItem.start/1000, oldItem.end/1000, oldItem.group, 'ask.state.13' );
+	ask_slots_delete( oldItem.start/1000, oldItem.end/1000, oldItem.group, oldItem.content );
 
 	timeline.cancelDelete();
 }
 
+
+var timeline_selected = null;
+function timeline_onSelect()
+{
+	var sel = timeline.getSelection();
+	var row = sel[0].row;   
+	timeline_selected = timeline.getItem( row );
+	//console.log('select', timeline_selected );
+}
+function timeline_onChange()
+{
+	var sel = timeline.getSelection();
+	var row = sel[0].row;   
+	var newItem = timeline.getItem( row );
+	ask_slots_update(  timeline_selected, newItem );
+
+	
+}
 
 
 //////////////////
@@ -141,6 +192,7 @@ function ask_login(user, pass) {
             var data = JSON.parse(jsonData);
             global_update('sessionID', data['X-SESSION_ID'] );
             global_update('user', user );
+		menu_set(0);
             /*
             if (r != null) {
                 localStorage.setItem("loginCredentials", user + ";" + pass);
@@ -188,7 +240,7 @@ function home_setLocation(data)
 	var now = parseInt( new Date().getTime() /1000 );
     var json = '{"data":{"value":'+state+',"date":'+now+'}}';
 
-	console.log( resman, json );
+	//console.log( resman, json );
     
     var noCookie = { "X-SESSION_ID": ask_key };
     document.cookie= 'X-SESSION_ID='+ask_key+'; path=/';    //does not work cross domain..
@@ -197,9 +249,12 @@ function home_setLocation(data)
         data: json, contentType: 'application/json',
         xhrFields: {   withCredentials: true   },
         headers: noCookie,
+	statusCode: {
+            403: function () { alert("gps, no session??"); }
+	},
         success: function(jsonData)
         {
-            console.log("success!", jsonData );
+            //console.log("success!", jsonData );
 			global_update("location" , [ data['lati'],data['longi'] ] );
         }
     });
@@ -232,17 +287,17 @@ function home_getLocation()
 
 function ask_slots_add( from,till, type, value )
 {
-	console.log( from/1000,till/1000,type,value );
+	//console.log( from/1000,till/1000,type,value );
 
 	var ask_host = global_get('host');
 
 	var resman = ask_host+'/states';
 	var json = '{"color":null'
 		+',"count":0'
-		+',"end":'+(till/1)
+		+',"end":'+(till/1000)
 		+',"recursive":'+ (type=='reoc')
-		+',"start":'+(from/1)
-		+',"text":"'+value
+		+',"start":'+(from/1000)
+		+',"text":"'+ timeline_helper_html2state( value )
 		+'","type":'+'"avail"'
 		+',"wish":0}';
 
@@ -259,24 +314,67 @@ function ask_slots_add( from,till, type, value )
 
 function ask_slots_delete( from,till, type, value )
 {
-	console.log("JAMES");
-
 	var ask_host = global_get('host');
 	var ask_user = global_get('user');
 
-	var resman = ask_host+'/askatars/'+ask_user+'/slots?start='+from+'&end='+till+'&text='+value+'&recursive='+(type=='reoc');
+	var resman = ask_host+'/askatars/'+ask_user+'/slots?start='+from
+		+'&end='+till
+		+'&text='+timeline_helper_html2state(value)
+		+'&recursive='+(type=='reoc');
 
 	$.ajax({
 		url: resman, type: 'DELETE',
 		//data: json, contentType: 'application/json',
 		xhrFields: {   withCredentials: true   },
+		statusCode: {
+	            403: function () { alert("del, no session??"); }
+		},
 		success: function(jdata)
 		{
-			console.log("HENK");
 			ask_slots_getPlanning();
 		}
 	});
 }
+
+function ask_slots_update( oldSlot, newSlot )
+{
+	//console.log('upDate ', oldSlot, newSlot );
+	
+	var ask_host = global_get('host');
+	var ask_user = global_get('user');
+
+	var resman = ask_host+'/askatars/'+ask_user+'/slots';
+	var bodyJson = '{"color":null'
+		+',"count":0'
+		+',"end":'+(oldSlot.end/1000)
+		+',"recursive":'+ (oldSlot.group=='reoc')
+		+',"start":'+(oldSlot.start/1000)
+		+',"text":"'+ timeline_helper_html2state(oldSlot.content)
+		+'","type":'+'"avail"'
+		+',"wish":0}';
+
+	var queryJson = 'start='+(newSlot.start/1000)
+		+'&end='+(newSlot.end/1000)
+		+'&text='+ timeline_helper_html2state(newSlot.content)
+		+'&recursive='+(newSlot.group=='reoc');
+
+	console.log( bodyJson,queryJson );
+
+	$.ajax({
+		url: resman +'?'+queryJson , type: 'PUT',
+		data: bodyJson, contentType: 'application/json',
+		xhrFields: {   withCredentials: true   },
+		statusCode: {
+	            403: function () { alert("del, no session??"); }
+		},
+		success: function(jdata)
+		{
+			ask_slots_getPlanning();
+		}
+	});
+
+}
+
 
 function ask_slots_getPlanning()
 {
@@ -297,9 +395,12 @@ function ask_slots_getPlanning()
         url: resman, type: 'GET',
 		data: json, contentType: 'application/json',
         xhrFields: {   withCredentials: true   },
-		statusCode: {
-            403: function () { alert("no session??"); }
-			},
+	statusCode: {
+        	403: function () { 
+			global_update('user','none');
+			alert("planning, no session??"); 
+		}
+	},
         success: function(jdata){
 			var slots = JSON.parse(jdata);
 			//slots = slots.data; //silly
@@ -313,11 +414,7 @@ function ask_slots_getPlanning()
 			//timeline_data = [];
 			for(var i in slots )
 			{
-				var content = "<div style='color:black;'>" + slots[i].text +"</div>";
-			
-				if( slots[i].text == 'ask.state.13' )
-					content = "<div style='background-color:#cdc;'>" + '13' +"</div>";
-			
+				var content = timeline_helper_state2html( slots[i].text );
 
 				timeline_data.addRow( [
 					new Date( slots[i].start *1000),

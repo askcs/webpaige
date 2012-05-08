@@ -94,8 +94,11 @@ function menu_set(index)
 		var div2 = modal_in(document.getElementById('page_modal_setLocation').innerHTML);
 		var inputs = div2.getElementsByTagName('input');
 		var location = global_get('location');
-		inputs[0].value = location[0];
-		inputs[1].value = location[1];
+		if( location )
+		{
+			inputs[0].value = location[0];
+			inputs[1].value = location[1];
+		}
 		div2.style.display = 'inline';
 	}
 
@@ -103,10 +106,37 @@ function menu_set(index)
 	{
 		var div2 = modal_in(document.getElementById('page_modal_addSlot').innerHTML);
 		var inputs = div2.getElementsByTagName('input');
+		var selects = div2.getElementsByTagName('select');
 		inputs[0].value = from/1000;
 		inputs[1].value = till/1000;
-		inputs[2].value = type;
-		inputs[3].value = value;
+		inputs[2].checked = (type=='reoc');
+		for(var i in state_map )
+		{
+			var elOptNew = document.createElement('option');
+			elOptNew.text = state_map[ i ][0];
+			elOptNew.value = i;
+			selects[0].add(elOptNew, null);
+		}
+		selects[0].value = value;
+		div2.style.display = 'inline';
+	}
+
+	function modal_editSlot(from, till,type,value )
+	{
+		var div2 = modal_in(document.getElementById('page_modal_editSlot').innerHTML);
+		var inputs = div2.getElementsByTagName('input');
+		var selects = div2.getElementsByTagName('select');
+		inputs[0].value = from/1000;
+		inputs[1].value = till/1000;
+		inputs[2].checked = (type=='reoc');
+		for(var i in state_map )
+		{
+			var elOptNew = document.createElement('option');
+			elOptNew.text = state_map[ i ][0];
+			elOptNew.value = i;
+			selects[0].add(elOptNew, null);
+		}
+		selects[0].value = 'x';// value;
 		div2.style.display = 'inline';
 	}
 
@@ -217,24 +247,91 @@ function menu_set(index)
 	<td>
 		from<input name='from' /><br/>
 		till<input name='till' /><br/>
-		type<input name='type' /><br/>
-		value<input name='value' />
+		weekly recurring<input type='checkbox' name='ctype' /><br/>
+		state:<select name='svalue' >
+		</select>
 	</td>
 	</tr>
        <tr><td colspan='2' align='right' style='height:54px;padding-right:16px' >
         <img src='img/widget_button_save.png' onClick="
+
 	var inputs = this.parentNode.parentNode.parentNode.getElementsByTagName('input');   // img->td->tr->tablebody->*inputs
+	var selects = this.parentNode.parentNode.parentNode.getElementsByTagName('select');
         var inputValues = new Object();
         for(var i in inputs )
-        if( inputs[i].name && inputs[i].value )
-        	inputValues[ inputs[i].name ] = inputs[i].value;
-	ask_slots_add(inputValues.from, inputValues.till, inputValues.type, inputValues.value );
+        if( inputs[i].name )
+	{
+		if( inputs[i].name == 'ctype' )
+        		inputValues[ inputs[i].name ] = inputs[i].checked;
+		if( inputs[i].value )
+        		inputValues[ inputs[i].name ] = inputs[i].value;
+	}
+        for(var i in selects )
+	{
+		if( selects[i].name )
+			inputValues[ selects[i].name ] = selects[i].value;
+	}
+	ask_slots_add( new Date(inputValues.from*1000), new Date(inputValues.till*1000), inputValues.ctype?'reoc':'plan', '<div>'+inputValues.svalue+'</div>' );
 	modal_out();
         " />
      </td></tr>
 	</table>
 </div>
 
+<!-- -->
+
+<div id='page_modal_editSlot' >
+    <table style="background-color:#E6E7E6; color:#5D5F95" border="1" cellspacing="0" >
+      <tr>
+        <td align="center" colspan="2" style='color:white; background-color:#434477; width:480px; height:36px; font-weight:bold' >
+          <div style='float:right;padding:4px'>
+            <img onClick="modal_out();" border="0" src='img/widget_button_close.png' />
+          </div>
+          edit slot
+        </td>
+      </tr>
+	<tr>	
+	<td>
+		from<input name='from' /><br/>
+		till<input name='till' /><br/>
+		weekly recurring<input type='checkbox' name='ctype' /><br/>
+
+		state:<select name='svalue' >
+		</select>
+	</td>
+	</tr>
+       <tr><td colspan='2' align='right' style='height:54px;padding-right:16px' >
+        <img src='img/widget_button_save.png' onClick="
+	var inputs = this.parentNode.parentNode.parentNode.getElementsByTagName('input');   // img->td->tr->tablebody->*inputs
+	var selects = this.parentNode.parentNode.parentNode.getElementsByTagName('select');
+        var inputValues = new Object();
+        for(var i in inputs )
+        if( inputs[i].name )
+	{
+		if( inputs[i].name == 'ctype' )
+        		inputValues[ inputs[i].name ] = inputs[i].checked;
+		else if( inputs[i].value )
+	        	inputValues[ inputs[i].name ] = inputs[i].value;
+	}
+        for(var i in selects )
+	{
+		if( selects[i].name )
+			inputValues[ selects[i].name ] = selects[i].value;
+	}
+
+	var newSlot = new Object();
+	newSlot.start = new Date( inputValues.from*1000 );
+	newSlot.end = new Date( inputValues.till *1000 );
+	newSlot.group = inputValues.ctype?'reoc':'plan';
+	newSlot.content = '<div>'+inputValues.svalue+'</div>';
+	ask_slots_update( timeline_selected, newSlot );
+	modal_out();
+        " />
+     </td></tr>
+	</table>
+</div>
+
+<!-- -->
 
   <div id='page_modal_setLocation' >
     <table style="background-color:#E6E7E6; color:#5D5F95" border="1" cellspacing="0" >
@@ -448,7 +545,7 @@ function menu_set(index)
            You have a request to postpone your meeting with Kees to friday the 12th of april. Do you accept this request?
         </div>
             |/<br />
-        <div style='color:white; background-color:#7E82BE'>no | Go to appointment | yes</div>
+        <div style='color:white; background-color:#7E82BE'>no | <span onClick="menu_set(4);" >Go to appointment</span> | yes</div>
     </div>
     <br style='clear:both'/>
 
