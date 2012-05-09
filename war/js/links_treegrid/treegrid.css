@@ -38,11 +38,6 @@
 .treegrid-droparea, .treegrid-item-dragover {
   background-color: #F5F5F5;
   border: 1px dashed gray;
-
-  /* TODO: cleanup
-  background-color: #FFE6EA;
-  border-color: red;
-  /**/
 }
 
 
@@ -59,7 +54,9 @@
   border: 1px solid #FFD500;
   font-weight: bold;
   border-radius: 3px;
-  z-index: 9999;
+  
+  z-index: 99999;
+  position: relative;
 }
 
 .treegrid-item-field {
@@ -136,11 +133,11 @@
 }
 
 .treegrid-icons {
+  padding: 4px;
 }
 
 .treegrid-icon {
   padding-right: 4px;
-  padding-bottom: 4px;
 }
 
 /* TODO

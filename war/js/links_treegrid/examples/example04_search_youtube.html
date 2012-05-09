@@ -20,9 +20,10 @@
         height: 24px; 
         vertical-align: top;
       }
+      /*
       div.entry {
         max-width: 250px;
-      }      
+      } */     
       img.thumbnail {
         height: 45px;
         margin-right: 5px;
@@ -76,6 +77,14 @@
         this.query = query || '';
         this.url = 'https://gdata.youtube.com/feeds/api/videos?alt=json&q=' + escape(query);
         this.items = [];
+        this.setOptions({
+          'columns': [
+            {'name': 'image'},
+            {'name': 'title', 'width': 250},
+            {'name': 'views'},
+            {'name': 'rating'}
+          ]
+        });
       }
       YoutubeConnector.prototype = new links.DataConnector();
 
@@ -219,7 +228,9 @@
         var options = {
           'width': '100%',
           'height': '500px',
-          'itemHeight': 60   // px
+          'items': {
+            'defaultHeight': 60   // px
+          }
         };
 
         // Instantiate our treegrid object.

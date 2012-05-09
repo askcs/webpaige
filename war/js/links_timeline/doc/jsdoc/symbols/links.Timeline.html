@@ -304,6 +304,15 @@ The timeline is developed in javascript as a Google Visualization Chart.
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/links.Timeline.html#applyRange">applyRange</a></b>(start, end, zoomAroundDate)
+								</div>
+								<div class="description">Apply a visible range.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/links.Timeline.html#cancelAdd">cancelAdd</a></b>()
 								</div>
 								<div class="description">Cancel creation of a new item
@@ -511,7 +520,7 @@ HTML element</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/links.Timeline.html#getGroupFromHeight">getGroupFromHeight</a></b>(height)
+								<div class="fixedFont"><b><a href="../symbols/links.Timeline.html#getGroupFromHeight">getGroupFromHeight</a></b>(height, )
 								</div>
 								<div class="description">Find the group from a given height in the timeline</div>
 							</td>
@@ -877,6 +886,15 @@ if there is no item selected, the button is hidden.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/links.Timeline.html#repositionItem">repositionItem</a></b>(item, left, right)
+								</div>
+								<div class="description">Reposition given item</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/links.Timeline.html#screenToTime">screenToTime</a></b>(x)
 								</div>
 								<div class="description">Convert a position on screen (pixels) to a datetime 
@@ -936,6 +954,15 @@ executed once.</div>
 								<div class="fixedFont"><b><a href="../symbols/links.Timeline.html#setGroups">setGroups</a></b>(data)
 								</div>
 								<div class="description">Set the groups available in the given dataset</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/links.Timeline.html#setOptions">setOptions</a></b>(options)
+								</div>
+								<div class="description">Set options for the timeline.</div>
 							</td>
 						</tr>
 					
@@ -1334,6 +1361,55 @@ but the existing group is returned.
                         {Date} end,
                         {String} content with text or HTML code,
                         {String} group</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="applyRange"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>applyRange</b>(start, end, zoomAroundDate)
+					
+					</div>
+					<div class="description">
+						Apply a visible range. The range is limited to feasible maximum and minimum
+range.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Date}</span> <b>start</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Date}</span> <b>end</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Date}</span> <b>zoomAroundDate</b>
+									
+								</dt>
+								<dd>Optional. Date around which will be zoomed.</dd>
 							
 							</dl>
 						
@@ -2166,7 +2242,7 @@ the current time has been changed via the method setCurrentTime.
 					<div class="fixedFont">
 					
 					<span class="light">{Object}</span>
-					<b>getGroupFromHeight</b>(height)
+					<b>getGroupFromHeight</b>(height, )
 					
 					</div>
 					<div class="description">
@@ -2186,6 +2262,12 @@ the current time has been changed via the method setCurrentTime.
 									
 								</dt>
 								<dd>Height in the timeline</dd>
+							
+								<dt>
+									<span class="light fixedFont">{boolean}</span> <b></b>
+									
+								</dt>
+								<dd></dd>
 							
 							</dl>
 						
@@ -3511,6 +3593,54 @@ end time are changed, or when data is added or removed dynamically.
 
 					<hr />
 				
+					<a name="repositionItem"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>repositionItem</b>(item, left, right)
+					
+					</div>
+					<div class="description">
+						Reposition given item
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>item</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Number}</span> <b>left</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Number}</span> <b>right</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="screenToTime"> </a>
 					<div class="fixedFont">
 					
@@ -3763,6 +3893,44 @@ The custom time bar can be used to display events in past or future.
 									
 								</dt>
 								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setOptions"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setOptions</b>(options)
+					
+					</div>
+					<div class="description">
+						Set options for the timeline. 
+Timeline must be redrawn afterwards
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{name/value map}</span> <b>options</b>
+									
+								</dt>
+								<dd>A name/value map containing settings for the
+                                timeline. Optional.</dd>
 							
 							</dl>
 						
@@ -4542,7 +4710,7 @@ For example, try zoomfactor = 0.1 or -0.1
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Tue Mar 20 2012 10:34:17 GMT+0100 (CET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Tue May 01 2012 11:12:20 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>

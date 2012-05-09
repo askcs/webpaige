@@ -15,11 +15,15 @@
         vertical-align: top;
       }
       
+      div.treegrid-frame {
+        border-color: #BF29C8;
+      }
       div.treegrid-header {
         color: white;
         background-color: #E157E9;
         border-color: #BF29C8;
       }
+
       img.icon {
         vertical-align: top;
       }      
@@ -37,7 +41,7 @@
           'employees': personCount,
           'sales': '$ ' + (10 + personCount * 10 * Math.round(7 * Math.random())) + '.000'
         }
-        department._childs = createPersons(personCount);
+        department.persons = createPersons(personCount);
         department._actions = [
           {'event': 'delete', 'title': 'Delete this department', 'image': 'img/24/Close-2-icon.png'}
           //{'event': 'delete', 'title': 'Delete this department'}
@@ -92,7 +96,9 @@
         var options = {
           'width': '500px',
           'height': '400px',
-          'itemHeight': 32   // px
+          'items': {
+            'defaultHeight': 32   // px
+          }
         };  
 
         // Instantiate our treegrid object.

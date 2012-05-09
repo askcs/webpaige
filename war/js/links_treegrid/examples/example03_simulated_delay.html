@@ -49,7 +49,7 @@
           'name': 'Truck ' + index + (index == 0 ? ' (first)' : ''),
           'capacity': randomTruckCapacity()
         }
-        truck._childs = createOrders();
+        truck['orders'] = createOrders();
         return truck;
       }
 
@@ -205,7 +205,9 @@
         var options = {
           'width': '500px',
           'height': '400px',
-          'itemHeight': 32   // px
+          'items': {
+            'defaultHeight': 32   // px
+          }
         };
         
         // Instantiate our treegrid object.

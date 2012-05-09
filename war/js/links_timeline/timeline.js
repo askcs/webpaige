@@ -30,18 +30,19 @@
  * Copyright (c) 2011-2012 Almende B.V.
  *
  * @author 	Jos de Jong, <jos@almende.org>
- * @date    2012-03-22
+ * @date    2012-05-01
  */
 
 
 /*
  * TODO
  *
- * Add methods deleteItem, addItem, changeItem to the GWT wrapper
- * Add moving items from one group to another
- * Add options for a minimum and maximum zoom level
  * Add zooming with pinching on Android
  * 
+ * Bug: when an item contains a javascript onclick or a link, this does not work
+ *      when the item is not selected (when the item is being selected,
+ *      it is redrawn, which cancels any onclick or link action)
+ * Bug: when an item contains an image without size, or a css max-width, it is not sized correctly
  * Bug: neglect items when they have no valid start/end, instead of throwing an error
  * Bug: Pinching on ipad does not work very well, sometimes the page will zoom when pinching vertically
  * Bug: cannot set max width for an item, like div.timeline-event-content {white-space: normal; max-width: 100px;}
@@ -136,11 +137,17 @@ links.Timeline = function(container) {
     'eventMarginAxis': 20, // minimal margin beteen events and the axis
     'dragAreaWidth': 10, // pixels
 
+    'min': undefined,
+    'max': undefined,
+    'intervalMin': 10,  // milliseconds
+    'intervalMax': 1000 * 60 * 60 * 24 * 365 * 10000, // milliseconds
+
     'moveable': true,
     'zoomable': true,
     'selectable': true,
     'editable': false,
     'snapEvents': true,
+    'groupChangeable': true,
 
     'showCurrentTime': true, // show a red bar displaying the current time
     'showCustomTime': false, // show a blue, draggable bar displaying a custom time    
@@ -209,15 +216,7 @@ links.Timeline = function(container) {
  *                                 timeline. Optional.
  */
 links.Timeline.prototype.draw = function(data, options) {
-  if (options) {
-    // retrieve parameter values
-    for (var i in options) {
-      if (options.hasOwnProperty(i)) {
-        this.options[i] = options[i];
-      }
-    }
-  }
-  this.options.autoHeight = (this.options.height === "auto");
+  this.setOptions(options);
 
   // read the data
   this.setData(data);
@@ -231,6 +230,27 @@ links.Timeline.prototype.draw = function(data, options) {
   }
   
   this.firstDraw = false;
+}
+
+
+/**
+ * Set options for the timeline. 
+ * Timeline must be redrawn afterwards
+ * @param {name/value map} options A name/value map containing settings for the
+ *                                 timeline. Optional.
+ */ 
+links.Timeline.prototype.setOptions = function(options) {
+  if (options) {
+    // retrieve parameter values
+    for (var i in options) {
+      if (options.hasOwnProperty(i)) {
+        this.options[i] = options[i];
+      }
+    }
+  }
+  
+  // validate options
+  this.options.autoHeight = (this.options.height === "auto");
 }
 
 /**
@@ -272,7 +292,7 @@ links.Timeline.prototype.setData = function(data) {
       var itemData = data[row]
       var item = this.createItem(itemData);
       items.push(item);
-    }    
+    }
   }
   else {
     throw "Unknown data type. DataTable or Array expected.";
@@ -464,27 +484,36 @@ links.Timeline.prototype.setSize = function(width, height) {
  *                           directly redrawn
  */
 links.Timeline.prototype.setVisibleChartRange = function(start, end, redraw) {
-  if (start != null) {
-    this.start = new Date(start);
-  } else {
+  if (start == undefined) {
     // default of 3 days ago
-    this.start = new Date();
-    this.start.setDate(this.start.getDate() - 3);
+    start = new Date();
+    start.setDate(start.getDate() - 3);
   }
-  
-  if (end != null) {
-    this.end = new Date(end);
-  } else {
+
+  if (end == undefined) {
     // default of 4 days ahead
-    this.end = new Date();
-    this.end.setDate(this.end.getDate() + 4);
+    end = new Date();
+    end.setDate(start.getDate() + 4);
   }
 
   // prevent start Date <= end Date
-  if (this.end.valueOf() <= this.start.valueOf()) {
-    this.end = new Date(this.start);
-    this.end.setDate(this.end.getDate() + 7);
+  if (end.valueOf() <= start.valueOf()) {
+    end = new Date(start);
+    end.setDate(end.getDate() + 7);
   }
+
+  // limit to the allowed range (dont let this do by applyRange,
+  // because that method will try to maintain the interval (end-start)
+  var min = this.options.min ? this.options.min.valueOf() : undefined;
+  if (min && start.valueOf() < min) {
+    start = new Date(min);
+  }
+  var max = this.options.max ? this.options.max.valueOf() : undefined;
+  if (max && end.valueOf() > max) {
+    end = new Date(max);
+  }  
+  
+  this.applyRange(start, end);
 
   if (redraw == undefined || redraw == true) {
     this.recalcSize();
@@ -1263,8 +1292,6 @@ links.Timeline.prototype.redrawItems = function() {
           var line = domItem.line;
           line.style.left = (left - item.lineWidth/2) + "px";
           if (axisOnTop) {
-            //line.style.top = axisHeight + "px"; // TODO: cleanup
-            //line.style.height = (item.top - axisHeight) + "px";
             line.style.top = "0px";
             line.style.height = Math.max(item.top, 0) + "px";
           }
@@ -2271,7 +2298,7 @@ links.Timeline.prototype.recalcSize = function() {
         var finalItems = this.animation.finalItems;        
         for (var i = 0, iMax = finalItems.length; i < iMax; i++) {
           finalItems[i].top += diff;
-          finalItems[i].item.top += diff; // TODO
+          finalItems[i].item.top += diff;
         }        
       }
       else {
@@ -2507,10 +2534,6 @@ links.Timeline.prototype.onTouchEnd = function(event) {
   var params = this.eventParams;
   params.touchDown = false;
 
-  /* TODO: cleanup
-  document.getElementById("info").innerHTML = "touchEnd";
-  */
-
   if (params.zoomed) {
     timeline.trigger("rangechanged");
   }
@@ -2744,24 +2767,8 @@ links.Timeline.prototype.onMouseMove = function (event) {
         item.end = this.screenToTime(right);
       }
     }
-
-    switch(item.type) {
-      case 'range':
-        domItem.style.left = left + "px"; 
-        //domItem.style.width = Math.max(right - left - 2 * item.borderWidth, 1) + "px";  // TODO
-        domItem.style.width = Math.max(right - left, 1) + "px"; 
-        break;
-      
-      case 'box':
-        domItem.style.left = (left - item.width / 2) + "px"; 
-        domItem.line.style.left = (left - item.lineWidth / 2) + "px"; 
-        domItem.dot.style.left = (left - item.dotWidth / 2) + "px"; 
-        break;
-        
-      case 'dot':
-        domItem.style.left = (left - item.dotWidth / 2) + "px"; 
-        break;
-    }
+    
+    this.repositionItem(item, left, right);
 
     if (this.groups.length == 0) {
       // TODO: does not work well in FF, forces redraw with every mouse move it seems
@@ -2772,13 +2779,21 @@ links.Timeline.prototype.onMouseMove = function (event) {
       // Note: when animate==true, no redraw is needed here, its done by stackEvents animation
     }
     else {
-      /* TODO: move item from one group to another when needed
-      var y = mouseY - params.frameTop;
-      var group = this.getGroupFromHeight(y);
-      if (item.group !== group) {
-        // ... move item to the other group
-      } 
-      */ 
+      // move item from one group to another when needed
+      if (options.groupsChangeable) {
+        var y = mouseY - params.frameTop;
+        var group = this.getGroupFromHeight(y);
+        if (item.group !== group) {
+          // move item to the other group
+
+          //item.group = group;
+          var index = this.items.indexOf(item);
+          this.changeItem(index, {'group': group.content});
+
+          item.top = group.top;
+          this.repositionItem(item);
+        }
+      }
     }
 
     this.redrawDeleteButton();
@@ -2786,9 +2801,17 @@ links.Timeline.prototype.onMouseMove = function (event) {
   }
   else if (options.moveable) {
     var interval = (params.end.valueOf() - params.start.valueOf());
-    var diffMillisecs = parseFloat(-diffX) / size.contentWidth * interval;
-    this.start = new Date(params.start.valueOf() + Math.round(diffMillisecs));
-    this.end = new Date(params.end.valueOf() + Math.round(diffMillisecs));
+    var diffMillisecs = Math.round(parseFloat(-diffX) / size.contentWidth * interval);
+    var newStart = new Date(params.start.valueOf() + diffMillisecs);
+    var newEnd = new Date(params.end.valueOf() + diffMillisecs);
+    this.applyRange(newStart, newEnd);
+    
+    // if the applied range is moved due to a fixed min or max, 
+    // change the diffMillisecs accordingly
+    var appliedDiff = (this.start.valueOf() - newStart.valueOf());
+    if (appliedDiff) {
+      diffMillisecs += appliedDiff;
+    }
 
     this.recalcConversion();
 
@@ -2800,7 +2823,7 @@ links.Timeline.prototype.onMouseMove = function (event) {
     var currentLeft = parseFloat(dom.items.frame.style.left) || 0;
     var previousOffset = params.previousOffset || 0;
     var frameOffset = previousOffset + (currentLeft - previousLeft);
-    var frameLeft = -Math.round(diffMillisecs) / interval * size.contentWidth + frameOffset;
+    var frameLeft = -diffMillisecs / interval * size.contentWidth + frameOffset;
     params.previousOffset = frameOffset;
     params.previousLeft = frameLeft;
 
@@ -2809,7 +2832,7 @@ links.Timeline.prototype.onMouseMove = function (event) {
     this.redrawCurrentTime();
     this.redrawCustomTime();
     this.redrawAxis();
-   
+    
     // fire a rangechange event
     this.trigger('rangechange');
   }
@@ -2882,7 +2905,7 @@ links.Timeline.prototype.onMouseUp = function (event) {
           this.updateData(params.itemIndex, {
             'start': item.start, 
             'end': item.end
-          });            
+          });
         }
         else {
           // undo a change
@@ -2893,9 +2916,8 @@ links.Timeline.prototype.onMouseUp = function (event) {
             domItem = item.dom;
 
           item.start = params.itemStart;
-          item.end = params.itemEnd;    
-          domItem.style.left = params.itemLeft + "px"; 
-          domItem.style.width = (params.itemRight - params.itemLeft) + "px"; 
+          item.end = params.itemEnd;
+          this.repositionItem(item, params.itemLeft, params.itemRight);
         }
       }
 
@@ -2905,7 +2927,7 @@ links.Timeline.prototype.onMouseUp = function (event) {
         this.redrawFrame();
       }
       this.redrawDeleteButton();
-      this.redrawDragAreas();      
+      this.redrawDragAreas();
     }
   }
   else {
@@ -2924,13 +2946,16 @@ links.Timeline.prototype.onMouseUp = function (event) {
         if (params.itemIndex !== undefined) {
           if (!this.isSelected(params.itemIndex)) {
             this.selectItem(params.itemIndex);
-            this.trigger('select');        
+            this.redrawDeleteButton();
+            this.redrawDragAreas();
+            this.trigger('select');
           }
         }
         else {
           this.unselectItem();
+          this.redrawDeleteButton();
+          this.redrawDragAreas();
         }
-        this.redrawDeleteButton();
       }
     }
     else {
@@ -3129,20 +3154,7 @@ links.Timeline.prototype.zoom = function(zoomFactor, zoomAroundDate) {
   var newStart = new Date(this.start.valueOf() - startDiff * zoomFactor);
   var newEnd   = new Date(this.end.valueOf() - endDiff * zoomFactor);
   
-  // prevent scale of less than 10 milliseconds
-  // TODO: IE has problems with milliseconds
-  if (zoomFactor > 0 && (newEnd.valueOf() - newStart.valueOf()) < 10) {
-    return;
-  }
-
-  // prevent scale of more than than 10 thousand years
-  if (zoomFactor < 0 && (newEnd.getFullYear() - newStart.getFullYear()) > 10000) {
-    return;
-  }
-  
-  // apply new dates
-  this.start = newStart;
-  this.end = newEnd;
+  this.applyRange(newStart, newEnd, zoomAroundDate);
   
   this.recalcSize();
   var animate = this.options.animate ? this.options.animateZoom : false;
@@ -3172,11 +3184,133 @@ links.Timeline.prototype.move = function(moveFactor) {
   var diff = parseFloat(this.end.valueOf() - this.start.valueOf());
   
   // apply new dates
-  this.start = new Date(this.start.valueOf() + diff * moveFactor);
-  this.end   = new Date(this.end.valueOf() + diff * moveFactor);
+  var newStart = new Date(this.start.valueOf() + diff * moveFactor);
+  var newEnd   = new Date(this.end.valueOf() + diff * moveFactor);
+  this.applyRange(newStart, newEnd);
 
   this.recalcConversion();
   this.redrawFrame();    
+}
+
+/**
+ * Reposition given item
+ * @param {Object} item
+ * @param {Number} left
+ * @param {Number} right
+ */ 
+links.Timeline.prototype.repositionItem = function (item, left, right) {
+  var domItem = item.dom;
+  switch(item.type) {
+    case 'range':
+      domItem.style.left = left + "px"; 
+      //domItem.style.width = Math.max(right - left - 2 * item.borderWidth, 1) + "px";  // TODO: borderwidth
+      domItem.style.width = Math.max(right - left, 1) + "px"; 
+      break;
+    
+    case 'box':
+      domItem.style.left = (left - item.width / 2) + "px"; 
+      domItem.line.style.left = (left - item.lineWidth / 2) + "px"; 
+      domItem.dot.style.left = (left - item.dotWidth / 2) + "px"; 
+      break;
+      
+    case 'dot':
+      domItem.style.left = (left - item.dotWidth / 2) + "px"; 
+      break;
+  }
+  
+  if (this.groups.length > 0) {
+    domItem.style.top = item.top + 'px';
+  }
+}
+
+/**
+ * Apply a visible range. The range is limited to feasible maximum and minimum
+ * range.
+ * @param {Date} start
+ * @param {Date} end 
+ * @param {Date}   zoomAroundDate  Optional. Date around which will be zoomed.
+ */ 
+links.Timeline.prototype.applyRange = function (start, end, zoomAroundDate) {
+  // calculate new start and end value
+  var startValue = start.valueOf();
+  var endValue = end.valueOf();
+  var interval = (endValue - startValue);
+  
+  // determine maximum and minimum interval
+  var options = this.options;
+  var year = 1000 * 60 * 60 * 24 * 365;
+  var intervalMin = Number(options.intervalMin) || 10;
+  if (intervalMin < 10) {
+    intervalMin = 10;
+  }
+  var intervalMax = Number(options.intervalMax) || 10000 * year;
+  if (intervalMax > 10000 * year) {
+    intervalMax = 10000 * year;
+  }
+  if (intervalMax < intervalMin) {
+    intervalMax = intervalMin;
+  }
+
+  // determine min and max date value
+  var min = options.min ? options.min.valueOf() : undefined;
+  var max = options.max ? options.max.valueOf() : undefined;
+  if (min && max) {
+    if (min >= max) {
+      // empty range
+      var day = 1000 * 60 * 60 * 24;
+      max = min + day;
+    }
+    if (intervalMax > (max - min)) {
+      intervalMax = (max - min);
+    }
+    if (intervalMin > (max - min)) {
+      intervalMin = (max - min);
+    }    
+  }
+  
+  // prevent empty interval
+  if (startValue >= endValue) {
+    endValue += 1000 * 60 * 60 * 24;
+  }
+  
+  // prevent too small scale
+  // TODO: IE has problems with milliseconds
+  if (interval < intervalMin) {
+    var diff = (intervalMin - interval);
+    var f = zoomAroundDate ? (zoomAroundDate.valueOf() - startValue) / interval : 0.5;
+    startValue -= Math.round(diff * f);
+    endValue   += Math.round(diff * (1 - f));
+  }
+
+  // prevent too large scale
+  if (interval > intervalMax) {
+    var diff = (interval - intervalMax);
+    var f = zoomAroundDate ? (zoomAroundDate.valueOf() - startValue) / interval : 0.5;
+    startValue += Math.round(diff * f);
+    endValue   -= Math.round(diff * (1 - f));
+  }
+  
+  // prevent to small start date
+  if (min) {
+    var diff = (startValue - min);
+    if (diff < 0) {
+      startValue -= diff;
+      endValue -= diff;
+    }
+  }
+  
+  // prevent to large end date
+  if (max) {
+    var diff = (max - endValue);
+    if (diff < 0) {
+      startValue += diff;
+      endValue += diff;
+    }
+  }
+
+  // apply new dates
+  this.start = new Date(startValue);
+  this.end = new Date(endValue);
 }
 
 /**
@@ -3285,6 +3419,7 @@ links.Timeline.prototype.deleteAllItems = function() {
 /**
  * Find the group from a given height in the timeline
  * @param {Number} height   Height in the timeline
+ * @param {boolean}  
  * @return {Object} group   The group object, or undefined if out of range
  */ 
 links.Timeline.prototype.getGroupFromHeight = function(height) {
@@ -3295,9 +3430,16 @@ links.Timeline.prototype.getGroupFromHeight = function(height) {
 
   if (groups) {
     var group;
+    /* TODO: cleanup
     for (var i = 0, iMax = groups.length; i < iMax; i++) {
       group = groups[i];
       if (y > group.top && y < group.top + group.height) {
+        return group;
+      }
+    }*/
+    for (var i = groups.length - 1; i >= 0; i--) {
+      group = groups[i];
+      if (y > group.top) {
         return group;
       }
     }
@@ -3484,11 +3626,12 @@ links.Timeline.prototype.deleteGroups = function () {
  */ 
 links.Timeline.prototype.addGroup = function (groupName) {
   var groups = this.groups,
-    groupIndexes = this.groupIndexes;
+    groupIndexes = this.groupIndexes,
+    groupObj = undefined;
 
-  var groupObj = groupIndexes[groupName];
-  if (groupObj === undefined && groupName !== undefined) {
-    var groupObj = {
+  var groupIndex = groupIndexes[groupName];
+  if (groupIndex === undefined && groupName !== undefined) {
+    groupObj = {
       'content': groupName,
       'labelTop': 0,
       'lineTop': 0
@@ -3513,6 +3656,9 @@ links.Timeline.prototype.addGroup = function (groupName) {
     for (var i = 0, iMax = groups.length; i < iMax; i++) {
       groupIndexes[groups[i].content] = i;
     }
+  }
+  else {
+    groupObj = groups[groupIndex];
   }
 
   return groupObj;
@@ -3581,6 +3727,10 @@ links.Timeline.prototype.setSelection = function(selection) {
       }
     }
   }
+  else {
+    // unselect current selection
+    this.unselectItem();
+  }
   return false;
 }
 
@@ -3634,6 +3784,15 @@ links.Timeline.prototype.selectItem = function(index) {
         domItem.dot.className = "timeline-event timeline-event-selected timeline-event-dot";
         break;
     }
+    
+    /* TODO: cleanup this cannot work as this breaks any javscript action inside the item
+    // move the item to the end, such that it will be displayed on top of the other items
+    var parent = domItem.parentNode;
+    if (parent) {
+      parent.removeChild(domItem);
+      parent.appendChild(domItem);
+    }
+    */
   }
 }
 
@@ -3728,7 +3887,6 @@ links.Timeline.prototype.stackEvents = function(animate) {
   else {
     this.stackMoveToFinal(sortedItems, finalItems);
     this.recalcSize();
-    //this.redraw(); // TODO: cleanup
   }
 }
 
@@ -3852,7 +4010,6 @@ links.Timeline.prototype.stackCalculateFinal = function(items) {
  *                               location, else false
  */ 
 links.Timeline.prototype.stackMoveOneStep = function(currentItems, finalItems) {
-  // TODO: check this method
   var arrived = true;
   
   // apply new positions animated
@@ -3924,19 +4081,6 @@ links.Timeline.prototype.stackEventsCheckOverlap = function(items, itemIndex,
     itemStart, itemEnd) {
     eventMargin = this.options.eventMargin,
     collision = this.collision;
-  
-  /* TODO: cleanup
-  var item1 = items[itemIndex];
-  for (var i = itemStart; i <= itemEnd; i++) {
-    var item2 = items[i];
-    if (collision(item1, item2, eventMargin)) {
-      if (i != itemIndex) {
-        return item2;
-      }
-    }
-  }
-  return;
-  //*/
   
   // we loop from end to start, as we suppose that the chance of a 
   // collision is larger for items at the end, so check these first.
@@ -4423,7 +4567,7 @@ links.Timeline.StepDate.prototype.snap = function(date) {
     date.setMinutes(0);
     date.setSeconds(0);
     date.setMilliseconds(0);
-  } 
+  }
   else if (this.scale == links.Timeline.StepDate.SCALE.MONTH) {
     if (date.getDate() > 15) {
       date.setDate(1); 
@@ -4834,8 +4978,7 @@ links.Timeline.preventDefault = function (event) {
  * @return {number} left        The absolute left position of this element
  *                              in the browser page.
  */ 
-links.Timeline.getAbsoluteLeft = function(elem)
-{
+links.Timeline.getAbsoluteLeft = function(elem) {
   var left = 0;
   while( elem != null ) {
     left += elem.offsetLeft;
@@ -4855,8 +4998,7 @@ links.Timeline.getAbsoluteLeft = function(elem)
  * @return {number} top        The absolute top position of this element
  *                              in the browser page.
  */ 
-links.Timeline.getAbsoluteTop = function(elem)
-{
+links.Timeline.getAbsoluteTop = function(elem) {
   var top = 0;
   while( elem != null ) {
     top += elem.offsetTop;

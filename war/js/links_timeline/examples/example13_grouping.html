@@ -27,9 +27,12 @@
         color: #103E9C;          
       }
       
-      div.timeline-event, div.timeline-event-selected, div.timeline-event-box, div.timeline-event-range {
+      div.timeline-event {
         border: none;
-        background: none;
+        background-color: white;
+      }
+      div.timeline-event-selected {
+        background-color: #C0D8E1;
       }
       div.timeline-event-content {
         margin: 0px;
@@ -51,7 +54,6 @@
         font: bold 12px arial ;
         color: #103E9C;
 
-        background-color: white; 
         padding: 2px; 
         margin:1px;
         overflow: hidden; 
@@ -111,6 +113,7 @@
           showMajorLabels: false,
           axisOnTop: true,
           // groupsWidth : "200px",
+          groupsChangeable : true,
           groupsOnRight: false
         };
 

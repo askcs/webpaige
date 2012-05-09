@@ -12,7 +12,7 @@
  * TreeGrid is part of the CHAP Links library.
  * 
  * TreeGrid is tested on Firefox 3.6, Safari 5.0, Chrome 6.0, Opera 10.6, and
- * Internet Explorer 8+.
+ * Internet Explorer 9+.
  *
  * @license
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -30,12 +30,20 @@
  * Copyright (c) 2011-2012 Almende B.V. <http://links.sourceforge.net>
  *
  * @author   Jos de Jong, <jos@almende.org>
- * @date  2012-02-10
+ * @date    2012-05-02
+ * @version 1.0
  */
 
 /*
  * TODO
- * - items loose there expanded state when an item is inserted or removed before
+ * - send the changed items along with the change event?
+ * - the columns of an item should be reset after a drop
+ * - when the columns change (by reading a new item), the already drawn items and header are not updated
+ * - with multiple subgrids in one item, the header does not overlap correctly when scrolling down
+ * - get the TreeGrid working on IE8 again
+ * - dataconnector: be able to define how to generate childs based on the 
+ *   definition of a field name and dataconnector type 
+ * 
  * - couple events from dataconnectors to the TreeGrid?
  * - drag and drop: 
  *   - enable dropping in between items
@@ -48,19 +56,26 @@
  * - implement horizontal scrollbar when data does not fit
  */
 
+
 /**
  * Declare a unique namespace for CHAP's Common Hybrid Visualisation Library,
  * "links"
  */ 
-var links;
-if (links === undefined) {
-  var links = {};
-};
+if (typeof links === 'undefined') {
+  links = {};
+  // important: do not use var, as "var links = {};" will overwrite 
+  //            the existing links variable value with undefined in IE8, IE7.  
+}
+
 
 /**
- * Declare google variable, loaded and used in case of Google DataTable
+ * Ensure the variable google exists
  */ 
-var google;
+if (typeof google === 'undefined') {
+  google = undefined; 
+  // important: do not use var, as "var google = undefined;" will overwrite 
+  //            the existing google variable value with undefined in IE8, IE7.
+}
 
 
 /**
@@ -74,35 +89,6 @@ var google;
  * @param {Object} options
  */
 links.TreeGrid = function(container, options) {
-  this.options = {
-    'width': '100%',
-    'height': '100%',
-    'padding': 4,               // px // TODO: padding is not yet used
-    'indentationWidth': 20,     // px
-    'itemHeight': 24,           // px
-    //'dropAreaHeight': 10         // px // TODO: dropAreas
-    'dropAreaHeight': 0         // px
-  };
-
-  if (options) {
-    // copy options
-    for (var i in options) {
-      if (options.hasOwnProperty(i)) {
-        this.options[i] = options[i];
-      }
-    }
-  }
-
-  // remove all elements from the container element.
-  while (container.hasChildNodes()) {
-    container.removeChild(container.firstChild);
-  }
-
-  this.frame = new links.TreeGrid.Frame(container, this.options);
-  this.frame.setTreeGrid(this);
-  this.frame.repaint();
-  this.frame.reflow();
-
   // Internet Explorer does not support Array.indexof, 
   // so we define it here in that case
   // http://soledadpenades.com/2007/05/17/arrayindexof-in-internet-explorer/
@@ -116,11 +102,69 @@ links.TreeGrid = function(container, options) {
       return -1;
     }
   }
+  http://links.sourceforge.net/treegrid/js/examples/example04_search_youtube.html
+  this.options = {
+    'width': '100%',
+    'height': '100%',
+    'padding': 4,               // px // TODO: padding is not yet used
+    'indentationWidth': 20,     // px
+    'items': {
+      'defaultHeight': 22,      // px
+      'minHeight': 24           // px 
+    },
+    //'dropAreaHeight': 10      // px // TODO: dropAreas
+    'dropAreaHeight': 0         // px
+  };
+
+  // temporary warning
+  try {
+    if (options.itemHeight != undefined) {
+      console.log('WARNING: property option.itemHeight is no longer supported. ' +
+        'It is changed to options.items.defaultHeight');
+    }
+  }
+  catch (e) {} 
+
+  if (options) {
+    links.TreeGrid.extend(this.options, options);
+  }
+
+  // remove all elements from the container element.
+  while (container.hasChildNodes()) {
+    container.removeChild(container.firstChild);
+  }
+
+  this.frame = new links.TreeGrid.Frame(container, this.options);
+  this.frame.setTreeGrid(this);
+  this.frame.repaint();
+  this.frame.reflow();
 
   // fire the ready event
   this.trigger('ready');
 };
 
+/**
+ * Recursively extend obj with all properties in newProps.
+ * @param {Object} obj
+ * @param {Object} newProps
+ */ 
+links.TreeGrid.extend = function(obj, newProps) {
+  for (var i in newProps) {
+    if (newProps.hasOwnProperty(i)) {
+      if (obj[i] instanceof Object) {
+        if (newProps[i] instanceof Object) {
+          links.TreeGrid.extend(obj[i], newProps[i]);
+        }
+        else {
+          // value from newProps will be neglected
+        }
+      }
+      else {
+        obj[i] = newProps[i];
+      }
+    }
+  }
+}
 
 /** 
  * Main drawing logic. This is the function that needs to be called 
@@ -136,18 +180,24 @@ links.TreeGrid.prototype.draw = function(data, options) {
   // TODO: support multiple input types: DataConnector, Google DataTable, JSON table, ...
 
   if (options) {
-    // copy options
-    for (var i in options) {
-      if (options.hasOwnProperty(i)) {
-        this.options[i] = options[i];
-      }
-    }
+    // merge options
+    links.TreeGrid.extend(this.options, options);
   }
 
   var grid = new links.TreeGrid.Grid(data, this.options);
   this.frame.setGrid(grid);
 };
 
+/**
+ * Redraw the TreeGrid.
+ * This method can be used after the size of the TreeGrid changed, for example
+ * due to resizing of the page
+ */ 
+links.TreeGrid.prototype.redraw = function() {
+  if (this.frame) {
+    this.frame.onRangeChange();
+  }
+}
 
 /**
  * Base prototype for Frame, Grid, and Item
@@ -341,13 +391,22 @@ links.TreeGrid.Node.prototype.update = function() {
  * Remove the DOM of the node and set the node invisible
  * This will cause a repaint and reflow
  */ 
-links.TreeGrid.Node.prototype.remove = function () {
+links.TreeGrid.Node.prototype.hide = function () {
   this.setVisible(false);
   this.repaint();
   this.reflow();
 };
 
 
+/**
+ * Make the node visible and repaint it
+ */ 
+links.TreeGrid.Node.prototype.show = function () {
+  this.setVisible(true);
+  this.repaint();
+};
+
+      
 /**
  * Select this node
  */ 
@@ -448,8 +507,7 @@ links.TreeGrid.Frame.prototype.setTreeGrid = function(treegrid) {
 links.TreeGrid.Frame.prototype.setGrid = function (grid) {
   if (this.grid) {
     // remove old grid
-    this.grid.setVisible(false);
-    this.grid.repaint();
+    this.grid.hide();
     delete this.grid;
   }
   
@@ -632,7 +690,7 @@ links.TreeGrid.Frame.prototype._repaintFrame = function() {
     mainFrame.className = 'treegrid-frame';
     mainFrame.style.position = 'relative';
     mainFrame.style.overflow = 'hidden';
-    // mainFrame.style.overflow = 'visible'; // TODO: cleanup
+    //mainFrame.style.overflow = 'visible'; // TODO: cleanup
     mainFrame.style.left = '0px';
     mainFrame.style.top = '0px';
 
@@ -661,18 +719,9 @@ links.TreeGrid.Frame.prototype._repaintFrame = function() {
       'dragImage': dragImage,
       'dragImageOffsetX': 10,
       'dragImageOffsetY': -10,
-      'dragStart': function (event) {frame.onDragStart(event);},
-      'dragEnd': function (event) {frame.onDragEnd(event);}
+      'dragStart': function (event) {return frame.onDragStart(event);},
+      'dragEnd': function (event) {return frame.onDragEnd(event);}
     });
-    
-    /* TODO: cleanup
-    links.dnd.makeDroppable(mainFrame, {
-      'dropEffect': 'link',
-      'drop': function (event) {frame.onDrop(event);},
-      'dragEnter': function (event) {frame.onDragEnter(event);},
-      'dragOver': function (event) {frame.onDragOver(event);},
-      'dragLeave': function (event) {frame.onDragLeave(event);}
-    });    */
   }
 
   // resize frame
@@ -730,7 +779,6 @@ links.TreeGrid.Frame.prototype._repaintScrollbars = function() {
   this.verticalScroll.redraw();
 };
 
-
 /**
  * Check if given object is a Javascript Array
  * @param {any type} obj
@@ -760,15 +808,14 @@ links.TreeGrid.Grid = function (data, options) {
 
   // initialize options
   this.options = {
-    'itemHeight': 24
+    'items': {
+      'defaultHeight': 24, // px
+      'minHeight': 24      // px
+    }
   };
   if (options) {
-    // copy options
-    for (var i in options) {
-      if (options.hasOwnProperty(i)) {
-        this.options[i] = options[i];
-      }
-    }
+    // merge options
+    links.TreeGrid.extend(this.options, options);
   }
   
   this.columns = [];
@@ -786,7 +833,7 @@ links.TreeGrid.Grid = function (data, options) {
   this.loadingHeight = 0;
   this.emptyHeight = 0;
   this.errorHeight = 0;
-  this.height = this.options.itemHeight;
+  this.height = this.options.items.defaultHeight;
 
   this.dropAreas = [];
   this.dropAreaHeight = this.options.dropAreaHeight;
@@ -821,7 +868,7 @@ links.TreeGrid.Grid.prototype.update = function() {
   //console.log('update', this.left, offset, offset + limit)
 
   // update childs of the items
-  var updateItems = links.TreeGrid.merge(this.visibleItems, this.expandedItems);
+  var updateItems = links.TreeGrid.mergeArray(this.visibleItems, this.expandedItems);
   for (var i = 0, iMax = updateItems.length; i < iMax; i++) {
     var item = updateItems[i];
     if (item) {
@@ -879,22 +926,35 @@ links.TreeGrid.Grid.prototype.updateHeight = function (child, diffHeight) {
 links.TreeGrid.Grid.prototype.onDrop = function(event) {
   var data = JSON.parse(event.dataTransfer.getData('text'));
 
-  // TODO: trigger event
+  // TODO: trigger event?
   
   if (this.dataConnector) {
     var me = this;
     var callback = function () {
+      /* TODO
       if (me.expanded) {      
         me.onResize();
       }
       else {
         me.onExpand();
-      }
+      }*/
     }
     var errback = callback;
     
     var items = [data.item];
-    this.dataConnector.appendItems(items, callback, errback);
+    if (event.dataTransfer.dropEffect == 'move') { 
+      this.dataConnector.appendItems(items, callback, errback);
+    }
+    else if (event.dataTransfer.dropEffect == 'copy') {
+      this.dataConnector.appendItems(items, callback, errback);
+    }
+    /* TODO
+    else if (event.dataTransfer.dropEffect == 'link') {
+      // TODO: should be used to link one item to another item...
+    }
+    else {
+      // TODO
+    }*/
   }
   else {
     console.log('dropped but do nothing', event.dataTransfer.dropEffect);
@@ -908,7 +968,7 @@ links.TreeGrid.Grid.prototype.onDrop = function(event) {
  * merge two arrays
  * returns a copy of the merged arrays, containing only distinct elements 
  */ 
-links.TreeGrid.merge = function(array1, array2) {
+links.TreeGrid.mergeArray = function(array1, array2) {
   var merged = array1.slice(0); // copy first array
   for (var i = 0, iMax = array2.length; i < iMax; i++) {
     var elem = array2[i];
@@ -936,7 +996,7 @@ links.TreeGrid.Grid.prototype.reflow = function() {
     resized = resized || headerResized;
   }
 
-  var reflowItems = links.TreeGrid.merge(this.visibleItems, this.expandedItems);
+  var reflowItems = links.TreeGrid.mergeArray(this.visibleItems, this.expandedItems);
   for (var i = 0, iMax = reflowItems.length; i < iMax; i++) {  
     var item = reflowItems[i];
     if (item) {
@@ -957,15 +1017,16 @@ links.TreeGrid.Grid.prototype.reflow = function() {
     indentationWidth = this.options.indentationWidth;
   for (var i = 0, iMax = widths.length; i < iMax; i++) {
     var column = columns[i];
-
-    var width = widths[i] + indentationWidth;
-    if (width > column.width) {
-      column.width = width;
-      resized = true;        
+    if (!column.fixedWidth) {
+      var width = widths[i] + indentationWidth;
+      if (width > column.width) {
+        column.width = width;
+        resized = true;
+      }
     }
   }
 
-  // calculate the width of the fields of the items
+  // calculate the width of the fields
   for (var i = 0, iMax = visibleItems.length; i < iMax; i++) {
     var item = visibleItems[i];
     var offset = 0;
@@ -973,10 +1034,12 @@ links.TreeGrid.Grid.prototype.reflow = function() {
     for (var j = 0, jMax = columns.length; j < jMax; j++) {
       var column = columns[j];
       
-      var width = widths[j] + indentationWidth;
-      if (width > column.width) {
-        column.width = width;
-        resized = true;
+      if (!column.fixedWidth) {
+        var width = widths[j] + indentationWidth;
+        if (width > column.width) {
+          column.width = width;
+          resized = true;
+        }
       }
     }
   }
@@ -1060,7 +1123,7 @@ links.TreeGrid.Grid.prototype.reflow = function() {
   //height += this.errorHeight; // We do not append the height of the error to the total height.
   if (height == 0) {
     // grid can never have zero height, should always contain some message
-    height = this.options.itemHeight;
+    height = this.options.items.defaultHeight;
   }
   
   var diffHeight = (height - this.height);
@@ -1270,7 +1333,9 @@ links.TreeGrid.Grid.prototype.getColumnsFromFields = function (fields) {
     var i = 0;
     for (var fieldName in fields) {
       if (fields.hasOwnProperty(fieldName)) {
-        if (fieldName.charAt(0) != '_') {
+        var field = fields[fieldName];
+        if (fieldName.charAt(0) != '_' && !links.TreeGrid.isArray(field) &&
+             !(field instanceof links.DataConnector)) {
           var column = {
             'name': fieldName
           }
@@ -1341,6 +1406,9 @@ links.TreeGrid.Grid.prototype.setColumns = function (columns) {
       }
     }
 
+    // set a fixed width if applicable
+    newColumn.fixedWidth = (column.width != undefined);
+
     // copy values from new column data
     for (field in column) {
       newColumn[field] = column[field];
@@ -1356,9 +1424,12 @@ links.TreeGrid.Grid.prototype.setColumns = function (columns) {
   }
   
   if (changed) {
-    // replace the columns array. 
-    // the Grid can trigger and update of fields when this object is changed 
-    this.columns = newColumns;
+    // replace the contents of columns array.
+    // Important: keep the same array object, all items link to this object!
+    this.columns.splice(0, this.columns.length); 
+    for (var i = 0; i < newColumns.length; i++) {
+      this.columns.push(newColumns[i]);
+    }
     //console.log('columns changed!');
   }
   //console.log('setColumns end', this.columns);
@@ -1411,9 +1482,41 @@ links.TreeGrid.Grid.prototype.setData = function (data) {
     // TODO: use the eventbus instead of the addEventListener structure?
     this.dataConnector = dataConnector;
     this.dataConnector.addEventListener(this.eventListener);
+    
+    if (this.dataConnector && this.dataConnector.options.showHeader != undefined) {
+      this.showHeader = this.dataConnector.options.showHeader;
+    }
+    else {
+      this.showHeader = true;
+    }
   }
 }
-
+/**
+ * Remove the item at given index
+ * all lower down items will be shifted one up. These changes take only
+ * place in the display of the treegrid, and are not refected to a dataconnector
+ * @param {Number} index
+ */ 
+links.TreeGrid.Grid.prototype._removeItem = function (item) {
+  var items = this.items;
+  var index = items.indexOf(item);
+  if (index != -1) {
+    if (item.expanded) {
+      item.onExpand();
+    }
+    
+    var visIndex = this.visibleItems.indexOf(item);
+    if (visIndex != -1) {
+      this.visibleItems.splice(visIndex, 1);
+    }
+    
+    var height = item.getHeight();
+    this.updateHeight(item, -height);
+    item.hide();
+    items.splice(index, 1);
+    this.itemCount--;
+  }
+}
 
 /**
  * Update the columns of the header
@@ -1443,11 +1546,8 @@ links.TreeGrid.Grid.prototype._getChanges = function (offset, limit, callback, e
   var checkItemIds = [];
   for (var i = offset, iMax = offset + limit; i < iMax; i++) {
     var item = this.getItem(i);
-    // if (!item.updating && item.data) { // TODO
-    if (true) { // TODO
-      checkData.push(item.data);
-      checkItemIds.push(i);
-    }
+    checkData.push(item.data);
+    checkItemIds.push(i);
   }
   
   var changesCallback = function (resp) {
@@ -1457,8 +1557,15 @@ links.TreeGrid.Grid.prototype._getChanges = function (offset, limit, callback, e
     //console.log('changesCallback', resp.totalItems, resp.items);
 
     // update the item count
-    var countChanged = (resp.totalItems != grid.itemCount);
+    var countChanged = (resp.totalItems !== grid.itemCount);
     if (countChanged) {
+      /* TODO
+      if (grid.totalItems !== undefined || resp.totalItems !== 0) { 
+        // On the first run, grid.totalItems will be undefined. When getChanges
+        // in that case returns resp.totalItems==0, we do not set the totalItems 
+        // here but leave it undefined, forcing a call of getItems.
+        grid.setItemCount(resp.totalItems);
+      }*/
       grid.setItemCount(resp.totalItems);
     }
     
@@ -1608,7 +1715,7 @@ links.TreeGrid.Grid.prototype._updateItems = function (offset, limit, callback, 
     }
   }
 
-  if (limit > 0) {
+  if (limit > 0 || this.totalItems === undefined) {
     //console.log('_updateItems offset=' + offset + ', limit=' + limit ); // TODO: cleanup
 
     this.repaint();
@@ -1626,7 +1733,7 @@ links.TreeGrid.Grid.prototype._updateItems = function (offset, limit, callback, 
  * Redraw the header
  */ 
 links.TreeGrid.Grid.prototype._repaintHeader = function () {
-  var visible = (this.itemCount != undefined && this.itemCount > 0);
+  var visible = (this.showHeader && this.itemCount != undefined && this.itemCount > 0);
   this.header.setVisible(visible);
   this.header.repaint();
 }
@@ -1636,17 +1743,17 @@ links.TreeGrid.Grid.prototype._repaintHeader = function () {
  */ 
 links.TreeGrid.Grid.prototype._repaintItems = function () {
   var columns = this.columns,
-    windowTop = (this.window && this.window.top) ? this.window.top : 0;
+    windowTop = (this.window && this.window.top) ? this.window.top : 0,
+    visibleItems = this.visibleItems;
 
   // remove items which are outside the visible window
   var visible = this.isVisible(),
     visibleItems = this.visibleItems,
     i = 0;
-  while (i < this.visibleItems.length) {
-    var item = this.visibleItems[i];
+  while (i < visibleItems.length) {
+    var item = visibleItems[i];
     if (item.index < this.offset || item.index >= this.offset + this.limit || !visible) {
-      item.setVisible(false);
-      item.remove();
+      item.hide();
       var index = visibleItems.indexOf(item);
       if (index != -1) {
         visibleItems.splice(index, 1);
@@ -1656,20 +1763,24 @@ links.TreeGrid.Grid.prototype._repaintItems = function () {
     i++;
   }
 
-  // show items inside the visible window
+  // add items inside the visible window
   var itemCount = this.itemCount || 0,
     iStart = this.offset,
     iEnd = Math.min(this.offset + this.limit, itemCount);
-  //console.log('_repaintItems', iStart, iEnd)
   if (this.isVisible()) {
     for (var i = iStart; i < iEnd; i++) {
       var item = this.getItem(i);
       item.setVisible(true);
-      item.repaint();
-      if (this.visibleItems.indexOf(item) == -1) {
-        this.visibleItems.push(item);
+      if (visibleItems.indexOf(item) == -1) {
+        visibleItems.push(item);
       }
     }
+  }
+
+  // repaint the visible items
+  for (var i = 0; i < visibleItems.length; i++) {
+    var item = visibleItems[i];
+    item.repaint();
   }
 };
 
@@ -1707,7 +1818,7 @@ links.TreeGrid.Grid.prototype._repaintDropAreas = function () {
     }
     for (var i = 0; i < redundantCount; i++) {
       var dropArea = dropAreas.shift();
-      dropArea.remove();
+      dropArea.hide();
     }
 
     // position the dropareas right above the items
@@ -1724,7 +1835,7 @@ links.TreeGrid.Grid.prototype._repaintDropAreas = function () {
     var dropAreas = this.dropAreas;
     while (dropAreas.length > 0) {
       var dropArea = dropAreas.shift();
-      dropArea.remove();
+      dropArea.hide();
     }
   }
 }
@@ -1769,7 +1880,7 @@ links.TreeGrid.Header.prototype.repaint = function () {
     var prevColumns = this.prevColumns;
     if (columns != prevColumns) {
       // columns are changed. remove old dom
-      this.remove();
+      this.hide();
       this.prevColumns = columns;
     }
 
@@ -1850,7 +1961,7 @@ links.TreeGrid.Header.prototype.reflow = function () {
   // calculate maximum height of the fields
   var domFields = this.dom ? this.dom.fields : undefined,
     fieldCount = domFields ? domFields.length : 0,
-    fieldsHeight = 0;
+    fieldsHeight = this.options.items.minHeight;
   if (domFields) {
     for (var i = 0; i < fieldCount; i++) {
       if (domFields[i]) {
@@ -1927,7 +2038,7 @@ links.TreeGrid.Header.prototype.getFieldWidths = function () {
  * @param {Number} itemCount
  */ 
 links.TreeGrid.Grid.prototype.setItemCount = function (itemCount) {
-  var defaultHeight = this.options.itemHeight;
+  var defaultHeight = this.options.items.defaultHeight;
   var diff = (itemCount - (this.itemCount || 0));
   
   //console.log('setItemCount', this.itemCount, itemCount);
@@ -1945,7 +2056,7 @@ links.TreeGrid.Grid.prototype.setItemCount = function (itemCount) {
     for (var i = itemCount; i < oldItemCount; i++) {
       var item = items[i];
       if (item) {
-        item.remove();
+        item.hide();
         delete items[i];
       }
       var itemHeight = item ? item.getHeight() : defaultHeight;
@@ -1965,7 +2076,7 @@ links.TreeGrid.Grid.prototype.setItemCount = function (itemCount) {
  * Add an item to the list with expanded grids. 
  * This list is used to update all grids.
  */ 
-links.TreeGrid.Grid.prototype.addExpandedItem = function (item) {
+links.TreeGrid.Grid.prototype.registerExpandedItem = function (item) {
   var index = this.expandedItems.indexOf(item);
   if (index == -1) {
     this.expandedItems.push(item);
@@ -1976,10 +2087,10 @@ links.TreeGrid.Grid.prototype.addExpandedItem = function (item) {
  * Add an item to the list with expanded items 
  * This list is used to update all grids.
  */ 
-links.TreeGrid.Grid.prototype.removeExpandedItem = function (item) {
-  var index = this.expandedItems.indexOf(this.grid);
+links.TreeGrid.Grid.prototype.unregisterExpandedItem = function (item) {
+  var index = this.expandedItems.indexOf(item);
   if (index != -1) {
-    this.expandedItems.splice(item, 1);
+    this.expandedItems.splice(index, 1);
   }
 }
 
@@ -2007,7 +2118,7 @@ links.TreeGrid.Grid.prototype.getItem = function (index) {
       'options': this.options, 
       'index': index,  // TODO: remove this index
       'top': this._calculateItemTop(index),
-      'height': this.options.itemHeight
+      'height': this.options.items.defaultHeight
     });
     item.setParent(this);
     this.items[index] = item;
@@ -2026,7 +2137,7 @@ links.TreeGrid.Grid.prototype.getItem = function (index) {
  */
 links.TreeGrid.Grid.prototype._calculateItemTop = function(index) {
   var items = this.items,
-    defaultHeight = this.options.itemHeight,
+    defaultHeight = this.options.items.defaultHeight,
     prevBottom = 0,
     prev = undefined;
 
@@ -2053,7 +2164,6 @@ links.TreeGrid.Grid.prototype._calculateItemTop = function(index) {
 };
 
 
-
 /**
  * Item prototype
  * @param {Object} params. A key-value map containing parameters: 
@@ -2067,7 +2177,7 @@ links.TreeGrid.Item = function (params) {
   }
 
   // objects
-  this.height = this.options.itemHeight;
+  this.height = Math.max(this.options.items.defaultHeight, this.options.items.minHeight);
   this.data = undefined;    // link to the original data of this item
   this.fields = undefined;  // array with the fields
   this.fieldsHeight = 0;
@@ -2089,6 +2199,39 @@ links.TreeGrid.Item = function (params) {
 links.TreeGrid.Item.prototype = new links.TreeGrid.Node();;
 
 /**
+ * Evaluate given function with a custom current object
+ * When the given fn is a string, it will be evaluated
+ * WARNING: evaluating fn when it is a string is unsafe. It is safer to provide
+ *          fn as a javascript function.
+ * @param {function or String} fn
+ * @param {Object} obj
+ */ 
+links.TreeGrid.eval = function (fn, obj) {
+  var t = typeof(fn);
+  if (t == 'function') { 
+    return fn.call(obj);
+  }
+  else if (t == 'string') {
+    var evalHistory = links.TreeGrid.evalHistory;
+    if (!evalHistory) {
+      evalHistory = {};
+      links.TreeGrid.evalHistory = evalHistory;
+    }
+    
+    var f = evalHistory[fn];
+    if (!f) {
+      f = eval('f=(' + fn + ');');
+      evalHistory[fn] = f;
+    }
+    return f.call(obj);    
+  }
+  else {
+    throw new Error('Function must be of type function or string');
+  }
+}
+
+
+/**
  * read the field values from the item data
  * @param {Object} data     Item data
  * @param {Array} columns   Array with column objects, the column objects
@@ -2096,26 +2239,71 @@ links.TreeGrid.Item.prototype = new links.TreeGrid.Node();;
  */
 links.TreeGrid.Item.prototype.setFields = function (data, columns) {
   if (data && columns) {
+    // read the field values from the columns
     var fields = [];
     for (var i = 0, iMax = columns.length; i < iMax; i++) {
-      fields[i] = (data[columns[i].name] || '');
+      var col = columns[i];
+      if (col.format) {
+        fields[i] = links.TreeGrid.eval(col.format, data) || '';
+      }
+      else {
+        fields[i] = (data[col.name] || '');
+      }
     }
     this.fields = fields;
     this.columns = columns;
+
+    // link to the icons
+    this.icons = data._icons; 
+
+    // link to the actions
+    this.actions = data._actions;
     
-    // create dataConnector
-    var childs = data._childs;
-    if (childs) {
+    // find dataconnectors
+    var dataconnectors = [];
+    for (var name in data) {
+      if (data.hasOwnProperty(name) && name.charAt(0) != '_') {
+        var value = data[name];
+        if (links.TreeGrid.isArray(value)) {
+          dataconnectors.push({
+            'name': name,
+            'data': new links.DataTable(value)
+          });
+        }
+        else if (value instanceof links.DataConnector) {
+          dataconnectors.push({
+            'name': name,
+            'data': value
+          });
+        }
+      }
+      
+      // TODO: remove warning in the future
+      if (name == '_childs') {
+        try {
+          console.log('WARNING: special field _childs encountered. ' +
+            'This field is no longer in use for subgrids, and is now a regular hidden field. ' + 
+            'Use a fieldname without underscore instead for subgrids.');
+        }
+        catch (err) {}          
+      }
+    }
+
+    // create dataconnector
+    var dataconnector = undefined;
+    if (dataconnectors.length == 1) {
+      // a single dataconnector
+      dataconnector = dataconnectors[0].data;
+    }
+    else if (dataconnectors.length > 1) {
+      // create a new dataconnector containing multipe dataconnectors
+      var options = {'showHeader': false};
+      dataconnector = new links.DataTable(dataconnectors, options);
+    }
+    
+    if (dataconnector) {
       // TODO: is it needed to store childs as a dataConnector here in Item?
-      if (links.TreeGrid.isArray(childs)) {
-        this.dataConnector = new links.DataTable(childs);
-      }
-      else if (childs instanceof links.DataConnector) {
-        this.dataConnector = childs;
-      }
-      else {
-        throw 'Error: no valid data. JSON Array or DataConnector expected.';
-      }
+      this.dataConnector = dataconnector;
       if (this.grid) {
         this.grid.setData(this.dataConnector);
         this.grid.update();
@@ -2127,22 +2315,18 @@ links.TreeGrid.Item.prototype.setFields = function (data, columns) {
         delete this.dataConnector;
       }
       if (this.grid) {
-        this.grid.remove();
+        this.grid.hide();
         this.gridHeight = 0; // TODO: not so nice to set the height and expanded to zero like this
-        this.expanded = false;
         delete this.grid;
       }
+      if (this.expanded) {
+        this.expanded = false;
+        this.parent.unregisterExpandedItem(this);
+      }
     }
-
-    // TODO: for optimization: do not create extra links to the data _icon and _actions
-
-    // copy the icon
-    this.icon = data._icon; 
-
-    // copy the actions
-    this.actions = data._actions;
   }
 };
+
 
 /**
  * Calculate the width of the fields from the HTML DOM
@@ -2189,7 +2373,7 @@ links.TreeGrid.Item.prototype.updateHeight = function (child, diffHeight) {
 
 /**
  * trigger an event
- * @param {String} event  User clicked an action button
+ * @param {String} event  Event name. For example 'expand' or 'collapse'
  */ 
 links.TreeGrid.Item.prototype.onEvent = function (event) {
   var params = {
@@ -2200,29 +2384,26 @@ links.TreeGrid.Item.prototype.onEvent = function (event) {
   // send the event to the treegrid
   links.events.trigger(this.getTreeGrid(), event, params);
   
-  // send the event to the dataconnector in two ways
+  // send the event to the dataconnector
   var dataConnector = this.parent.dataConnector; // TODO: not so nice accessing dataconnector like this
   if (dataConnector) {
-    links.events.trigger(dataConnector, event, params);
-    dataConnector.onEvent(event, params);
+    dataConnector._onEvent(event, params);
   }
 }
 
 /**
- * Expand or collapse an item
- * @param {Number} index  Index of an item
+ * Expand or collapse the item
  */ 
-links.TreeGrid.Item.prototype.onExpand = function (index) {
+links.TreeGrid.Item.prototype.onExpand = function () {
   if (this.expanded) {
     // collapse the item
     this.dom.buttonExpand.className = 'treegrid-fold';
     this.expanded = false;
-    
+    this.parent.unregisterExpandedItem(this);
+   
     if (this.grid) {
       this.grid.setVisible(false);
       
-      this.parent.removeExpandedItem(this);
-
       this.gridHeight -= (this.grid.getHeight() + this.options.padding);
     }
 
@@ -2232,6 +2413,7 @@ links.TreeGrid.Item.prototype.onExpand = function (index) {
     // expand the item
     this.dom.buttonExpand.className = 'treegrid-unfold';
     this.expanded = true;
+    this.parent.registerExpandedItem(this);
     
     if (this.dataConnector) {
       if (!this.grid) {
@@ -2244,8 +2426,6 @@ links.TreeGrid.Item.prototype.onExpand = function (index) {
 
       // if grid was already loaded before, make it visible
       this.grid.setVisible(true);
-
-      this.parent.addExpandedItem(this);
 
       this.gridHeight += (this.grid.getHeight() + this.options.padding);
     }
@@ -2263,14 +2443,7 @@ links.TreeGrid.Item.prototype.onDragOver = function(event) {
   if (this.dataTransfer.dragging) {
     return; // we cannot drop the item onto itself
   }
-  
-  //console.log(event.offsetY || event.layerY, event);
-  
-  /* TODO
-  event.dataTransfer.allowedEffect = this.dataTransfer.allowedEffect || 'none';
-  event.dataTransfer.dropEffect = this.dataTransfer.dropEffect || 'none';
-  */
-  
+
   // we need to repaint on every dragover event.
   // because the item consists of various elements, the dragenter and dragleave
   // events are fired every time we enter/leave one of the elements.
@@ -2281,12 +2454,6 @@ links.TreeGrid.Item.prototype.onDragOver = function(event) {
   this.dataTransfer.dragover   = !dragbefore;
   this.dataTransfer.dragbefore = dragbefore;
   // TODO: get the correct vertical offset, independent of the child
-
-
-  /*
-  this.dataTransfer.dragover   = (this.dataConnector != undefined);
-  this.dataTransfer.dragbefore = false;
-  */
 
   this.repaint();
 
@@ -2349,25 +2516,28 @@ links.TreeGrid.Item.prototype.onDrop = function(event) {
   if (this.dataConnector) {
     var me = this;
     var callback = function () {
+      //* TODO
       if (me.expanded) {      
         me.onResize();
       }
       else {
         me.onExpand();
       }
+      //*/
     }
     var errback = callback;
     
     // console.log('drop', items);
     
-    // remove items from which this item is a child
+    // prevent a circular loop, when an item is dropped on one of its own
+    // childs. So, remove items from which this item is a child
     var i = 0;
     while (i < items.length) {
-      var item = this;
-      while (item && item != items[i]) {
-        item = item.parent;
+      var checkItem = this;
+      while (checkItem && checkItem != items[i]) {
+        checkItem = checkItem.parent;
       }
-      if (item == items[i]) {
+      if (checkItem == items[i]) {
         items.splice(i, 1);
       }            
       else {
@@ -2435,7 +2605,7 @@ links.TreeGrid.Item.prototype.reflow = function () {
   this.width = this.getVisibleWindow().width - this.getAbsLeft(); 
 
   if (this.isVisible()) {
-    var fieldsHeight = 0,
+    var fieldsHeight = this.options.items.minHeight,
       fields = this.dom.fields,
       actions = this.dom.actions,
       icons = this.dom.icons,
@@ -2513,7 +2683,7 @@ links.TreeGrid.Item.prototype.reflow = function () {
   height += this.errorHeight;
   height += this.gridHeight;
   if (height == 0) {
-    height = this.options.itemHeight;
+    height = this.options.items.defaultHeight;
   }
   
   var diffHeight = (height - this.height);
@@ -2538,8 +2708,8 @@ links.TreeGrid.Item.prototype.reflow = function () {
  */ 
 links.TreeGrid.Grid.prototype._getRangeFromWindow = function(window, currentRange) {
   // use the current range as start
-  var itemHeight = this.options.itemHeight,
-    itemCount = (this.itemCount != undefined) ? this.itemCount : Math.ceil(window.height / itemHeight),
+  var defaultHeight = this.options.items.defaultHeight,
+    itemCount = (this.itemCount != undefined) ? this.itemCount : Math.ceil(window.height / defaultHeight),
     windowTop = -this.getAbsTop() + this.header.getHeight(), // normalize the top
     windowBottom = windowTop + window.height - this.header.getHeight(),
     newOffset = currentRange ? currentRange.offset : 0,
@@ -2552,19 +2722,19 @@ links.TreeGrid.Grid.prototype._getRangeFromWindow = function(window, currentRang
   // find the first visible item
   item = this.items[newOffset];
   top = item ? item.top : this._calculateItemTop(newOffset);
-  height = item ? item.getHeight() : itemHeight;
+  height = item ? item.getHeight() : defaultHeight;
   bottom = top + height;
   while ((newOffset < itemCount - 1) && (bottom < windowTop)) {
     newOffset++;
     item = this.items[newOffset];
     top = bottom + this.dropAreaHeight;
-    height = item ? item.getHeight() : itemHeight;
+    height = item ? item.getHeight() : defaultHeight;
     bottom = top + height;
   }
   while ((newOffset > 0) && top > windowTop) {
     newOffset--;
     item = this.items[newOffset];
-    height = item ? item.getHeight() : itemHeight;
+    height = item ? item.getHeight() : defaultHeight;
     bottom = top;
     top = top - height - this.dropAreaHeight;
   }
@@ -2574,7 +2744,7 @@ links.TreeGrid.Grid.prototype._getRangeFromWindow = function(window, currentRang
     newLimit++;
     item = this.items[newOffset + newLimit];
     top = bottom + this.dropAreaHeight;
-    height = item ? item.getHeight() : itemHeight;
+    height = item ? item.getHeight() : defaultHeight;
     bottom = top + height;
     //console.log('item', newOffset + newLimit, top, height, bottom, windowBottom) // TODO: cleanup
   }
@@ -2635,7 +2805,7 @@ links.TreeGrid.Item.prototype._repaintFields = function() {
       }
 
       // create icons
-      var icons = this.data ? this.data._icons : undefined;
+      var icons = this.icons;
       if (icons) {
         var domIcons = document.createElement('DIV');
         domIcons.className = 'treegrid-icons';
@@ -2647,9 +2817,9 @@ links.TreeGrid.Item.prototype._repaintFields = function() {
             var domIcon = document.createElement('img');
             domIcon.className = 'treegrid-icon';
             domIcon.src = icon.image;
-            domIcon.title = icon.title ? icon.title : undefined;
-            domIcon.style.width = icon.width ? icon.width : undefined;
-            domIcon.style.height = icon.height ? icon.height : undefined;
+            domIcon.title = icon.title ? icon.title : '';
+            domIcon.style.width = icon.width ? icon.width : '';
+            domIcon.style.height = icon.height ? icon.height : '';
             domIcons.appendChild(domIcon);
           }
         }
@@ -2671,6 +2841,12 @@ links.TreeGrid.Item.prototype._repaintFields = function() {
         domField.style.position = 'absolute';
         //domField.style.position = 'relative';
         domField.style.top = '0px';
+
+        var col = this.columns[i];
+        if (col.fixedWidth) {
+          domField.style.width = col.width + 'px';
+        }
+
         domField.innerHTML = field;
         domFrame.appendChild(domField);
         domFields.push(domField);
@@ -2727,15 +2903,17 @@ links.TreeGrid.Item.prototype._repaintFields = function() {
       
       var dataTransfer = this.dataConnector ? this.dataConnector.getOptions().dataTransfer : undefined;
       if (dataTransfer) {
-        this.dataTransfer.dropEffect = dataTransfer.dropEffect;
-        
-        links.dnd.makeDroppable(domFrame, {
-          'dropEffect': dataTransfer.dropEffect,
-          'drop': function (event) {item.onDrop(event);},
-          'dragEnter': function (event) {item.onDragEnter(event);},
-          'dragOver': function (event) {item.onDragOver(event);},
-          'dragLeave': function (event) {item.onDragLeave(event);}
-        });
+        if (dataTransfer.dropEffect != undefined && dataTransfer.dropEffect != 'none') {
+          this.dataTransfer.dropEffect = dataTransfer.dropEffect;
+
+          links.dnd.makeDroppable(domFrame, {
+            'dropEffect': dataTransfer.dropEffect,
+            'drop': function (event) {item.onDrop(event);},
+            'dragEnter': function (event) {item.onDragEnter(event);},
+            'dragOver': function (event) {item.onDragOver(event);},
+            'dragLeave': function (event) {item.onDragLeave(event);}
+          });
+        }
       }
     }
     
@@ -2762,9 +2940,10 @@ links.TreeGrid.Item.prototype._repaintFields = function() {
     var domFields = this.dom.fields;
     if (domFields) {
       for (var i = 0, iMax = this.columns.length; i < iMax; i++) {
+        var col = this.columns[i];
         var domField = domFields[i];
         if (domField) {
-          domField.style.left = this.columns[i].left + 'px';
+          domField.style.left = col.left + 'px';
         }
       }
     }
@@ -3068,7 +3247,6 @@ links.TreeGrid.DropArea.prototype.onDragLeave = function(event) {
  */ 
 links.TreeGrid.DropArea.prototype.onDrop = function(event) {
   var data = JSON.parse(event.dataTransfer.getData('text'));
-  //var data = JSON.parse(event.dataTransfer.getData('text'));
   this.dragover = false;
   this.repaint();
   
@@ -3084,6 +3262,15 @@ links.TreeGrid.DropArea.prototype.onDrop = function(event) {
     var items = [data.item];
     var itemBefore = this.item.data;
     this.dataConnector.insertItemsBefore(items, itemBefore, callback, errback);
+    
+    /* TODO: trigger event?
+    // send drop event
+    this.dataConnector._onEvent('drop', {
+      'dataConnector': this.dataConnector,
+      'dropEffect': event.dataTransfer.dropEffect,
+      'items': items
+    });
+    */
   }
   else {
     console.log('dropped but do nothing', event.dataTransfer.dropEffect);
@@ -3549,12 +3736,23 @@ links.DataConnector.prototype.linkItems = function (sourceItem, targetItem, call
 };
 
 /**
+ * internal onEvent handler
+ * @param {String} event
+ * @param {Object} params. Object containing index (Number), 
+ *                         and item (Object).
+ */ 
+links.DataConnector.prototype._onEvent = function (event, params) {
+  this.trigger(event, params);
+  this.onEvent(event, params);
+};
+
+
+/**
  * onEvent handler
  * @param {String} event
  * @param {Object} params. Object containing index (Number), 
  *                         and item (Object).
  */ 
-// TODO: do we want the onEvent ?
 links.DataConnector.prototype.onEvent = function (event, params) {
   // this method can be overwritten 
 };
@@ -3874,7 +4072,7 @@ links.DataTable.prototype.getChanges = function (index, num, items, callback, er
 
   for (var i = 0; i < num; i++) {
     var item = items[i];
-    if (items[i] != filteredData[index + i]) {
+    if (item != filteredData[index + i]) {
       changedItems.push(item);
     }
   }
@@ -4016,6 +4214,8 @@ links.CouchConnector = function (url) {
   this.updateSeq = undefined;
   this.blockSize = 16; // data will be retrieved in blocks of this blockSize
   // TODO: make blockSize customizable
+
+  this.totalItems = this.blockSize;
 };
 
 links.CouchConnector.prototype = new links.DataConnector();;
@@ -4137,12 +4337,15 @@ links.CouchConnector.prototype.getItems = function (index, num, callback, errbac
       for (var i = 0, iMax = rows.length; i < iMax; i++) {
         data[i + skip] = rows[i];
       }
+
+      // set the number of total items
+      me.totalItems = Math.min(me.data.length + me.blockSize, response.total_rows);
       
       var dataSubset = getSubset(index, num);
       callback({
-        'items': dataSubset,
-        'updateSeq': me.updateSeq
-      }); // TODO: reckon with update seq
+        'totalItems': me.totalItems,
+        'items': dataSubset
+      });
       return;
     }, errback);
   }
@@ -4150,14 +4353,10 @@ links.CouchConnector.prototype.getItems = function (index, num, callback, errbac
     // all data is already loaded
     var dataSubset = getSubset(index, num);
     callback({
-      'items': dataSubset,
-      'updateSeq': me.updateSeq
-    }); // TODO: reckon with update seq
+      'totalItems': me.totalItems,
+      'items': dataSubset
+    });
   }
-};
-
-links.CouchConnector.prototype.setItems = function (index, num, items, callback, errback) {
-  errback('Error: method setItems is not implemented');
 };
 
 links.CouchConnector.prototype._getUpdateSeq = function (callback, errback) {
@@ -4184,16 +4383,17 @@ links.CouchConnector.prototype._getUpdateSeq = function (callback, errback) {
   }, errback);
 };
 
-links.CouchConnector.prototype.getChanges = function (index, num, updateSeq) {
+links.CouchConnector.prototype.getChanges = function (index, num, items, 
+    callback, errback) {
   // TODO: implement CouchConnector.getChanges, use real update_seq from couch
-  var changedItems = [],
-    data = this.data;
+  var changedItems = [];
 
-  for (var i = index, iMax = index + num; i < iMax; i++) {
-    if (data[i] == undefined) {
-      changedItems.push(i);
-    }
-  }
+  // TODO: check for changes in the items and in the total count
+
+  callback({
+    'totalItems': (this.totalItems || 10),
+    'items': changedItems
+  });
   return changedItems;
 }
 
@@ -4226,8 +4426,10 @@ links.CouchConnector.prototype.setFilters = function (filters) {
  * @param {String} url         The url to be retrieved
  * @param {function} callback. On response, the callback function will be called
  *                             with the retrieved data as parameter (JSON object)
+ * @param {function} errback   On error, the errback function will be called
+ *                             without parameters
  */
-links.getJSONP = function (url, callback) {
+links.getJSONP = function (url, callback, errback) {
   //console.log('getJSONP ' + url) // TODO: cleanup
   
   // create a random function name to use as temporary callback function
@@ -4237,6 +4439,15 @@ links.getJSONP = function (url, callback) {
   var script = document.createElement('script');
   var separator = (url.indexOf('?') == -1) ? '?' : '&';
   script.src = url + separator + 'callback=' + callbackName;
+  script.onerror = function (event) {
+    // clean up created function and script
+    document.body.removeChild(script);
+    delete window[callbackName];
+
+    if (errback) {
+      errback();
+    }
+  };
   script.type = 'text/javascript';
   
   // create the temporary callback function
@@ -4246,7 +4457,9 @@ links.getJSONP = function (url, callback) {
     delete window[callbackName];
 
     // call callback function with retrieved data
-    callback(data);
+    if (callback) {
+      callback(data);
+    }
   }
   
   // inject the script in the document
@@ -4261,9 +4474,11 @@ links.getJSONP = function (url, callback) {
  */ 
 links.TreeGrid.Frame.prototype.onDragStart = function(event) {
   // create a copy of the selection array
+  /* TODO: cleanup
   var items = [];
   for (var i = 0; i < this.selection.length; i++) {
-    items.push(this.selection[i]);
+    var sel = this.selection[i];
+    items.push(sel);
   }
   
   var dragImage = this.dom.dragImage;
@@ -4271,8 +4486,39 @@ links.TreeGrid.Frame.prototype.onDragStart = function(event) {
     var count = items.length;
     dragImage.innerHTML = count + ' item' + ((count != 1) ? 's' : '');
   }
-  
   event.dataTransfer.setData('items', items);
+  */
+  
+  // check if there are selected items that can be dragged
+  var items = [];
+  for (var i = 0; i < this.selection.length; i++) {
+    var sel = this.selection[i];
+    
+    var parent = sel.parent;
+    var dataConnector = parent ? parent.dataConnector : undefined;
+    var options = dataConnector ? dataConnector.options : undefined;
+    var dataTransfer = options ? options.dataTransfer : undefined;
+    var allowedEffect = dataTransfer ? dataTransfer.allowedEffect : undefined;
+    
+    // validate whether at least one of the items can be moved or copied
+    if (allowedEffect != undefined && allowedEffect.toLowerCase() != 'none') {
+      items.push(sel);
+    }
+  }
+  
+  if (items.length > 0) {
+    var dragImage = this.dom.dragImage;
+    if (dragImage) {
+      var count = items.length;
+      dragImage.innerHTML = count + ' item' + ((count != 1) ? 's' : '');
+    }
+    
+    event.dataTransfer.setData('items', items);
+    return true;
+  }
+  else {
+    return false;
+  }
 }
 
 /**
@@ -4296,12 +4542,28 @@ links.TreeGrid.Frame.prototype.onDragEnd = function(event) {
     
     for (var i = 0; i < items.length; i++) {
       var item = items[i];
+      // FIXME: removing the item is a temporary hack. This only works
+      //        in case of a single user, and prevents the state of the items
+      //        (expanded or not) from being shifted.
+      //        The real solution is to be able to really store the state of an 
+      //        not on an index basis, but on an item basis. 
+      //        Use a linked list instead of an array?
+      item.parent._removeItem(item); 
+
       // TODO: not so nice accessing the parent grid this way...
       item.parent.dataConnector.removeItems([item.data], callback, errback);
     }
   }
+  /* TODO
+  else if (dropEffect == 'link') {
+    // TODO: linkedItems    
+  }
+  else if (dropEffect == 'copy') {
+    // TODO: copiedItems    
+  }
+  */
   
-  // TODO: trigger event
+  // TODO: trigger event?
   
   this.repaint();
 }
@@ -4324,10 +4586,12 @@ links.TreeGrid.Frame.prototype.onMouseDown = function(event) {
   var target = links.TreeGrid.getTarget(event);
   
   if (target.treeGridType && target.treeGridType == 'expand') {
-    target.grid.onExpand(target.index);
+    target.grid.onExpand();
+    links.TreeGrid.stopPropagation(event); // TODO: does not work
   }
   else if (target.treeGridType && target.treeGridType == 'action') {
     target.item.onEvent(target.event);
+    links.TreeGrid.stopPropagation(event); // TODO: does not work
   }
   else {
     var item = links.TreeGrid.getItemFromTarget(target);
@@ -4797,11 +5061,7 @@ links.dnd = function () {
       'element': element
     };
     if (options) {
-      for (var prop in options) {
-        if (options.hasOwnProperty(prop)) {
-          newDragArea[prop] = options[prop];
-        }
-      }
+      links.TreeGrid.extend(newDragArea, options);
     }
     dragAreas.push(newDragArea);
 
@@ -4866,11 +5126,7 @@ links.dnd = function () {
       'mouseOver': false
     };
     if (options) {
-      for (var prop in options) {
-        if (options.hasOwnProperty(prop)) {
-          newDropArea[prop] = options[prop];
-        }
-      }
+      links.TreeGrid.extend(newDropArea, options);
     }
     if (!newDropArea.dropEffect) {
       newDropArea.dropEffect = 'link';
@@ -4878,7 +5134,6 @@ links.dnd = function () {
     
     dropAreas.push(newDropArea);
   }
-
 
   /**
    * Remove draggable functionality from element
@@ -4922,6 +5177,7 @@ links.dnd = function () {
     dragArea = newDragArea;
     
     // trigger event
+    var proceed = true;
     if (dragArea.dragStart) {
       var data = {};
       dragEvent = {
@@ -4943,7 +5199,14 @@ links.dnd = function () {
         'clientY': event.clientY
       };
       
-      dragArea.dragStart(dragEvent);
+      var ret = dragArea.dragStart(dragEvent);
+      proceed = (ret !== false);
+    }
+    
+    if (!proceed) {
+      // cancel dragevent
+      dragArea = undefined;
+      return;
     }
 
     // create dragImage
@@ -5506,8 +5769,9 @@ links.TreeGrid.getItemFromTarget = function (target) {
  * Stop event propagation
  */ 
 links.TreeGrid.stopPropagation = function (event) {
-  if (!event) 
+  if (!event) {
     var event = window.event;
+  }
   
   if (event.stopPropagation) {
     event.stopPropagation();  // non-IE browsers
@@ -5522,8 +5786,9 @@ links.TreeGrid.stopPropagation = function (event) {
  * Cancels the event if it is cancelable, without stopping further propagation of the event.
  */ 
 links.TreeGrid.preventDefault = function (event) {
-  if (!event) 
+  if (!event) {
     var event = window.event;
+  }
   
   if (event.preventDefault) {
     event.preventDefault();  // non-IE browsers

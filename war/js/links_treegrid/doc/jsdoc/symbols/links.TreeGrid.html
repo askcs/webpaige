@@ -293,6 +293,26 @@ TreeGrid is developed in javascript as a Google Visualization Chart.
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont">links.TreeGrid.<b><a href="../symbols/links.TreeGrid.html#.eval">eval</a></b>(fn, obj)
+								</div>
+								<div class="description">Evaluate given function with a custom current object
+When the given fn is a string, it will be evaluated
+WARNING: evaluating fn when it is a string is unsafe.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">links.TreeGrid.<b><a href="../symbols/links.TreeGrid.html#.extend">extend</a></b>(obj, newProps)
+								</div>
+								<div class="description">Recursively extend obj with all properties in newProps.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont">links.TreeGrid.<b><a href="../symbols/links.TreeGrid.html#.Frame">Frame</a></b>(container, options)
 								</div>
 								<div class="description">The Frame is the base for a TreeGrid, it creates a DOM container and creates
@@ -357,7 +377,7 @@ scrollbars etc.</div>
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">links.TreeGrid.<b><a href="../symbols/links.TreeGrid.html#.merge">merge</a></b>(array1, array2)
+								<div class="fixedFont">links.TreeGrid.<b><a href="../symbols/links.TreeGrid.html#.mergeArray">mergeArray</a></b>(array1, array2)
 								</div>
 								<div class="description">merge two arrays
 returns a copy of the merged arrays, containing only distinct elements</div>
@@ -379,6 +399,15 @@ returns a copy of the merged arrays, containing only distinct elements</div>
 								<div class="fixedFont">links.TreeGrid.<b><a href="../symbols/links.TreeGrid.html#.preventDefault">preventDefault</a></b>(event)
 								</div>
 								<div class="description">Cancels the event if it is cancelable, without stopping further propagation of the event.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/links.TreeGrid.html#redraw">redraw</a></b>()
+								</div>
+								<div class="description">Redraw the TreeGrid.</div>
 							</td>
 						</tr>
 					
@@ -610,6 +639,93 @@ A data table with the events must be provided, and an options table.
 								</dt>
 								<dd>A key-value map containing parameters: 
                         grid, item, top, height</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".eval"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">links.TreeGrid.</span><b>eval</b>(fn, obj)
+					
+					</div>
+					<div class="description">
+						Evaluate given function with a custom current object
+When the given fn is a string, it will be evaluated
+WARNING: evaluating fn when it is a string is unsafe. It is safer to provide
+         fn as a javascript function.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{function or String}</span> <b>fn</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>obj</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".extend"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">links.TreeGrid.</span><b>extend</b>(obj, newProps)
+					
+					</div>
+					<div class="description">
+						Recursively extend obj with all properties in newProps.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>obj</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>newProps</b>
+									
+								</dt>
+								<dd></dd>
 							
 							</dl>
 						
@@ -910,11 +1026,11 @@ scrollbars etc.
 
 					<hr />
 				
-					<a name=".merge"> </a>
+					<a name=".mergeArray"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">links.TreeGrid.</span><b>merge</b>(array1, array2)
+					<span class="light">links.TreeGrid.</span><b>mergeArray</b>(array1, array2)
 					
 					</div>
 					<div class="description">
@@ -1004,6 +1120,33 @@ returns a copy of the merged arrays, containing only distinct elements
 								<dd></dd>
 							
 							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="redraw"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>redraw</b>()
+					
+					</div>
+					<div class="description">
+						Redraw the TreeGrid.
+This method can be used after the size of the TreeGrid changed, for example
+due to resizing of the page
+						
+						
+					</div>
+					
+					
+					
 						
 						
 						
@@ -1213,7 +1356,7 @@ returns a copy of the merged arrays, containing only distinct elements
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Fri Feb 10 2012 13:33:12 GMT+0100 (CET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Thu May 03 2012 16:43:36 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>

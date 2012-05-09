@@ -26,6 +26,8 @@ http://code.google.com/apis/gdata/samples/cal_sample.html
     <script type="text/javascript" src="http://www.google.com/calendar/feeds/developer-calendar@google.com/public/full?alt=json-in-script&callback=insertAgenda&orderby=starttime&max-results=20&singleevents=true&sortorder=ascending&futureevents=true"></script>
     
     <script type="text/javascript">
+      var timeline;
+      
       google.load("visualization", "1");
       
       // Set callback to run when API is loaded
@@ -81,7 +83,7 @@ http://code.google.com/apis/gdata/samples/cal_sample.html
         };
 
         // Instantiate our timeline object.
-        var timeline = new links.Timeline(document.getElementById('mytimeline'));
+        timeline = new links.Timeline(document.getElementById('mytimeline'));
         
         // Draw our timeline with the created data and options 
         timeline.draw(data, options);

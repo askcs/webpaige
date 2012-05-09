@@ -11,6 +11,8 @@
     <link rel="stylesheet" type="text/css" href="../timeline.css">
     
     <script type="text/javascript">
+      var timeline;
+      
       google.load("visualization", "1");
       
       // Set callback to run when API is loaded
@@ -48,22 +50,22 @@
         ]);
 
         // specify options
-        options = {
-          'width':  "100%", 
-          'height': "auto", 
+        var options = {
+          'width':  '100%', 
+          'height': 'auto', 
           'start': new Date(1942, 6, 1),
           'end': new Date(1946, 6, 1),
           'editable': false,
           'enableKeys': true,
           'animate': false,
-          'style': "dot"
+          'style': 'dot'
         };
 
         // Instantiate our timeline object.
-        var vis = new links.Timeline(document.getElementById('mytimeline'));
+        timeline = new links.Timeline(document.getElementById('mytimeline'));
 
         // Draw our timeline with the created data and options 
-        vis.draw(data, options);
+        timeline.draw(data, options);
       }
    </script>
   </head>

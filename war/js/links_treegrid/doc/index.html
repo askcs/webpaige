@@ -35,7 +35,7 @@ License: <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">Ap
 Related pages:
 </p>
 <ul>
-  <li><a href="dataconnector.html">dataconnector.html</a></li> 
+  <li><a href="dataconnector.html">DataConnector documentation</a></li> 
 </ul>
 
 
@@ -44,7 +44,7 @@ Related pages:
 TreeGrid is a visualization which represents data in a hierarchical grid 
 view. It is designed to handle large amouts of data.
 
-Items in the TreeGrid can contain custom HTML code. Information in 
+Items in the TreeGrid can contain custom HTML. Information in 
 one item can be spread over multiple columns, and can have action buttons on 
 the right.
 </p>
@@ -68,6 +68,73 @@ Internet Explorer 8+. <!-- TODO: test on IE -->
 There is a GWT wrapper available to use the TreeGrid in GWT (Google Web Toolkit),
 you can find relevant documentation <a href="../../gwt/doc">here</a>.
 </p>
+
+<h3><a name="DataConnector" id="DataConnector"></a>DataConnector</h3>
+<p>
+A TreeGrid can be connected to a DataConnector, 
+which is useful for data manipulation and lazy loading.
+When you are dealing with a small amount of readonly data, it is
+probably easiest to put the data in a simple JSON Array which is loaded 
+from the server at once.
+But when dealing with large amounts of data, it will not be feasible to
+retrieve all data from the server, as it will take to much time and
+is very expensive for the server.
+</p>
+
+<p>
+When dealing with large amounts of data, it is a good idea to 
+use a DataConnector. 
+When a TreeGrid is connected to a DataConnector, every time it redraws
+it will request the data that is currently displayed from the DataConnector.
+The DataConnector will check if it has the data in cache, and if it
+is up to date. If not, it will retrieve the missing data from the server.
+</p>
+
+<p>
+Only retrieving the displayed items saves a lot of load on the server side,
+and keeps the client side fast and reactive.
+Retrieval of data is always done asynchronously. 
+While retrieving data, the TreeGrid will display a "loading" status for 
+the items being retrieved, to give the user feedback.
+</p>
+
+<img src="img/overview.png" alt="Data flow between treegrid, dataconnector, and a server.">
+
+<p>
+A DataConnector typically retrieves data from a RESTful web service.
+To connect a TreeGrid with your own RESTful web service, you will need to 
+create your own DataConnector which connects to your RESTful web service.
+</p>
+
+<p>
+How to create or use a DataConnector is described on the documentation
+page of the DataConnector at
+<a href="dataconnector.html">dataconnector.html</a>.
+</p>
+
+<h3><a name="Drag_and_Drop" id="Drag_and_Drop"></a>Drag and Drop</h3>
+<p>
+The TreeGrid supports drag and drop operations inside one TreeGrid, and 
+between different TreeGrids in one page.
+</p>
+
+<p>
+Drag and drop is only supported when using a DataConnector. 
+The dataconnector can be configured to allow or disallow various drag
+and drop actions. 
+Drag and Drop must be supported by the server side of the DataConnector,
+A drag and drop action will remove items from one DataConnector, and
+append them to another DataConnector.
+</p>
+
+<h3><a name="Subgrids" id="Subgrids"></a>Subgrids</h3>
+<p>
+The Treegrid supports nesting of data (hence the name TreeGrid).
+Each item can have one or multiple fields containing a JSON Array or a DataConnector.
+In that case, the item becomes expandable. 
+When expanded, the item displays the nested data as a subgrid right below itself.
+</p>
+
 
 <h2><a name="Example" id="Example"></a>Example</h2>
 <p>
@@ -103,11 +170,11 @@ More examples can be found in the <a href="../examples">examples</a> directory.
             "lastname": "Smith",
             "age": 15,
             "class": "B10",
-            "_childs": [
+            "courses": [
               {
                 "course": "physics", 
                 "grade": "B", 
-                "_childs": [
+                "courses": [
                   {"test": "test 1", "grade": "A"},
                   {"test": "test 2", "grade": "B"},
                   {"test": "final exam", "grade": "B"}
@@ -128,7 +195,7 @@ More examples can be found in the <a href="../examples">examples</a> directory.
             "lastname": "Harris",
             "age": 14,
             "class": "B10",
-            "_childs": [
+            "courses": [
               {"course": "economy", "grade": "A"},
               {"course": "maths", "grade": "D"}
             ]           
@@ -138,9 +205,8 @@ More examples can be found in the <a href="../examples">examples</a> directory.
         // specify options
         var options = {
           'width': '400px',
-          'height': '200px',
-          'itemHeight': 24   // px
-        };  
+          'height': '200px'
+        };
 
         // Instantiate our treegrid object.
         var container = document.getElementById('mytreegrid');
@@ -241,6 +307,7 @@ var data = [
 </pre>
 
 
+
 <h3><a name="Data_Format_DataConnector" id="Data_Format_DataConnector"></a>DataConnector</h3>
 
 <p>
@@ -253,166 +320,170 @@ other data sources, such as a RESTful web service or a database connection.
 <a href="dataconnector.html">dataconnector.html</a>.</p>
 
 
-<h3><a name="Special_Fields" id="Special_Fields"></a>Special Fields</h3>
+<h3><a name="Special_fields" id="Special_fields"></a>Special fields</h3>
 
-<p>
-There are a number of special, reserved fields. 
-</p>
+<ul>
+<li>
+  <b>Subgrids</b>
+  <p>
+  When an item has one or multiple fields containing a JSON Array or a DataConnector,
+  the item becomes expandable. 
+  When expanded, the item displays this nested data as a subgrid right below itself.
+  </p>
+    
+  <p>Example:</p>
+<pre class="prettyprint lang-js">
+var data = [
+  {"name": "John", "friends": [{"name": "Susan"},{"name": "Harry"}]},
+  {"name": "Susan"},
+  {"name": "David"}
+];
+</pre>
 
-<table>
-  <tr> 
-    <th>Name</th> 
-    <th>Type</th> 
-    <th>Description</th> 
-  </tr> 
-  <tr> 
-    <td>_actions</td> 
-    <td>Array with Objects</td> 
-    <td>Each item can contain a field <code>_actions</code>. This field contains 
-      an array with one or more action objects. 
-      Actions are displayed as a button or a link at the right side of an item. 
-      When clicked, an <a href="#Events">event</a> will be fired. 
-      The properties available for an action are described under 
-      <a href="#Actions">Actions</a>. 
-    </td> 
-  </tr> 
-  <tr> 
-    <td>_childs</td> 
-    <td>Array or DataConnector</td> 
-    <td>Each item can contain a field <code>_childs</code>, which points
-      to an Array or a DataConnector. 
-      When an item contains a field <code>_childs</code>, it will become 
-      expandable. When expanded, data under <code>_childs</code> will be
-      displayed as a subgrid.
-      Each item can have a pointer to another DataConnector, and these 
-      DataConnectors do not need to be of the same type. Not all items need to
-      have a field <code>_childs</code>.</td> 
-  </tr> 
-  <tr>
-    <td>_items</td>
-    <td>Array with Objects</td>
-      <td>Each item can have a field <code>_items</code>, containing an array
-      with one or more icon objects. Icons are displayed on the left of an item.
-      The properties available for an item are described under 
-      <a href="#Icons">Icons</a>. 
-    </td>
-  </tr>
-</table>
+</li>
 
+<li>
+  <b>Actions</b>
+  <p>
+  Each item can contain a field <code>_actions</code>, containing an array
+  with one or multiple actions. Actions are displayed as a button or
+  a link at the right side of an item. When clicked, an 
+  <a href="#Events">event</a> will be fired.
+  </p>
 
-<h3><a name="Hidden_Fields" id="Hidden_Fields"></a>Hidden fields</h3>
+  <table>
+    <tr> 
+      <th>Name</th> 
+      <th>Type</th> 
+      <th>Required</th> 
+      <th>Description</th> 
+    </tr> 
+    
+    <tr> 
+      <td>event</td> 
+      <td>String</td> 
+      <td>yes</td> 
+      <td>The name of the action. When the action is clicked, an event with 
+      this name is fired. Example events are 'delete', 'edit', 'open'.
+      An eventlistener can be used to link an event to execution of a method.
+      </td> 
+    </tr>
 
-<p>
-All fields starting with an underscore <code>_</code> are hidden by default.
-For example to store a hidden field containing an id in the items, on can use
-a field named <code>_id</code>. The visibility and order of fields can be 
-specified in more detail via a DataConnector (see <a href="dataconnector.html">dataconnector.html</a>).
-</p>
+    <tr> 
+      <td>image</td> 
+      <td>String</td> 
+      <td>no</td> 
+      <td>Url of an image to be displayed on the button. If no image is provided,
+      the action will be displayed as a link.</td> 
+    </tr>
 
+    <tr>
+      <td>text</td> 
+      <td>String</td> 
+      <td>no</td> 
+      <td>The value of <code>text</code> will be displayed as text for the link.
+      If no text is provided, the name of the event will be displayed on the link.
+      Only applicable when no image is provided.</td> 
+    </tr>
 
-
-<h3><a name="Actions" id="Actions"></a>Actions</h3>
-
-<p>
-Each item can contain a field <code>_actions</code>, containing an array
-with one or multiple actions. Actions are displayed as a button or
-a link at the right side of an item. When clicked, an 
-<a href="#Events">event</a> will be fired.
-</p>
-
-<table>
-  <tr> 
-    <th>Name</th> 
-    <th>Type</th> 
-    <th>Required</th> 
-    <th>Description</th> 
-  </tr> 
+    <tr>
+      <td>title</td> 
+      <td>String</td> 
+      <td>no</td> 
+      <td>When the mouse is hovered over an action, the title will be displayed.
+      The title can contain an explanation of the action.</td> 
+    </tr>
+    
+  </table>
   
-  <tr> 
-    <td>event</td> 
-    <td>String</td> 
-    <td>yes</td> 
-    <td>The name of the action. When the action is clicked, an event with 
-    this name is fired. Example events are 'delete', 'edit', 'open'.
-    An eventlistener can be used to link an event to execution of a method.
-    </td> 
-  </tr>
+  <p>Example:</p>
+<pre class="prettyprint lang-js">
+var data = [
+  {"name": "John",  "_actions": [{"event": "edit"}, {"event": "delete"}]},
+  {"name": "Susan", "_actions": [{"event": "edit"}, {"event": "delete"}]},
+  {"name": "David", "_actions": [{"event": "edit"}, {"event": "delete"}]}
+];
+</pre>
+</li>
 
-  <tr> 
-    <td>image</td> 
-    <td>String</td> 
-    <td>no</td> 
-    <td>Url of an image to be displayed on the button. If no image is provided,
-    the action will be displayed as a link.</td> 
-  </tr>
+<li>
+  <b>Icons</b>
+  <p>
+  Each item can contain a field <code>_icons</code>, containing an array
+  with one or multiple items. Items are displayed as an image  at the left side 
+  of an item and can be used for visualizing a status or the type of an icon.
+  </p>
 
-  <tr>
-    <td>text</td> 
-    <td>String</td> 
-    <td>no</td> 
-    <td>The value of <code>text</code> will be displayed as text for the link.
-    If no text is provided, the name of the event will be displayed on the link.
-    Only applicable when no image is provided.</td> 
-  </tr>
+  <table>
+    <tr> 
+      <th>Name</th> 
+      <th>Type</th> 
+      <th>Required</th> 
+      <th>Description</th> 
+    </tr> 
+    
+    <tr> 
+      <td>height</td> 
+      <td>String</td> 
+      <td>no</td> 
+      <td>The height of the icon, for example '32px'.</td> 
+    </tr>
+    
+    <tr> 
+      <td>image</td> 
+      <td>String</td> 
+      <td>yes</td> 
+      <td>Url of an image to be displayed.</td> 
+    </tr>
 
-  <tr>
-    <td>title</td> 
-    <td>String</td> 
-    <td>no</td> 
-    <td>When the mouse is hovered over an action, the title will be displayed.
-    The title can contain an explanation of the action.</td> 
-  </tr>
-  
-</table>
+    <tr> 
+      <td>title</td> 
+      <td>String</td> 
+      <td>no</td> 
+      <td>When the mouse is hovered over an icon, the title will be displayed.
+      The title can contain an explanation of the icon.</td> 
+    </tr>
 
+    <tr> 
+      <td>width</td> 
+      <td>String</td> 
+      <td>no</td> 
+      <td>The width of the icon, for example '32px'.</td> 
+    </tr>
+    
+  </table>
 
+  <p>Example:</p>
+<pre class="prettyprint lang-js">
+var data = [
+  {"name": "John",  "_icons": [{"image": "img/leader.png"}, {"image": "img/online.png"}]},
+  {"name": "Susan", "_icons": [{"image": "img/member.png"}]},
+  {"name": "David", "_icons": [{"image": "img/member.png"}, {"image": "img/online.png"}]}
+];
+</pre>
 
-<h3><a name="Icons" id="Icons"></a>Icons</h3>
+</li>
 
-<p>
-Each item can contain a field <code>_icons</code>, containing an array
-with one or multiple items. Items are displayed as an image  at the left side 
-of an item and can be used for visualizing a status or the type of an icon.
-</p>
+<li>
+  <b>Hidden fields</b>
+  <p>
+  All fields starting with an underscore <code>_</code> are hidden by default.
+  For example to store a hidden field containing an id in the items, on can use
+  a field named <code>_id</code>. The visibility and order of fields can be 
+  specified in more detail via a DataConnector (see <a href="dataconnector.html">dataconnector.html</a>).
+  </p>
 
-<table>
-  <tr> 
-    <th>Name</th> 
-    <th>Type</th> 
-    <th>Required</th> 
-    <th>Description</th> 
-  </tr> 
-  
-  <tr> 
-    <td>height</td> 
-    <td>String</td> 
-    <td>no</td> 
-    <td>The height of the icon, for example '32px'.</td> 
-  </tr>
-  
-  <tr> 
-    <td>image</td> 
-    <td>String</td> 
-    <td>yes</td> 
-    <td>Url of an image to be displayed.</td> 
-  </tr>
+  <p>Example:</p>
+<pre class="prettyprint lang-js">
+var data = [
+  {"name": "John",  "_id": "145912", "_rev": 6},
+  {"name": "Susan", "_id": "142831", "_rev": 2},
+  {"name": "David", "_id": "148692", "_rev": 14}
+];
+</pre>  
+</li>
 
-  <tr> 
-    <td>title</td> 
-    <td>String</td> 
-    <td>no</td> 
-    <td>When the mouse is hovered over an icon, the title will be displayed.
-    The title can contain an explanation of the icon.</td> 
-  </tr>
-
-  <tr> 
-    <td>width</td> 
-    <td>String</td> 
-    <td>no</td> 
-    <td>The width of the icon, for example '32px'.</td> 
-  </tr>
-  
-</table>
+</ul>
 
 
 <h2><a name="Configuration_Options" id="Configuration_Options"></a>Configuration Options</h2>
@@ -425,7 +496,9 @@ Options can be used to customize the treegrid. Options are defined as a JSON obj
 var options = {
   'width': '100%', 
   'height': '600px',
-  'itemHeight': 24   // px
+  'items': {
+    'defaultHeight' : 24,   // px
+  }
 };
 </pre>
 
@@ -463,11 +536,20 @@ The following options are available.
   </tr>
 
   <tr> 
-    <td>itemHeight</td> 
+    <td>items.defaultHeight</td> 
     <td>Number</td> 
     <td>24</td> 
     <td>The default height of an item in pixels. This height is used to estimate
     the height of the TreeGrid contents for items which are not yet loaded.</td> 
+  </tr>
+
+  <tr> 
+    <td>items.minHeight</td> 
+    <td>Number</td> 
+    <td>24</td> 
+    <td>The minimum height of an item in pixels. 
+      A minimum height of an item prevents the item from getting a height of
+      zero in case of no data.</td> 
   </tr>
 </table>
 
@@ -492,6 +574,15 @@ data.
     <td>Loads data, sets options, and draws the TreeGrid.
     <code>data</code> is a JSON Array or DataTable.
     <code>options</code> is an (optional) JSON Object containing values for options.
+    </td> 
+  </tr> 
+  
+  <tr> 
+    <td>redraw()</td> 
+    <td>none</td> 
+    <td>Redraw the TreeGrid. When the height of the TreeGrid has been changed
+    (for example when the height is 100% and the page is resized),
+    this method can be used to force a redraw of the TreeGrid.
     </td> 
   </tr> 
 </table>
@@ -549,7 +640,7 @@ The following events are available.
   <tr> 
     <td>expand</td> 
     <td>Expand an item. This is only possible when the item contains
-    child data. This data will be displayed as a sub-grid below the item.
+    nested data. This data will be displayed as a subgrid below the item.
     </td>
     <td>
       <ul>
@@ -738,7 +829,9 @@ following code inside the head of your html code or in a separate stylesheet.</p
       border: 1px solid #FFD500;<br>
       font-weight: bold;<br>
       border-radius: 3px;<br>
-      z-index: 9999;<br>
+  
+      z-index: 99999;<br>
+      position: relative;<br>
     </td>
   </tr>
 

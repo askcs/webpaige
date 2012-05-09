@@ -39,14 +39,14 @@
       function createTruck(index, orderCount) {
         var truck = {
           '_icons': [
-            {'image': 'img/24/autoship-icon.png', 'title': 'Truck'}
+            {'image': 'img/24/autoship-icon.png', 'title': 'Truck', 'width': '24px'}
           ],
           'name': 'Truck ' + (index + 1),
           'capacity': Math.round(Math.random() * 100 + 100) * 10
         };
         if (index > 3) {
           var orders = createOrders(orderCount);
-          truck._childs = orders;
+          truck['orders'] = orders;
         }
         return truck;
       }
@@ -59,19 +59,19 @@
         }
         //var trucksDataConnector = new links.DataTable(trucks);
         return trucks;
-      }      
+      }
       
       function createOrder(index, count) {
         var order = {
           '_icons': [
-            {'image': 'img/24/product-icon.png', 'title': 'Order'}
+            {'image': 'img/24/product-icon.png', 'title': 'Order', 'width': '24px'}
           ],
           'id': 'Order ' + (index + 1),
           'postcode': String(Math.random() * 10000).substring(0, 4) + "AB",
           'capacity': Math.round(Math.random() * 10 + 10) * 10
         }
         if (Math.random() > 0.7) {
-          order._icons.push({'image': 'img/24/success-icon.png', 'title': 'Order completed'});
+          order._icons.push({'image': 'img/24/success-icon.png', 'title': 'Order completed', 'width': '24px'});
         }
 
         if (index == count - 1) {
@@ -88,7 +88,7 @@
           if (Math.random() > 0.67) {
             var packageCount = 4;
             var packages = createPackages(packageCount);
-            order._childs = packages;
+            order['packages'] = packages;
           }
 
           orders.push(order);
@@ -130,8 +130,10 @@
         var options = {
           'width': '500px',
           'height': '400px',
-          'itemHeight': 32   // px
-        };  
+          'items': {
+            'defaultHeight': 32   // px
+          }
+        };
 
         // Instantiate our treegrid object.
         treegrid = new links.TreeGrid(document.getElementById('mytreegrid'), options);
