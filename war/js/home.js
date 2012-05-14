@@ -2,7 +2,16 @@
 
 function homePage_init()
 {
-    jos_timeline();
+	//retrieve from db?
+	global_update('stateMap',
+		{ 
+	'ask.state.12' : ['meeting','#77d'], 
+	'ask.state.13' : ['nr13','red'], 
+	'ask.state.14' : ['nr14','green'] 
+		}
+	);
+
+	jos_timeline();
 
 	home_getLocation();
 }
@@ -84,12 +93,11 @@ function timeline_locationEvent(data, prevData )
 	timeline.draw(timeline_data, options);
 }
 
-var state_map = { 
-	'ask.state.13' : ['x','red'], 
-	'ask.state.14' : ['y','green'] };
 
 function timeline_helper_html2state(content)
 {
+	var state_map = global_get('stateMap');
+
 	var state = content.split('>')[1].split('<')[0] ;
 	//reverse map search..
 	for(var i in state_map )
@@ -100,9 +108,11 @@ function timeline_helper_html2state(content)
 }
 function timeline_helper_state2html(state)
 {
+	var state_map = global_get('stateMap');
+
 	var content = '?';
 
-	if( state_map[ state ] )return '<div style="background-color:'+state_map[ state ][1]+'">' + state_map[ state ][0] + '</div>';
+	if( state_map[ state ] )return '<div style="height:24px; background-color:'+state_map[ state ][1]+'">' + state_map[ state ][0] + '</div>';
 	return "<div style='color:black;'>" + state +"</div>";
 }
 
@@ -287,7 +297,7 @@ function home_getLocation()
 
 function ask_slots_add( from,till, type, value )
 {
-	//console.log( from/1000,till/1000,type,value );
+	console.log( from/1000,till/1000,type,value );
 
 	var ask_host = global_get('host');
 
@@ -388,7 +398,7 @@ function ask_slots_getPlanning()
 	var resman = ask_host+'/askatars/'+ ask_user +'/slots';
 	//var resman = ask_host+'/rev1/node/'+ ask_user +'/timeline/'+'avail';
 
-	var json =  {"start": (now-86400*7*2), "end": (now+86400*7*2) };
+	var json =  {"start": (now-86400*7*4), "end": (now+86400*7*4) };
 	//var json = ' {"start":'+(now-86400*7*2)+', "end":'+(now+86400*7*2)+' }';
 
     $.ajax({

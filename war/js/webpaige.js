@@ -94,6 +94,7 @@ function modal_in(htmlString) {
     div2.style.top = window.pageYOffset+'px';
     div2.style.width = '100%';
     div2.style.height = '100%';
+	div2.style.zIndex = 999;	//quite on top?
     div2.innerHTML =
         '<table border=1 style="width:100%; height:100%" ><tr valign="middle"><td align="center" >' +
         htmlString +

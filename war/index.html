@@ -110,6 +110,8 @@ function menu_set(index)
 		inputs[0].value = from/1000;
 		inputs[1].value = till/1000;
 		inputs[2].checked = (type=='reoc');
+
+		var state_map = global_get('stateMap');
 		for(var i in state_map )
 		{
 			var elOptNew = document.createElement('option');
@@ -129,6 +131,8 @@ function menu_set(index)
 		inputs[0].value = from/1000;
 		inputs[1].value = till/1000;
 		inputs[2].checked = (type=='reoc');
+
+		var state_map = global_get('stateMap');
 		for(var i in state_map )
 		{
 			var elOptNew = document.createElement('option');
@@ -136,7 +140,7 @@ function menu_set(index)
 			elOptNew.value = i;
 			selects[0].add(elOptNew, null);
 		}
-		selects[0].value = 'x';// value;
+		selects[0].value =  value;
 		div2.style.display = 'inline';
 	}
 
@@ -263,7 +267,7 @@ function menu_set(index)
 	{
 		if( inputs[i].name == 'ctype' )
         		inputValues[ inputs[i].name ] = inputs[i].checked;
-		if( inputs[i].value )
+		else if( inputs[i].value )
         		inputValues[ inputs[i].name ] = inputs[i].value;
 	}
         for(var i in selects )
@@ -271,6 +275,7 @@ function menu_set(index)
 		if( selects[i].name )
 			inputValues[ selects[i].name ] = selects[i].value;
 	}
+
 	ask_slots_add( new Date(inputValues.from*1000), new Date(inputValues.till*1000), inputValues.ctype?'reoc':'plan', '<div>'+inputValues.svalue+'</div>' );
 	modal_out();
         " />

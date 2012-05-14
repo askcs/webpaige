@@ -13,7 +13,7 @@ function groupsPage_init()
     var rootNode = global_get('user');
     var resman = ask_host+'/node/'+rootNode+'/node';
 
-    var json = '{ filter":{"name":"contactGroups" } }';
+    var json = '{ "filter":"\'name\'LIKE\'contactGroups\'"  }';
     
     var noCookie = { "X-SESSION_ID": ask_key };
     document.cookie= 'X-SESSION_ID='+ask_key+'; path=/';    //does not work cross domain..
@@ -35,6 +35,7 @@ function groupsPage_init()
                 global_update('contactGroups', data.directMembers[0].uid );
                 jos_ding(1);//load treegrid
             }
+		else jos_ding(1); // load empty?
         }
     });
 
@@ -383,7 +384,7 @@ function ask_get(nodeID,nameFilter)
         resman += '/'+nodeID+'/node';
 
     var json = '{ "resource":["name","askatar","askatarNetwork","askatarNetworkGroup"] ';
-    if( nameFilter!='' )json += ',"filter":{"name":"'+ nameFilter+'" }';
+    if( nameFilter!='' )json += ',"filter":"\'name\'LIKE\''+ nameFilter+'\'" ';
     json += '}';
 
 
