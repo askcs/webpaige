@@ -2,6 +2,13 @@
 
 function homePage_init()
 {
+	var ask_session = global_get('sessionID');
+	if( ask_session == '' )
+	{
+		console.log("not logged in");
+		return;
+	}
+
 	//retrieve from db?
 	global_update('stateMap',
 		{ 
@@ -199,10 +206,17 @@ function ask_login(user, pass) {
             withCredentials: true
         },
         success: function (jsonData, status, xhr) {
-            var data = JSON.parse(jsonData);
-            global_update('sessionID', data['X-SESSION_ID'] );
-            global_update('user', user );
+
+		//in chrome json is already parsed?
+		if( jsonData && jsonData['X-SESSION_ID'] )
+			var data = jsonData;
+		else
+			var data = JSON.parse(jsonData);
+	
+		global_update('sessionID', data['X-SESSION_ID'] );
+		global_update('user', user );
 		menu_set(0);
+
             /*
             if (r != null) {
                 localStorage.setItem("loginCredentials", user + ";" + pass);
@@ -337,7 +351,12 @@ function ask_slots_delete( from,till, type, value )
 		//data: json, contentType: 'application/json',
 		xhrFields: {   withCredentials: true   },
 		statusCode: {
-	            403: function () { alert("del, no session??"); }
+	            403: function () 
+			{
+				global_update('sessionID','');
+				alert("del, no session??"); 
+			}
+
 		},
 		success: function(jdata)
 		{
@@ -407,7 +426,7 @@ function ask_slots_getPlanning()
         xhrFields: {   withCredentials: true   },
 	statusCode: {
         	403: function () { 
-			global_update('user','none');
+			global_update('sessionID','');
 			alert("planning, no session??"); 
 		}
 	},

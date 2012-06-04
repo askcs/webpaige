@@ -29,6 +29,12 @@ body{background-color:gray;}
 var menui=-1;
 function menu_set(index)
 {
+	var ask_session = global_get('sessionID');
+	if( ask_session == '' )
+	{
+		console.log('not much use in page switching');
+	}
+
 	var unselected = [ 'home','messages','groups','tasks','appointments','alarm','orders','deliveries','states'	];
 	
 	if(menui==index)return;
