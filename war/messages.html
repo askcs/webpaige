@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>WebPaige :: Messages</title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta content="WebPaige" name="description">
+  <meta content="Cengiz Ulusoy" name="author">
+  <link href="css/bootstrap.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  <link href="css/bootstrap-responsive.css" rel="stylesheet">
+  <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <link href="js/chosen/chosen.css" rel="stylesheet">
+  <link href="img/ico/favicon.ico" rel="shortcut icon">
+  <link href="img/ico/apple-touch-icon-144-precomposed.png" rel="apple-touch-icon-precomposed" sizes="144x144">
+  <link href="img/ico/apple-touch-icon-114-precomposed.png" rel="apple-touch-icon-precomposed" sizes="114x114">
+  <link href="img/ico/apple-touch-icon-72-precomposed.png" rel="apple-touch-icon-precomposed" sizes="72x72">
+  <link href="img/ico/apple-touch-icon-57-precomposed.png" rel="apple-touch-icon-precomposed">
+</head>
+
+<body>
+  <div class="navbar navbar-fixed-top navbar-inner container-fluid">
+    <a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse"></a> <a class="brand" href="dashboard.html">WebPaige</a>
+
+    <div class="btn-group pull-right">
+      <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-user"></i> Cengiz <span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li><a href="profile.html"><i class="icon-user"></i> Profile</a></li>
+        <li><a href="settings.html"><i class="icon-cog"></i> Settings</a></li>
+        <li><a href="help.html"><i class="icon-info-sign"></i> Help</a></li>
+        <li class="divider"></li>
+        <li><a href="login.html"><i class="icon-off"></i> Sign Out</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-collapse">
+      <ul class="nav">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li class="active"><a href="messages.html">Messages</a></li>
+        <li><a href="todos.html">Todos</a></li>
+        <li><a href="groups.html">Groups</a></li>
+        <li><a href="tasks.html">Tasks</a></li>
+        <li><a href="appointments.html">Appointments</a></li>
+        <li><a href="alarms.html">Alarms</a></li>
+        <li><a href="orders.html">Orders</a></li>
+        <li><a href="deliveries.html">Deliveries</a></li>
+        <li><a href="states.html">States</a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12 well">
+        <div class="btn-group btn-hanging">
+          <a class="btn" data-toggle="modal" href="#composeMessage"><i class="icon-plus-sign"></i> Compose</a>
+        </div>
+
+        <div class="modal hide" id="composeMessage">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">×</button>
+
+            <h3>Compose a message</h3>
+          </div>
+
+          <form class="">
+            <div class="modal-body">
+              <div class="control-group">
+                <label class="control-label">Receiver</label>
+
+                <div class="controls docs-input-sizes">
+                  <select class="chzn-select" data-placeholder="Choose a contact.." multiple style="width:530%" tabindex="4">
+                    <option value="1">Cengiz Ulusoy</option>
+                    <option value="2">Jan Smit</option>
+                    <option value="3">Mark Rutte</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <label class="control-label">Subject</label>
+                <div class="controls docs-input-sizes">
+                  <input class="span12" placeholder="" type="text">
+                </div>
+              </div>
+
+              <div class="control-group">
+                <label class="control-label">Message</label>
+                <div class="controls docs-input-sizes">
+                  <textarea class="span12" id="" name="" rows="6"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Cancel</a>
+              <a class="btn btn-success" href="#"><i class="icon-ok icon-white"></i> Send message</a>
+            </div>
+          </form>
+        </div>
+
+        <h2><span class="entypo eMedium">:</span> Messages</h2>
+        <hr>
+
+        <div class="tabbable">
+          <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#lA">Inbox</a></li>
+            <li><a data-toggle="tab" href="#lB">Sent</a></li>
+            <li><a data-toggle="tab" href="#lC">Trash</a></li>
+          </ul>
+
+          <div class="tab-content">
+            <div class="tab-pane active" id="lA">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>From</th>
+                    <th>Date</th>
+                    <th>Subject</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Mark Otto</td>
+                    <td>5 June 2012</td>
+                    <td>Let's eat some pannekoek's</td>
+                  </tr>
+
+                  <tr>
+                    <td>2</td>
+                    <td>Jacob Thornton</td>
+                    <td>5 June 2012</td>
+                    <td>Did you see the news?</td>
+                  </tr>
+
+                  <tr>
+                    <td>3</td>
+                    <td>Larry Bird</td>
+                    <td>5 June 2012</td>
+                    <td>Weather forecast</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="pagination pull-right">
+                <ul>
+                  <li class="disabled"><a href="#">«</a></li>
+                  <li class="active"><a href="#">1</a></li>
+                  <li><a href="#">2</a></li>
+                  <li><a href="#">3</a></li>
+                  <li><a href="#">4</a></li>
+                  <li><a href="#">»</a></li>
+                </ul><span class="pagination-info">Page 1 out of 1. Displaying 3 messages out of 3.</span>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="lB">
+              <p>Sent messages</p>
+            </div>
+
+            <div class="tab-pane" id="lC">
+              <p>Trashed ones.</p>
+            </div>
+          </div>
+        </div><!-- /tabbable -->
+      </div><!--/span-->
+    </div>
+
+    <footer>
+      <p>Ask Community Systems 2012, WebPaige v1.0<br>
+      <img alt="Ask Community Systems" src="img/company_logo.png"></p>
+    </footer>
+  </div><!--/.fluid-container-->
+  
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="js/jquery-1.7.2.min.js"></script><script src="js/bootstrap.js"></script>
+  <script src="js/chosen/chosen.jquery.js" type="text/javascript"></script><script type="text/javascript">
+	$(".chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true}); 
+  </script>
+</body>
+</html>

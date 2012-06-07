@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>WebPaige :: Login</title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta content="WebPaige" name="description">
+  <meta content="Cengiz Ulusoy" name="author">
+  <link href="css/bootstrap.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  <link href="css/bootstrap-responsive.css" rel="stylesheet">
+  <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <link href="img/ico/favicon.ico" rel="shortcut icon">
+  <link href="img/ico/apple-touch-icon-144-precomposed.png" rel="apple-touch-icon-precomposed" sizes="144x144">
+  <link href="img/ico/apple-touch-icon-114-precomposed.png" rel="apple-touch-icon-precomposed" sizes="114x114">
+  <link href="img/ico/apple-touch-icon-72-precomposed.png" rel="apple-touch-icon-precomposed" sizes="72x72">
+  <link href="img/ico/apple-touch-icon-57-precomposed.png" rel="apple-touch-icon-precomposed">
+</head>
+
+<body>
+  <div class="navbar navbar-fixed-top navbar-inner container-fluid">
+    <a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse"></a> <a class="brand" href="dashboard.html">WebPaige</a>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span3">
+      
+        <form class="well">
+        
+          <div id="alertDiv" class="alert alert-error">
+            <button id="alertClose" class="close" type="button">×</button><span id="alertMessage">{Alert Message}</span>
+          </div>
+
+          <h3><span class="entypo eMedium">+</span> Login</h3>
+          <hr>
+
+          <div class="control-group">
+            <!-- <label class="control-label">Enter your email address</label> -->
+            <div class="controls docs-input-sizes">
+              <input id="username" class="span12" placeholder="Enter your email address" type="text">
+            </div>
+          </div>
+
+          <div class="control-group">
+            <!-- <label class="control-label">Password</label> -->
+            <div class="controls docs-input-sizes">
+              <input id="password" class="span12" placeholder="Password" type="password">
+            </div>
+          </div><label class="checkbox"><input id="remember" type="checkbox"> Remember me</label><br>
+
+          <!-- <a class="btn" href="#" id="loginBtn">Login</a> -->
+
+          <a class="btn" href="#" id="loginBtn">Login</a>
+
+          	<img id="ajaxLoader" alt="Loading" src="img/ajax-loader.gif" style="margin-left:5px; height:20px;">
+          
+          <br><br>or<br><br>
+
+          <h4>Signin with your Google account</h4><br>
+          <a href="#"><img src="img/signin_google_btn.png"></a>
+        </form>
+      </div><!--/span-->
+
+      <div class="span3">
+        <form class="well">
+          <h3><span class="entypo eMedium">-</span> Register</h3>
+          <hr>
+
+          <p>Please follow the steps to register your account.</p><br>
+           <a class="btn btn-success" href="register.html"><i class="icon-ok icon-white"></i> Register your account</a>
+        </form>
+      </div><!--/span-->
+    </div><!--/row-->
+
+    <footer>
+      <p>Ask Community Systems 2012, WebPaige v1.0<br>
+      <img alt="Ask Community Systems" src="img/company_logo.png"></p>
+    </footer>
+  </div><!--/.fluid-container-->
+  
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="js/jquery-1.7.2.min.js"></script>
+  
+  <script type="text/javascript" src="js/libs/ask.session.js"></script>
+  <script type="text/javascript" src="js/libs/md5.js"></script>
+  <script src="js/bootstrap.js"></script>
+  <script src="js/custom.js"></script>
+  <script type="text/javascript">
+	  $(document).ready(function() {
+	  
+	    $('#username').val(localStorage.getItem('loginUser'));
+	    $('#password').val(localStorage.getItem('loginPass'));
+	    $('#remember').attr('checked', localStorage.getItem('loginRemember'));
+	    
+	    $("#alertClose").click(function() {
+	      $("#alertDiv").hide();
+	    });
+	    
+	    $("#loginBtn").click(function() {
+	    
+	      $("#ajaxLoader").show();
+	      
+	      var userDef = "Username"; //$('#username').attr('value');
+	      var passDef = "password"; //$('#password').attr('value');
+	      var user = $('#username').val();
+	      var pass = $('#password').val();
+	      var r = $('#remember:checked').val();
+	      
+	      console.log(pass);
+	      console.log('Pass: ' + MD5(pass));
+	      
+	      if (user == '' || user == userDef) {
+	        //alert('No Username given');
+	        $("#alertDiv").show();
+	        $("#alertMessage").setVal("<strong>Login failed!</strong><br>No username given.");
+	        $("#ajaxLoader").hide();
+	        return false;
+	      }
+	      
+	      if (pass == '' || pass == passDef) {
+	        //alert('No Password given');
+	        $("#alertDiv").show();
+	        $("#alertMessage").setVal("<strong>Login failed!</strong><br>No password given.");
+	        $("#ajaxLoader").hide();
+	        return false;
+	      }
+	      
+	      var xhr = $.ajax({
+	        url: host + '/login?uuid=' + user + '&pass=' + MD5(pass),
+	        //dataType: 'jsonp',
+	        statusCode: {
+	          400: function() {
+	            //alert("Username or password incorrect");
+	            $("#alertDiv").show();
+	            $("#alertMessage").setVal("<strong>Login failed!</strong><br>Invalid username or password.");
+	            $("#ajaxLoader").hide();
+	          }
+	        },
+	        xhrFields: {
+	          withCredentials: true
+	        },
+	        success: function(jsonData, status, xhr) {
+	          localStorage.setItem('loggedIn', '1');
+	          if (r != null) {
+	            localStorage.setItem("loginUser", user);
+	            localStorage.setItem("loginPass", pass);
+	            localStorage.setItem("loginRemember", r);
+	          } else {
+	            localStorage.removeItem("loginUser");
+	            localStorage.removeItem("loginPass");
+	            localStorage.removeItem("loginRemember");
+	          }
+	          document.location = "dashboard.html";
+	        },
+	        error: function(xhr, status) {
+	          //console.log(xhr);
+	          console.log('test');
+	          //alert('Invalid login or password');
+	        },
+	        complete: function(xhr, status) {
+	          var json = JSON.parse(xhr.responseText);
+	          var sessionId = json["X-SESSION_ID"];
+	          var session = new ask.session();
+	          session.setSession(sessionId);
+	          document.cookie = "sessionId=" + session;
+	        }
+	      });
+	    });
+	    
+	  });
+  </script>
+  
+</body>
+</html>
