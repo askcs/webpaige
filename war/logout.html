@@ -4,19 +4,16 @@
 <head>
   <meta charset="utf-8">
 
-  <title>WebPaige :: Help</title>
+  <title>WebPaige :: Logout</title>
+  
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <meta content="WebPaige" name="description">
   <meta content="Cengiz Ulusoy" name="author">
-</head>
-
-<body>
   
   <!-- Placed at the end of the document so the pages load faster -->
   <script src="js/jquery-1.7.2.min.js"></script>
   
   <script type="text/javascript" src="js/libs/ask.session.js"></script>
-  <script type="text/javascript" src="js/libs/md5.js"></script>
 
 	<script type="text/javascript">
 		$("document").ready(function() {
@@ -25,44 +22,27 @@
 					//dataType: 'jsonp',
 					statusCode: {
 						400: function() {
-							//alert("Username or password incorrect");
-							/*
-							$("#alertDiv").show();
-							$("#alertMessage").setVal("<strong>Login failed!</strong> Invalid username or password.");
-	    				$("#loginSP").show();
-	    				$("#loginSA").hide();
-							*/
 						}
 					},
 					xhrFields: {
 					      withCredentials: true
 					},
 					success: function(jsonData, status, xhr){
-						/*
-						if(r!=null) {
-							localStorage.setItem("loginCredentials",user+";"+pass);
-						} else {
-							localStorage.removeItem("loginCredentials");
-						}
-						*/
+						localStorage.removeItem("loginCredentials");
 		 				document.location = "login.html";
-		 				//alert("Good call");
 					},
 					error: function(xhr, status) {
-						//console.log(xhr);
-						console.log('test');
-						//alert('Invalid login or password');
+						console.log('error');
 					},
 					complete: function(xhr, status) {
-						var json = JSON.parse(xhr.responseText);
-						var sessionId = json["X-SESSION_ID"];
-						var session = new ask.session();
-						session.setSession(sessionId);
-						document.cookie="sessionId="+session;
 					}				
 			});
 			
 		});
 	</script>
+	
+</head>
+
+<body>
 </body>
 </html>

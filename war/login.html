@@ -5,18 +5,154 @@
   <meta charset="utf-8">
 
   <title>WebPaige :: Login</title>
+  
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <meta content="WebPaige" name="description">
   <meta content="Cengiz Ulusoy" name="author">
+  
   <link href="css/bootstrap.css" rel="stylesheet">
   <link href="css/styles.css" rel="stylesheet">
   <link href="css/bootstrap-responsive.css" rel="stylesheet">
   <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
   <link href="img/ico/favicon.ico" rel="shortcut icon">
   <link href="img/ico/apple-touch-icon-144-precomposed.png" rel="apple-touch-icon-precomposed" sizes="144x144">
   <link href="img/ico/apple-touch-icon-114-precomposed.png" rel="apple-touch-icon-precomposed" sizes="114x114">
   <link href="img/ico/apple-touch-icon-72-precomposed.png" rel="apple-touch-icon-precomposed" sizes="72x72">
   <link href="img/ico/apple-touch-icon-57-precomposed.png" rel="apple-touch-icon-precomposed">
+  
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="js/jquery-1.7.2.min.js"></script>
+  
+  <script type="text/javascript" src="js/libs/ask.session.js"></script>
+  <script type="text/javascript" src="js/libs/md5.js"></script>
+  <script src="js/bootstrap.js"></script>
+  
+  <script type="text/javascript">
+	  $(document).ready(function() {
+	  
+	    $('#username').val(localStorage.getItem('loginUser'));
+	    $('#password').val(localStorage.getItem('loginPass'));
+	    $('#remember').attr('checked', localStorage.getItem('loginRemember'));
+	    
+	    $("#alertClose").click(function() {
+	      $("#alertDiv").hide();
+	    });
+	    
+	    $("#loginBtn").click(function() {
+	    
+	      $("#ajaxLoader").show();
+	      
+	      var userDef = "Username"; //$('#username').attr('value');
+	      var passDef = "password"; //$('#password').attr('value');
+	      var user = $('#username').val();
+	      var pass = $('#password').val();
+	      var r = $('#remember:checked').val();
+	      
+	      console.log(pass);
+	      console.log('Pass: ' + MD5(pass));
+	      
+	      if (user == '' || user == userDef) {
+	        $("#alertDiv").show();
+	        $("#alertMessage").html("<strong>Login failed!</strong><br>No username given.");
+	        $("#ajaxLoader").hide();
+	        return false;
+	      }
+	      
+	      if (pass == '' || pass == passDef) {
+	        $("#alertDiv").show();
+	        $("#alertMessage").html("<strong>Login failed!</strong><br>No password given.");
+	        $("#ajaxLoader").hide();
+	        return false;
+	      }
+	      
+	      function loginSense(user, pass)
+	      {
+		      var xhr = $.ajax({
+		        //url: 'http://api.sense-os.nl/login?username=' + user + '&password=' + MD5(pass),
+		        url: 'http://api.sense-os.nl/login?username=steven@sense-os.nl&password=81dc9bdb52d04dc20036dbd8313ed055',
+		        type: 'POST',
+		        statusCode: {
+		          400: function() {
+		          }
+		        },
+		        xhrFields: {
+		          withCredentials: false
+		        },
+		        success: function(jsonData, status, xhr) {
+		        
+		          var json = JSON.parse(xhr.responseText);
+		          var senseSessionId = json["session_id"];
+		          
+	          	console.log('senseSession ID', senseSessionId);
+		          
+		          localStorage.setItem("senseSessionId", senseSessionId);
+		          
+		        },
+		        error: function(xhr, status) {
+		          console.log('Error!');
+		        },
+		        complete: function(xhr, status) {
+		          
+		        }
+		      });	
+	      }
+	      
+	      var xhr = $.ajax({
+	        url: host + '/login?uuid=' + user + '&pass=' + MD5(pass),
+	        //dataType: 'jsonp',
+	        statusCode: {
+	          400: function() {
+	            $("#alertDiv").show();
+	            $("#alertMessage").html("<strong>Login failed!</strong><br>Invalid username or password.");
+	            $("#ajaxLoader").hide();
+	          }
+	        },
+	        xhrFields: {
+	          withCredentials: true
+	        },
+	        success: function(jsonData, status, xhr) {
+	        	
+	          localStorage.setItem('loggedIn', '1');
+	          
+	          if (r != null) {
+	            localStorage.setItem("loginUser", user);
+	            localStorage.setItem("loginPass", pass);
+	            localStorage.setItem("loginRemember", r);
+	          } else {
+	            localStorage.removeItem("loginUser");
+	            localStorage.removeItem("loginPass");
+	            localStorage.removeItem("loginRemember");
+	          }
+	          
+	          loginSense(user, pass);
+	          
+	          document.location = "dashboard.html";
+	        },
+	        error: function(xhr, status) {
+	          console.log('Error!');
+	        },
+	        complete: function(xhr, status) {
+	          var json = JSON.parse(xhr.responseText);
+	          var sessionId = json["X-SESSION_ID"];
+	          var session = new ask.session();
+	          session.setSession(sessionId);
+	          document.cookie = "sessionId=" + session;
+	          
+	          
+	          
+	          console.log('Session ID: ', sessionId);
+	        }
+	      });
+	      
+	      
+	      
+	      
+	    });
+	    
+	  });
+  </script>
+  
 </head>
 
 <body>
@@ -79,99 +215,7 @@
       <p>Ask Community Systems 2012, WebPaige v1.0<br>
       <img alt="Ask Community Systems" src="img/company_logo.png"></p>
     </footer>
-  </div><!--/.fluid-container-->
-  
-  <!-- Placed at the end of the document so the pages load faster -->
-  <script src="js/jquery-1.7.2.min.js"></script>
-  
-  <script type="text/javascript" src="js/libs/ask.session.js"></script>
-  <script type="text/javascript" src="js/libs/md5.js"></script>
-  <script src="js/bootstrap.js"></script>
-  <script src="js/custom.js"></script>
-  <script type="text/javascript">
-	  $(document).ready(function() {
-	  
-	    $('#username').val(localStorage.getItem('loginUser'));
-	    $('#password').val(localStorage.getItem('loginPass'));
-	    $('#remember').attr('checked', localStorage.getItem('loginRemember'));
-	    
-	    $("#alertClose").click(function() {
-	      $("#alertDiv").hide();
-	    });
-	    
-	    $("#loginBtn").click(function() {
-	    
-	      $("#ajaxLoader").show();
-	      
-	      var userDef = "Username"; //$('#username').attr('value');
-	      var passDef = "password"; //$('#password').attr('value');
-	      var user = $('#username').val();
-	      var pass = $('#password').val();
-	      var r = $('#remember:checked').val();
-	      
-	      console.log(pass);
-	      console.log('Pass: ' + MD5(pass));
-	      
-	      if (user == '' || user == userDef) {
-	        //alert('No Username given');
-	        $("#alertDiv").show();
-	        $("#alertMessage").setVal("<strong>Login failed!</strong><br>No username given.");
-	        $("#ajaxLoader").hide();
-	        return false;
-	      }
-	      
-	      if (pass == '' || pass == passDef) {
-	        //alert('No Password given');
-	        $("#alertDiv").show();
-	        $("#alertMessage").setVal("<strong>Login failed!</strong><br>No password given.");
-	        $("#ajaxLoader").hide();
-	        return false;
-	      }
-	      
-	      var xhr = $.ajax({
-	        url: host + '/login?uuid=' + user + '&pass=' + MD5(pass),
-	        //dataType: 'jsonp',
-	        statusCode: {
-	          400: function() {
-	            //alert("Username or password incorrect");
-	            $("#alertDiv").show();
-	            $("#alertMessage").setVal("<strong>Login failed!</strong><br>Invalid username or password.");
-	            $("#ajaxLoader").hide();
-	          }
-	        },
-	        xhrFields: {
-	          withCredentials: true
-	        },
-	        success: function(jsonData, status, xhr) {
-	          localStorage.setItem('loggedIn', '1');
-	          if (r != null) {
-	            localStorage.setItem("loginUser", user);
-	            localStorage.setItem("loginPass", pass);
-	            localStorage.setItem("loginRemember", r);
-	          } else {
-	            localStorage.removeItem("loginUser");
-	            localStorage.removeItem("loginPass");
-	            localStorage.removeItem("loginRemember");
-	          }
-	          document.location = "dashboard.html";
-	        },
-	        error: function(xhr, status) {
-	          //console.log(xhr);
-	          console.log('test');
-	          //alert('Invalid login or password');
-	        },
-	        complete: function(xhr, status) {
-	          var json = JSON.parse(xhr.responseText);
-	          var sessionId = json["X-SESSION_ID"];
-	          var session = new ask.session();
-	          session.setSession(sessionId);
-	          document.cookie = "sessionId=" + session;
-	        }
-	      });
-	    });
-	    
-	  });
-  </script>
-  
+    
+  </div><!--/.fluid-container-->  
 </body>
 </html>
