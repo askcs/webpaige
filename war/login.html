@@ -97,7 +97,14 @@
 		        }
 		      });	
 	      }
-	      
+	     
+		var host = $('#gaeHost').val();
+		if( host )
+		{
+			localStorage.setItem("gaeHost", host );
+			console.log('connect to GAE @ ', host );
+		}
+
 	      var xhr = $.ajax({
 	        url: host + '/login?uuid=' + user + '&pass=' + MD5(pass),
 	        //dataType: 'jsonp',
@@ -130,18 +137,20 @@
 	          document.location = "dashboard.html";
 	        },
 	        error: function(xhr, status) {
-	          console.log('Error!');
+	          console.log('Error!', xhr.responseText );
 	        },
 	        complete: function(xhr, status) {
-	          var json = JSON.parse(xhr.responseText);
-	          var sessionId = json["X-SESSION_ID"];
-	          var session = new ask.session();
-	          session.setSession(sessionId);
-	          document.cookie = "sessionId=" + session;
+			if( xhr.responseText && xhr.responseText != '' )
+			{
+			          var json = JSON.parse(xhr.responseText);
+			          var sessionId = json["X-SESSION_ID"];
+			          var session = new ask.session();
+			          session.setSession(sessionId);
+			          document.cookie = "sessionId=" + session;
+	          		
+console.log('Session ID: ', sessionId);
+	        	}  
 	          
-	          
-	          
-	          console.log('Session ID: ', sessionId);
 	        }
 	      });
 	      
@@ -171,6 +180,10 @@
           </div>
 
           <h3><span class="entypo eMedium">+</span> Login</h3>
+
+	<!-- tymon debug input thingy -->	
+	<div><input style='color:green width:200px;border:none' id='gaeHost' value='http://localhost:9000/ns_default' /> </div>
+
           <hr>
 
           <div class="control-group">
