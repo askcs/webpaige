@@ -1,48 +1,16 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="utf-8">
-
-  <title>WebPaige :: Logout</title>
-  
+  <title>Logout</title>
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <meta content="WebPaige" name="description">
-  <meta content="Cengiz Ulusoy" name="author">
   
-  <!-- Placed at the end of the document so the pages load faster -->
-  <script src="js/jquery-1.7.2.min.js"></script>
-  
-  <script type="text/javascript" src="js/libs/ask.session.js"></script>
+  <script src="js/jquery/jquery-1.7.2.min.js" type="text/javascript"></script>
+  <script src="js/libs/ask.session.js" type="text/javascript"></script>
 
-	<script type="text/javascript">
-		$("document").ready(function() {
-	
-			var xhr = $.ajax({url: host+'/logout',
-					//dataType: 'jsonp',
-					statusCode: {
-						400: function() {
-						}
-					},
-					xhrFields: {
-					      withCredentials: true
-					},
-					success: function(jsonData, status, xhr){
-						localStorage.removeItem("loginCredentials");
-		 				document.location = "login.html";
-					},
-					error: function(xhr, status) {
-						console.log('error');
-					},
-					complete: function(xhr, status) {
-					}				
-			});
-			
-		});
-	</script>
-	
+  <script src="js/init.js" type="text/javascript"></script>
+	<script src="js/views/logout.js" type="text/javascript"></script>
 </head>
-
 <body>
 </body>
 </html>
