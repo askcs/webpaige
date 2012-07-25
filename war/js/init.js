@@ -47,7 +47,7 @@ function pageInit(active, logged)
 		userdrop.append('<li><a href="profile.html"><i class="icon-user"></i> Profile</a></li>');
 		userdrop.append('<li><a href="settings.html"><i class="icon-cog"></i> Settings</a></li>');
 		userdrop.append('<li class="divider"></li>');
-		userdrop.append('<li><a href="login.html"><i class="icon-off"></i> Sign Out</a></li>');
+		userdrop.append('<li><a onclick="webpaige.logout()"><i class="icon-off"></i> Sign Out</a></li>');
 		usermenu.append(userdrop);
 		
 		var navcollapse = $('<div class="nav-collapse"></div>');
@@ -59,8 +59,12 @@ function pageInit(active, logged)
 		{
 			if (unread != 0)
 			{
-				unreadMessages = unread;
+				unread =  ' <span class="badge badge-warning">' + unread + '</span>';
 			}
+		}
+		else
+		{
+			unread = '';
 		}
 		
 		for(var i in menuItems)
@@ -69,7 +73,6 @@ function pageInit(active, logged)
 				highlighter = '<li class="active">'; else highlighter = '<li>';
 				if (menuItems[i] == 'messages')
 				{
-					unread = '<span class="badge badge-warning">' + unread + '</span>';
 					var menu = menuItems[i].charAt(0).toUpperCase() + menuItems[i].slice(1) + ' ' + unread;
 				}
 				else
@@ -120,6 +123,19 @@ webpaige = function()
   	400: null,
   };  
 	window.data = [];
+	
+	if (localStorage)
+	{
+		if (!this.get('config'))
+		{
+			this.set('config', '{}');
+		}
+	}
+	else
+	{
+		// localStorage is not supported at all..
+	}
+	
 }
 
 webpaige.prototype.get = function(label)
@@ -153,8 +169,14 @@ webpaige.prototype.remove = function(label)
 	localStorage.removeItem(label);
 }
 
+webpaige.prototype.clear = function(label)
+{
+	localStorage.clear();
+}
+
 webpaige.prototype.con = function(options, callback)
 {
+	var w = this;
 	options = $.extend({}, this.options, options);
   $.ajax(
   {
@@ -163,7 +185,7 @@ webpaige.prototype.con = function(options, callback)
 		data: options.json,
     beforeSend: function(xhr)
     {
-    	webpaige.stats(options.loading);
+    	w.stats(options.loading);
       xhr.setRequestHeader('X-SESSION_ID', options.session);
       return true;
     },
@@ -245,6 +267,26 @@ webpaige.prototype.alert = function(message)
 	$('#alert').append('<div id="message">Error! ' + message + "</div>");
 	$('#alert').show();
 }
+
+webpaige.prototype.logout = function()
+{
+	//console.log('session: ', session.getSession());
+	webpaige.con(
+		options = {
+			path: '/logout',
+			loading: 'Logging out..'
+			,session: session.getSession()	
+		},
+		function(data)
+	  {
+	  	var login = webpaige.get('login');  
+			webpaige.clear();
+			webpaige.set('login', login);
+			document.location = "login.html";
+		}
+	); 
+}
+
 
 
 

@@ -1,3 +1,5 @@
+var session = new ask.session();
+
 $(document).ready(function()
 {
  	pageInit('register', 'false');

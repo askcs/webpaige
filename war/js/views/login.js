@@ -4,13 +4,16 @@ function loginAsk (user, pass, r)
 	webpaige.con(
 		options = {
 			path: '/login?uuid=' + user + '&pass=' + MD5(pass),
-			loading: 'Logging in..',
+			loading: 'Logging in..'
+			/*
+			,
 			400: function()
 			{
         $("#alertDiv").show();
         $("#alertMessage").html("<strong>Login failed!</strong><br>Invalid username or password.");
         $("#ajaxLoader").hide();
 			}	
+			*/
 		},
 		function(data, label)
 	  {  	
@@ -18,7 +21,7 @@ function loginAsk (user, pass, r)
       {
       	var login = {};
       	login.user = user;
-      	login.pass = pass;
+      	//login.pass = pass;
       	login.remember = r;
       	webpaige.set('login', JSON.stringify(login));
       }
@@ -232,8 +235,8 @@ function loginSense()
 			options = {
 				host: 'http://api.sense-os.nl',
 				// Steven's account
-				path: '/login?username=steven@sense-os.nl&password=81dc9bdb52d04dc20036dbd8313ed055',
-				//path: '/login?username=' + user + '&password=' + MD5(pass),
+				//path: '/login?username=steven@sense-os.nl&password=81dc9bdb52d04dc20036dbd8313ed055',
+				path: '/login?username=' + login.user + '&password=' + MD5(login.pass),
 				type: 'post',
 				credentials: false,
 				loading: 'Logging Sense OS..',

@@ -2,9 +2,42 @@ $(document).ready(function()
 {
  	pageInit('profile', 'true');
   renderProfile();
+  
+  $("#alertClose").click(function()
+  {
+    $("#alertDiv").hide();
+  });
+  
+  //testSense();
 });
 
 var session = new ask.session();
+
+
+function testSense()
+{
+							
+	var sense = webpaige.get('sense');
+	sense = sense ? JSON.parse(sense) : undefined;
+	webpaige.con(
+		options = {
+			host: 'http://api.sense-os.nl',
+			path: '/change_password.json',
+			type: 'post',
+			loading: 'Changing Sense password..',
+			message: 'Sense password changed..',
+			session: sense.session,
+			credentials: false,
+			label: 'sensors'
+		},
+		function(data, label)
+	  {
+			$("#successDiv").show();
+			$("#successMessage").html("<strong>Password changed!</strong><br>Your new password is set up.");
+		}
+	);
+}
+
 
 function renderProfile()
 { 
@@ -69,7 +102,88 @@ function updateProfile()
 
 function changePassword()
 {
-  $('#changePassword').modal('show');
+	var old_pass = $('#pass').val();
+	var pass1 = $('#pass1').val();
+	var pass2 = $('#pass2').val();
+  
+  if (pass1 == '' || pass2 == '')
+  {
+    $("#alertDiv").show();
+    $("#alertMessage").html("<strong>Password reset failed!</strong><br>Please fill the compulsory fields.");
+    return false;
+  }
+  
+  if (pass1 != pass2)
+  {
+    $("#alertDiv").show();
+    $("#alertMessage").html("<strong>Password reset failed!</strong><br>Passwords do not match. Please try again.");
+    return false;
+  }
+  else
+  {
+  	var pass = pass1;
+  }
+  
+	webpaige.con(
+		options = {
+			path: '/resources',
+			loading: 'Loading resources..',
+			label: 'resources',
+			session: session.getSession()	
+		},
+		function(data, label)
+	  {  	
+  		if (data.askPass == MD5(old_pass))
+  		{
+			  var tags = '{' + '"askPass":"' + MD5(pass) + '"' + '}';
+				webpaige.con(
+					options = {
+						type: 'post',
+						path: '/resources?tags=' + tags,
+						loading: 'Changing password..',
+						message: 'Successfully changed password',
+						label: 'resources'
+						,session: session.getSession()	
+					},
+					function(data, label)
+				  {
+				  	var body = '{' +				  		
+							'"current_password":"' + MD5(old_pass) + '",' +
+							'"new_password":"' + MD5(pass) + '"' +
+				  	'}'; 
+						var sense = webpaige.get('sense');
+						sense = sense ? JSON.parse(sense) : undefined;
+						webpaige.con(
+							options = {
+								host: 'http://api.sense-os.nl',
+								path: '/change_password.json',
+								type: 'post',
+								json: body,
+								loading: 'Changing Sense password..',
+								message: 'Sense password changed..',
+								session: sense.session,
+								credentials: false,
+								label: 'sensors'
+							},
+							function(data, label)
+						  {
+				    		$("#successDiv").show();
+				    		$("#successMessage").html("<strong>Password changed!</strong><br>Your new password is set up.");
+				    		$('#changePasswordButtons').hide();
+				    		$('#passwordChangedButton').show();
+							}
+						);
+					}
+				);
+  		}
+  		else
+  		{
+    		$("#alertDiv").show();
+    		$("#alertMessage").html("<strong>Password reset failed!</strong><br>You typed a wrong password.");
+  		}
+		}
+	);
+		
 }
 
 function changeResources()
@@ -100,6 +214,7 @@ function changeResources()
 		},
 		function(data, label)
 	  {  
+      $("#profileChanged").show();
     	renderProfile();
 		}
 	);

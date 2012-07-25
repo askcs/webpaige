@@ -221,7 +221,7 @@ hr {
 
 #alertBye { display:none;}
 
-#alertDiv, #successDiv, #goToLoginBtn { display:none;}
+#alertDiv, #successDiv, #goToLoginBtn, #profileChanged, #passwordChangedButton { display:none;}
 
 iframe {
 	border: none;
