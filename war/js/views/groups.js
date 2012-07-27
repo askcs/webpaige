@@ -62,7 +62,7 @@ function loadGroups(uuid, name)
 		function(data, label)
 	  {  
 			//local.set(label, data);
-    	console.log(data, uuid, name);
+    	//console.log(data, uuid, name);
     	renderGroups(data, uuid, name);
 		}
 	);
@@ -114,12 +114,33 @@ function addGroup()
 
 function updateGroup(name, uuid)
 {
-  var json = '{"name": "' + name + '"}';
+  
+  //var resources = JSON.parse(localStorage.getItem('resources')); 	
+  var body = '{"name": "' + name + '"}';	
+  
+	webpaige.con(
+		options = {
+			type: 'put',
+			path: '/network/'+uuid,
+			loading: 'Updating group..',
+			json: body,
+			message: 'Group updated.',
+			label: 'groups'
+			,session: session.getSession()	
+		},
+		function(data, label)
+	  {  
+    	loadGroups(uuid, name);
+		}
+	);
+	
+/*
 	webpaige.con('put', '/network/'+uuid, json, 'Updating group', 'Group updated.',
 	function(data)
   {
     loadGroups(uuid, name);
 	});
+*/
 }
 
 
@@ -202,7 +223,7 @@ function loadMembers(name, uuid)
 		function(data, label)
 	  {  
   		$('#live').remove();
-	  	console.log(data, name, uuid);
+	  	//console.log(data, name, uuid);
 	  	renderMembers(data, name, uuid);
 		}
 	);

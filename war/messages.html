@@ -132,11 +132,7 @@
                 </div>
               </div>
             </div>
-            <div class="modal-footer">
-              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Close</a>
-            	<a class="btn btn-danger" onclick="removeMessage();"><i class="icon-white icon-trash"></i> Delete Message</a>
-            	<a class="btn btn-success" onclick="replyMessage();"><i class="icon-white icon-ok"></i> Reply Message</a>
-            </div>
+            <div id="displayMessageActions" class="modal-footer"></div>
         </div>
         
         <h2><span class="entypo eMedium">w</span> Messages</h2>
@@ -147,6 +143,7 @@
           <ul class="nav nav-tabs">
             <li id="inboxBtn"><a onclick="loadMessages('inbox');">Inbox</a></li>
             <li id="outboxBtn"><a onclick="loadMessages('outbox');">Outbox</a></li>
+            <li id="trashBtn"><a onclick="loadMessages('trash');">Trash</a></li>
           </ul>
           
           <div class="tab-content">

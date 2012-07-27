@@ -48,14 +48,19 @@ function sendMessage()
   var receivers = $('#receivers').val(); 
 	
   var subject = $('#title').val();
+  //var content = $('#compose textarea').val().replace( /\r?\n/g, "\r\n" );
   var content = $('#compose textarea').val();
   
+  
+  //console.log('message',content);
+  
   //resetForms();
-    
-	/*
+  
+  /*  
 	for(var n in receivers)
-		receivers[n] = '"' + receivers[n] + '"'; 
-	*/
+		receivers[n] = '"' + receivers[n] + '"';
+	*/ 
+	
 		
   var query = '{"members":[' + 
   						receivers + 
@@ -83,6 +88,8 @@ function sendMessage()
 
 function replyMessage(uuid)
 {
+	$('#displayMessageModal').modal('hide');
+	
 	resetForms();
 	var messages = localStorage.getItem('messages');
   var messages = messages ? JSON.parse(messages) : undefined;
@@ -108,6 +115,19 @@ function replyMessage(uuid)
 
 function displayMessage(uuid, type)
 {
+	
+	$('#displayMessageActions').remove();
+	var actions = $('<div id="displayMessageActions" class="modal-footer"></div>');
+	
+	actions.append('<a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Close</a>');
+	
+	actions.append('<a class="btn btn-danger" onclick="removeMessage(\''+uuid+'\');"><i class="icon-white icon-trash"></i> Delete Message</a>');
+	
+	actions.append('<a class="btn btn-success" onclick="replyMessage(\''+uuid+'\');"><i class="icon-white icon-ok"></i> Reply Message</a>');
+	
+	$('#displayMessageModal').append(actions);
+	
+	
 	$('#displayMessageModal').modal('show');
 	var messages = localStorage.getItem('messages');
   var messages = messages ? JSON.parse(messages) : undefined;
@@ -115,6 +135,25 @@ function displayMessage(uuid, type)
 	{
 		if (messages[n].uuid === uuid)
 		{
+			if (messages[n].state == 'NEW')
+			{
+				var query = '{"ids":[' + 
+			  						messages[n].uuid + 
+			  						'],"state":"SEEN"}';
+				webpaige.con(
+					options = {
+						type: 'post',
+						path: '/question/changeState',
+						json: query,
+						loading: 'Changing state..'
+						,session: session.getSession()	
+					},
+					function(data)
+				  {  
+						loadMessages('inbox');
+					}
+				); 
+			}
 			if (type == 'inbox')
 			{
 				$('#messageDirection').html('From');
@@ -143,6 +182,113 @@ function displayMessage(uuid, type)
 
 
 
+function removeMessage(uuid, type)
+{
+	$('#displayMessageModal').modal('hide');
+  var query = '{"ids":[' + 
+  						uuid + 
+  						'],"state":"TRASH"}';
+	webpaige.con(
+		options = {
+			type: 'post',
+			path: '/question/changeState',
+			json: query,
+			loading: 'Changing state..'
+			,session: session.getSession()	
+		},
+		function(data)
+	  {  
+			loadMessages(type);
+		}
+	); 
+}
+
+
+
+function removeMessages(type)
+{
+	var ids = [];
+	
+  var values = $('#tb-' + type + ' input:checkbox:checked').map(function ()
+  {
+	  if (this.value != 'on')
+	  {
+	  	ids.push(this.value); 
+	  }
+	}).get();
+	
+  var query = '{"ids":[' + 
+  						ids + 
+  						'],"state":"TRASH"}';
+  						
+	webpaige.con(
+		options = {
+			type: 'post',
+			path: '/question/changeState',
+			json: query,
+			loading: 'Moving messages to trash..'
+			,session: session.getSession()	
+		},
+		function(data)
+	  {  
+			loadMessages(type);
+		}
+	); 
+}
+
+
+
+function deleteMessage(uuid, type)
+{
+  var query = '{"members":["' + uuid + '"]}';
+  						
+	webpaige.con(
+		options = {
+			type: 'post',
+			path: '/question/deleteQuestions',
+			json: query,
+			loading: 'Deleting message..'
+			,session: session.getSession()	
+		},
+		function(data)
+	  {  
+			loadMessages('trash');
+		}
+	);
+}
+
+
+function emptyTrash()
+{
+	var ids = [];
+	
+  var values = $('#tb-trash input:checkbox:checked').map(function ()
+  {
+	  if (this.value != 'on')
+	  {
+	  	ids.push(this.value); 
+	  }
+	}).get();
+	
+  var query = '{"members":[' + 
+  						ids + 
+  						']}';
+  						
+	webpaige.con(
+		options = {
+			type: 'post',
+			path: '/question/deleteQuestions',
+			json: query,
+			loading: 'Emptying trash..'
+			,session: session.getSession()	
+		},
+		function(data)
+	  {  
+			loadMessages('trash');
+		}
+	); 
+}
+
 
 function resetForms()
 {
@@ -168,6 +314,11 @@ function loadMessages(type)
 			var btn = $('#outboxBtn');
 			var status = 'Loading outbox..';
 		break;
+		case 'trash':
+			var url = '/question';
+			var btn = $('#trashBtn');
+			var status = 'Loading trash..';
+		break;
 		default:
 			var url = '/question?0=dm';
 			var btn = $('#inboxBtn');
@@ -191,8 +342,10 @@ function loadMessages(type)
 	  	localStorage.setItem("messages", data); 
 	  		
 	  	var filtered = [];
+			/*
 	  	var uniquesIdx = {};
 	  	var uniques = [];
+			*/
 	  	
 	  	var data = data ? JSON.parse(data) : undefined;
 			
@@ -213,7 +366,7 @@ function loadMessages(type)
 				case 'inbox':
 					for(var n in data)
 					{
-						if (data[n].module == 'message' && data[n].requester != resources.uuid)
+						if (data[n].module == 'message' && data[n].requester != resources.uuid && data[n].state != 'TRASH')
 						{
 							filtered.push(data[n]);
 							/*
@@ -235,7 +388,19 @@ function loadMessages(type)
 		  		//renderMessages(data, type);
 					for(var n in data)
 					{
-						if (data[n].module == 'message')
+						if (data[n].module == 'message' && data[n].state != 'TRASH')
+						{
+							filtered.push(data[n]);
+						}
+					}
+		  		renderMessages(filtered, type);
+				break;
+				
+				case 'trash':
+		  		//renderMessages(data, type);
+					for(var n in data)
+					{
+						if (data[n].module == 'message' && data[n].state == 'TRASH')
 						{
 							filtered.push(data[n]);
 						}
@@ -274,12 +439,20 @@ function renderMessages(data, type)
 		var theadtr = $('<tr></tr>');
 		theadtr.append('<th><input type="checkbox" onclick="toggleChecked(\'' + type + '\', this.checked)" /></th>');
 		
-		var direction = (type == 'outbox') ?  'To' : 'From';
+		if (type == 'trash')
+		{
+			theadtr.append('<th>From</th>');
+			theadtr.append('<th>To</th>');
+		}
+		else
+		{
+			var direction = (type == 'outbox') ?  'To' : 'From';
+			if (type == 'inbox')
+				theadtr.append('<th></th>');
+				
+			theadtr.append('<th>'+direction+'</th>');
+		}
 		
-		if (type == 'inbox')
-			theadtr.append('<th></th>');
-			
-		theadtr.append('<th>'+direction+'</th>');
 		theadtr.append('<th>Subject</th>');
 		theadtr.append('<th>Date</th>');
 		theadtr.append('<th></th>');
@@ -293,14 +466,20 @@ function renderMessages(data, type)
 		
 			if (type == 'inbox')
 			{
-				var stateLabel = (data[n].state == 'NEW') ?  '<span class="label label-info">New</span>' : '';
-				var moduleLabel = (data[n].module == 'alarm') ?  '<span class="label label-warning"><i class="icon-bell icon-white"></i> Alarm</span>' : '';
-				var state = stateLabel + moduleLabel;
+				var state = (data[n].state == 'NEW') ?  '<span class="label label-info">New</span>' : '';
 				tbodytr.append('<td>'+state+'</td>');
 			}
 			
-			var person = (type == 'outbox') ?  data[n].responder : data[n].requester;
-			tbodytr.append('<td>'+person+'</td>');
+			if (type == 'trash')
+			{
+				tbodytr.append('<td>'+data[n].responder+'</td>');
+				tbodytr.append('<td>'+data[n].requester+'</td>');
+			}
+			else
+			{
+				var person = (type == 'outbox') ?  data[n].responder : data[n].requester;
+				tbodytr.append('<td>'+person+'</td>');
+			}			
 			
 			var subject = (data[n].subject == null) ? 'No subject' : data[n].subject;
 			tbodytr.append('<td><a onclick="displayMessage(\''+data[n].uuid+'\', \''+type+'\');" rel="tooltip" title="'+data[n].question_text+'">'+subject+'</a></td>');
@@ -308,10 +487,38 @@ function renderMessages(data, type)
 		  var date = new Date(data[n].creationTime * 1000);
 			tbodytr.append('<td>'+date.toString("dd-MMM-yyyy HH:mm")+'</td>');
 			
-			tbodytr.append('<td><div class="btn-group"><a class="btn btn-mini" onclick="replyMessage(\''+data[n].uuid+'\');"><i class="icon-share-alt"></i></a><a class="btn btn-mini" onclick="removeMessage(\''+data[n].uuid+'\');"><i class="icon-trash"></i></a></div></td>');
+			tdbtns = $('<td></td>');
+			btngroup = $('<div class="btn-group"></div>');
+			
+			if (type == 'inbox')
+			{
+				btngroup.append('<a class="btn btn-mini" onclick="replyMessage(\''+data[n].uuid+'\');"><i class="icon-share-alt"></i></a>');
+			}
+			
+	    if (type == 'trash')
+	    {
+				btngroup.append('<a class="btn btn-mini" onclick="deleteMessage(\''+data[n].uuid+'\');"><i class="icon-trash"></i></a>');
+	    }
+	    else
+	    {
+				btngroup.append('<a class="btn btn-mini" onclick="removeMessage(\''+data[n].uuid+'\', \''+type+'\');"><i class="icon-trash"></i></a>');
+	    }
+	    
+			tdbtns.append(btngroup);
+			tbodytr.append(tdbtns);
+			
 			tbody.append(tbodytr);
     }
-    tbody.append('<tr><td colspan="6"><a class="btn" onclick="removeMessages(\''+type+'\');"><i class="icon-trash"></i> Remove selected</a></td></tr>');
+    
+    if (type == 'trash')
+    {
+    	tbody.append('<tr><td colspan="6"><a class="btn btn-danger" onclick="emptyTrash();"><i class="icon-trash icon-white"></i> Empty trash</a></td></tr>');
+    }
+    else
+    {
+    	tbody.append('<tr><td colspan="6"><a class="btn" onclick="removeMessages(\''+type+'\');"><i class="icon-trash"></i> Remove selected</a></td></tr>');
+    }
+    
     table.append(tbody);
     $(live).append(table);
   }			      
