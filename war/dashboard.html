@@ -8,6 +8,60 @@
   <link href="css/bootstrap/bootstrap.css" rel="stylesheet">
   <link href="css/bootstrap/bootstrap-responsive.css" rel="stylesheet">
   <link href="css/styles.css" rel="stylesheet">
+  
+  <style type="text/css">  
+	  #groupTimeline {
+	  	z-index:10;
+	  }
+	  #mytimelineHolder {
+	  	z-index: 20;
+	  	margin-top: -50px;
+	  }
+	  #groupTimeline div.timeline-event {
+	      border: none;
+	      background: none;
+	      border-radius: 0;
+	  }
+	  #groupTimeline div.timeline-event-selected {
+	      border: none;
+	      background: none;
+	  }
+	  #groupTimeline div.timeline-event-content {
+	      margin: 0;
+	  }
+	  #groupTimeline div.timeline-event-range {
+	      border: none;
+	      border-radius: 0;
+	      height: 100px;
+	      width: 100%;
+	      position: relative;
+	      overflow: visible;
+	  }
+	  #groupTimeline div.bar {
+	      position: absolute;
+	      bottom: 0;
+	      left: 0;
+	      width: 100%;
+	      text-align: center;
+	      color: white;
+	      /* height and color is set for each individual bar */
+	  }
+	  #groupTimeline div.requirement {
+	      position: absolute;
+	      bottom: 0;
+	      left: 0;
+	      width: 100%;
+	      border-top: 2px solid gray;
+	      background: #e5e5e5;
+	      opacity: 0.5;
+	  }
+/*
+	  #groupTimeline div.timeline-axis {
+	  	display: none;
+	  }
+*/
+  </style>
+  
   <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
   
   <script src="js/jquery/jquery-1.7.2.min.js" type="text/javascript"></script>
@@ -34,7 +88,7 @@
     
     
 </head>
-<body>
+<body onload="drawVisualization3();">
 	<div id="navbar"></div>
   <div class="container-fluid">       
   
@@ -57,6 +111,7 @@
     <div class="row-fluid">
     
       <div class="span12 well">
+      
         <div class="btn-group btn-hanging">
           <a id="tmlZoomInBtn" class="btn" onClick="timelineZoomIn();"><i class="icon-zoom-in"></i></a>
           <a id="tmlZoomOutBtn" class="btn" onClick="timelineZoomOut();"><i class="icon-zoom-out"></i></a>
@@ -64,10 +119,20 @@
           <a id="tmlMoveRightBtn" class="btn" onClick="timelineMoveRight();"><i class="icon-arrow-right"></i></a> 
           <a id="tmlTodayBtn" class="btn" onClick="timelineInit();">Today</a>  
         </div>
+        
         <div class="btn-group btn-hanging">
           <a class="btn" data-toggle="modal" href="#newEvent"><i class="icon-plus-sign"></i> New availability</a>
           <!-- <a class="btn" href="appointments.html"><i class="icon-calendar"></i> My appointments</a> -->
         </div>
+        
+        <div class="btn-group btn-hanging">
+          <a onclick="loadGroupAvs();" id="groupAvBtn" class="btn">Group availability</a>
+          <a onclick="loadMemberAvs();" id="memberAvBtn" class="btn">Member availabilities</a>
+          <a onclick="loadCurrentAvs();" id="currentAvBtn" class="btn">Current statuses</a>
+        </div>
+        
+        <form class="form-inline btn-hanging" style="margin-bottom:0px;"><div class="control-group"><div class="controls docs-input-sizes"><select id="groupsList"></select></div></div></form>       
+        
         <div class="modal hide" id="newEvent">
           <div class="modal-header">
             <button class="close" data-dismiss="modal" type="button">×</button>
@@ -110,10 +175,11 @@
             </div>
             <div class="modal-footer">
               <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Cancel</a>
-              <a id="planSubmitter" class="btn btn-success" href="#"><i class="icon-ok icon-white"></i> Save planning</a>
+              <a onclick="planSubmit()" class="btn btn-success"><i class="icon-ok icon-white"></i> Save planning</a>
             </div>
           </form>
         </div>
+        
         <div class="modal hide" id="editEvent">
           <div class="modal-header">
             <button class="close" data-dismiss="modal" type="button">×</button>
@@ -156,29 +222,21 @@
             </div>
             <div class="modal-footer">
               <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Cancel</a>
-              <a id="deletePlanBtn" class="btn btn-warning" href="#"><i class="icon-remove icon-white"></i> Delete planning</a>
-              <a id="editPlanSubmitter" class="btn btn-success" href="#"><i class="icon-ok icon-white"></i> Save planning</a>
+              <a onclick="deletePlanSubmit()" class="btn btn-warning"><i class="icon-remove icon-white"></i> Delete planning</a>
+              <a onclick="editPlanSubmit()" class="btn btn-success"><i class="icon-ok icon-white"></i> Save planning</a>
             </div>
           </form>
         </div>
+        
         <h2><span class="entypo eMedium">P</span> Planboard</h2>
         
-        <div id="mytimeline"></div>
-        
-      </div><!--/span-->
-    
-      <div class="span12 well" style="margin-left:0px;">
-        
-        <div class="btn-group btn-hanging">
-          <a onclick="loadGroupAvs();" id="groupAvBtn" class="btn">Group availability</a>
-          <a onclick="loadMemberAvs();" id="memberAvBtn" class="btn">Member availabilities</a>
-          <a onclick="loadCurrentAvs();" id="currentAvBtn" class="btn">Current statuses</a>
+        <div id="groupTimeline">
+        	<div id="groupTimelineGraph"></div>
         </div>
         
-        <form class="form-inline btn-hanging" style="margin-bottom:0px;"><div class="control-group"><div class="controls docs-input-sizes"><select id="groupsList"></select></div></div></form>        
-        
-        <h2><span class="entypo eMedium">,</span> Groups</h2>
-        <div id="grouptimeline"></div>
+        <div id="mytimelineHolder">
+        	<div id="mytimeline"></div>
+        </div>
         
       </div><!--/span-->
       

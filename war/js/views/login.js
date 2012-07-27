@@ -1,6 +1,84 @@
-
 function loginAsk (user, pass, r)
 {
+	webpaige.set('config', '{}');
+	webpaige.con(
+		options = {
+			path: '/login?uuid=' + user + '&pass=' + MD5(pass),
+			loading: 'Logging in..'
+		},
+		function(data, label)
+	  {  	
+      if (r != null)
+      {
+      	var login = {};
+      	login.user = user;
+      	login.remember = r;
+      	webpaige.set('login', JSON.stringify(login));
+      }
+      else
+      {
+      	webpaige.remove('login');
+      }
+      session.setSession(data["X-SESSION_ID"]);
+      document.cookie = "sessionId=" + session;
+			webpaige.con(
+				options = {
+					path: '/resources',
+					loading: 'Loading resources..',
+					label: 'resources',
+					session: session.getSession()	
+				},
+				function(data, label)
+			  {  	
+					webpaige.set(label, JSON.stringify(data));
+					document.location = "dashboard.html";
+				}
+			);
+		}
+	);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function loginAskOriginal (user, pass, r)
+{
+	webpaige.set('config', '{}');
 	webpaige.con(
 		options = {
 			path: '/login?uuid=' + user + '&pass=' + MD5(pass),
@@ -164,8 +242,11 @@ function loadModule(label, url)
 
 function countUnreadMessages()
 {
-	var messages = webpaige.get('messages');
-	messages = messages ? JSON.parse(messages) : undefined;
+	var messages = JSON.parse(webpaige.get('inbox'));
+	
+	console.log('messages :', messages);
+	
+	//messages = messages ? JSON.parse(messages) : undefined;
 	var count = 0;
 	for (var i in messages)
 	{
@@ -418,7 +499,7 @@ function loadActivityData(sensorID, session)
 
 function showPreloader()
 {
-	window.loaderTotal = 5;
+	window.loaderTotal = 2;
  	$('#live').remove();
 	var live = $('<div id="live"></div>');
 	var well = $('<div class="span3 well">');

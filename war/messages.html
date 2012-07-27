@@ -40,32 +40,32 @@
             <button class="close" data-dismiss="modal" type="button">×</button>
             <h3>Compose a message</h3>
           </div>
-          <form id="message" class="">
             <div class="modal-body">
-              <div class="control-group">
-                <label class="control-label">Receiver</label>
-                <div class="controls docs-input-sizes">
-                  <select id="receivers" class="chzn-select" data-placeholder="Choose a contact.." multiple style="width:530%" tabindex="4"></select>
-                </div>
-              </div>
-              <div class="control-group">
-                <label class="control-label">Subject</label>
-                <div class="controls docs-input-sizes">
-                  <input id="title" class="span12" placeholder="" type="text">
-                </div>
-              </div>
-              <div class="control-group">
-                <label class="control-label">Message</label>
-                <div class="controls docs-input-sizes">
-                  <textarea id="message" class="span12" id="" name="" rows="6"></textarea>
-                </div>
-              </div>
+          		<form id="compose">
+	              <div class="control-group">
+	                <label class="control-label">Receiver</label>
+	                <div class="controls docs-input-sizes">
+	                  <select id="receivers" class="chzn-select" data-placeholder="Choose a contact.." multiple style="width:530%" tabindex="4"></select>
+	                </div>
+	              </div>
+	              <div class="control-group">
+	                <label class="control-label">Subject</label>
+	                <div class="controls docs-input-sizes">
+	                  <input id="title" class="span12" placeholder="" type="text">
+	                </div>
+	              </div>
+	              <div class="control-group">
+	                <label class="control-label">Message</label>
+	                <div class="controls docs-input-sizes">
+	                  <textarea id="" class="span12" id="" name="" rows="6"></textarea>
+	                </div>
+	              </div>
+          		</form>
             </div>
             <div class="modal-footer">
               <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Cancel</a>
-              <a id="messageSender" class="btn btn-success" href="#"><i class="icon-ok icon-white"></i> Send message</a>
+              <a onclick="sendMessage();" class="btn btn-success"><i class="icon-ok icon-white"></i> Send message</a>
             </div>
-          </form>
         </div>
         
         <div class="modal hide" id="replyMessage">
@@ -73,32 +73,70 @@
             <button class="close" data-dismiss="modal" type="button">×</button>
             <h3>Reply message</h3>
           </div>
-          <form id="message" class="">
             <div class="modal-body">
-              <div class="control-group">
-                <label class="control-label">Receiver</label>
-                <div class="controls docs-input-sizes">
-                  <select id="receivers" class="chzn-select" data-placeholder="Choose a contact.." multiple style="width:530%" tabindex="4"></select>
-                </div>
-              </div>
-              <div class="control-group">
-                <label class="control-label">Subject</label>
-                <div class="controls docs-input-sizes">
-                  <input id="title" class="span12" placeholder="" type="text">
-                </div>
-              </div>
-              <div class="control-group">
-                <label class="control-label">Message</label>
-                <div class="controls docs-input-sizes">
-                  <textarea id="message" class="span12" id="" name="" rows="6"></textarea>
-                </div>
-              </div>
+          		<form id="reply">
+	              <div class="control-group">
+	                <label class="control-label">Receiver</label>
+	                <div class="controls docs-input-sizes">
+	                  <select id="receivers" class="chzn-select" data-placeholder="Choose a contact.." multiple style="width:530%" tabindex="4"></select>
+	                </div>
+	              </div>
+	              <div class="control-group">
+	                <label class="control-label">Subject</label>
+	                <div class="controls docs-input-sizes">
+	                  <input id="title" class="span12" placeholder="" type="text">
+	                </div>
+	              </div>
+	              <div class="control-group">
+	                <label class="control-label">Message</label>
+	                <div class="controls docs-input-sizes">
+	                  <textarea id="" class="span12" id="" name="" rows="6"></textarea>
+	                </div>
+	              </div>
+          		</form>
             </div>
             <div class="modal-footer">
               <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Cancel</a>
               <a id="messageSender" class="btn btn-success" href="#"><i class="icon-ok icon-white"></i> Send message</a>
             </div>
-          </form>
+        </div>
+        
+        <div class="modal hide" id="displayMessageModal">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">×</button>
+            <h3><span class="messageSubject"></span></h3>
+          </div>
+            <div class="modal-body">
+              <div class="control-group">
+                <label class="control-label"><h4 id="messageDirection"></h4></label>
+                <div class="controls docs-input-sizes">
+                  <span id="messageReceiver"></span>
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label"><h4>Date</h4></label>
+                <div class="controls docs-input-sizes">
+                  <span id="messageDate"></span>
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label"><h4>Subject</h4></label>
+                <div class="controls docs-input-sizes">
+                  <span class="messageSubject"></span>
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label"><h4>Message</h4></label>
+                <div class="controls docs-input-sizes">
+                  <span id="messageContent"></span>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Close</a>
+            	<a class="btn btn-danger" onclick="removeMessage();"><i class="icon-white icon-trash"></i> Delete Message</a>
+            	<a class="btn btn-success" onclick="replyMessage();"><i class="icon-white icon-ok"></i> Reply Message</a>
+            </div>
         </div>
         
         <h2><span class="entypo eMedium">w</span> Messages</h2>
@@ -107,9 +145,8 @@
         <div class="tabbable">
         
           <ul class="nav nav-tabs">
-            <li id="inboxBtn"><a onclick="loadMessages('inbox');">Me & others (Inbox)</a></li>
-            <li id="outboxBtn"><a onclick="loadMessages('outbox');">Paige to others (Outbox)</a></li>
-            <li id="modulesBtn"><a onclick="loadMessages('modules');">Me & Paige (Modules)</a></li>
+            <li id="inboxBtn"><a onclick="loadMessages('inbox');">Inbox</a></li>
+            <li id="outboxBtn"><a onclick="loadMessages('outbox');">Outbox</a></li>
           </ul>
           
           <div class="tab-content">

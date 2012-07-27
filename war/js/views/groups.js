@@ -21,13 +21,11 @@ $(document).ready(function()
  		searchMembers(value);
  	});
 
-  $('#groupSubmitter').click(function()
+	$('#groupSubmit').click(function()
   {
-    $('#newGroup').modal('hide');
-    var newGroupName = $('#newGroupName').val();
-    $('#newGroupForm')[0].reset();
-    addGroup(newGroupName);
+  	addGroup();
   });
+	
 
   $('#editGroupSubmitter').click(function()
   {
@@ -64,18 +62,19 @@ function loadGroups(uuid, name)
 		function(data, label)
 	  {  
 			//local.set(label, data);
+    	console.log(data, uuid, name);
     	renderGroups(data, uuid, name);
 		}
 	);
 	
 	
-/*
+	/*
 	webpaige.con('get', '/network', null, 'Loading groups..', null,
 	function(data)
   {
     renderGroups(data, uuid, name);
 	});
-*/
+	*/
 	/*
 	var cache = ASKCache("getGroups",'/network',null, 'uuid', session);
 	cache.addRenderer('group.html',function(json, oldData, data){
@@ -85,12 +84,15 @@ function loadGroups(uuid, name)
 }
 
 
-function addGroup(name)
+function addGroup()
 {
+  $('#newGroup').modal('hide');
+  var name = $('#newGroupName').val();
+  $('#newGroupForm')[0].reset();
+  
   var resources = JSON.parse(localStorage.getItem('resources')); 	
 	
   var body = '{"name": "' + name + '"}';	
-  
   
 	webpaige.con(
 		options = {
@@ -107,14 +109,6 @@ function addGroup(name)
     	loadGroups(data, name);
 		}
 	);
-	
-/*
-	webpaige.con('post', '/network/'+uuid, json, 'Adding new group..', 'Group added.',
-	function(data)
-  {
-    loadGroups(data, name);
-	});
-*/
 }
 
 
@@ -207,22 +201,13 @@ function loadMembers(name, uuid)
 		},
 		function(data, label)
 	  {  
-			//local.set(label, data);
   		$('#live').remove();
+	  	console.log(data, name, uuid);
 	  	renderMembers(data, name, uuid);
 		}
 	);
-	
-	
-/*
-	webpaige.con('get', '/network/'+uuid+'/members', null, 'Loading members..', null,
-	function(data)
-  {
-  	$('#live').remove();
-	  renderMembers(data, name, uuid);
-	});
-*/
 }
+
 
 function addMembers()
 {
@@ -344,6 +329,8 @@ function renderGroups(data, uuid, name)
   $('#groupsNav').html(groupsList);
   loadMembers(name, uuid);
 }
+
+
 
 function renderMembers(json, name, uuid)
 {

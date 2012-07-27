@@ -1,3 +1,4 @@
+
 $(document).ready(function()
 {
  	pageInit('messages', 'true');
@@ -33,7 +34,6 @@ $(document).ready(function()
 var session = new ask.session();
 
 
-
 function composeMessage()
 {
 	resetForms();
@@ -41,16 +41,44 @@ function composeMessage()
 }
 
 
-
-function sendMessage(receivers, subject, content)
+function sendMessage()
 {
-	for(var n in receivers) receivers[n] = '"' + receivers[n] + '"'; 
-  var json = '{"members":['+receivers+'],"content":"'+content+'","subject":"'+subject+'"}';
-	webpaige.con('post', '/question/sendDirectMessage', json, 'Sending message..', 'Message successfully sent!',
-	function(data)
-  {
-  	loadMessages('inbox');
-	});
+  $('#composeMessage').modal('hide');
+  
+  var receivers = $('#receivers').val(); 
+	
+  var subject = $('#title').val();
+  var content = $('#compose textarea').val();
+  
+  //resetForms();
+    
+	/*
+	for(var n in receivers)
+		receivers[n] = '"' + receivers[n] + '"'; 
+	*/
+		
+  var query = '{"members":[' + 
+  						receivers + 
+  						'],"content":"' + 
+  						content + 
+  						'","subject":"' + 
+  						subject + 
+  						'"}';
+  						
+	webpaige.con(
+		options = {
+			type: 'post',
+			path: '/question/sendDirectMessage',
+			json: query,
+			loading: 'Sending message(s)..',
+			message: 'Message sent!'
+			,session: session.getSession()	
+		},
+		function(data)
+	  {  
+			loadMessages('inbox');
+		}
+	); 
 }
 
 function replyMessage(uuid)
@@ -78,10 +106,48 @@ function replyMessage(uuid)
 }
 
 
+function displayMessage(uuid, type)
+{
+	$('#displayMessageModal').modal('show');
+	var messages = localStorage.getItem('messages');
+  var messages = messages ? JSON.parse(messages) : undefined;
+	for (var n in messages)
+	{
+		if (messages[n].uuid === uuid)
+		{
+			if (type == 'inbox')
+			{
+				$('#messageDirection').html('From');
+				$('#messageReceiver').html(messages[n].requester);
+			}
+			else
+			{
+				$('#messageDirection').html('To');
+				$('#messageReceiver').html(messages[n].responder);
+			}
+			var date = new Date(messages[n].creationTime * 1000);
+			$('#messageDate').html(date.toString("dd-MMM-yyyy HH:mm"));
+			if (messages[n].subject != null)
+			{
+				var subject = messages[n].subject;
+			}
+			else
+			{
+				var subject = 'No subject';
+			}
+			$('.messageSubject').html(subject);
+			$('#messageContent').html(messages[n].question_text);			
+		}
+	}
+}
+
+
+
 
 function resetForms()
 {
-	$('form')[0].reset();
+	//$('form')[0].reset();
+	//$('form')[1].reset();
 	$('.chzn-select option:selected').removeAttr('selected');
   $(".chzn-select").trigger("liszt:updated");
 }
@@ -92,31 +158,25 @@ function loadMessages(type)
 {
 	switch(type)
 	{
-	case 'inbox':
-		var url = '/question?0=dm';
-		var btn = $('#inboxBtn');
-		var status = 'Loading inbox..';
-	break;
-	case 'outbox':
-		var url = '/question?0=sent';
-		var btn = $('#outboxBtn');
-		var status = 'Loading outbox..';
-	break;
-	case 'modules':
-		var url = '/question';
-		var btn = $('#modulesBtn');
-		var status = 'Loading Paige messages..';
-	break;
-	default:
-		var url = '/question?0=dm';
-		var btn = $('#inboxBtn');
-		var status = 'Loading inbox..';
-		var type = 'inbox';
+		case 'inbox':
+			var url = '/question?0=dm';
+			var btn = $('#inboxBtn');
+			var status = 'Loading inbox..';
+		break;
+		case 'outbox':
+			var url = '/question?0=sent';
+			var btn = $('#outboxBtn');
+			var status = 'Loading outbox..';
+		break;
+		default:
+			var url = '/question?0=dm';
+			var btn = $('#inboxBtn');
+			var status = 'Loading inbox..';
+			var type = 'inbox';
 	}
 	
 	$('.nav-tabs li').removeClass('active');
 	btn.addClass('active');
-	
 	
 	webpaige.con(
 		options = {
@@ -156,6 +216,7 @@ function loadMessages(type)
 						if (data[n].module == 'message' && data[n].requester != resources.uuid)
 						{
 							filtered.push(data[n]);
+							/*
 							for (var i in filtered)
 							{
 								if (!uniquesIdx[filtered[i].requester])
@@ -164,19 +225,17 @@ function loadMessages(type)
 									uniques.push(filtered[i]);
 								}
 							}
+							*/
 						}
 					}
-		  		renderMessages(uniques, type);
+		  		renderMessages(filtered, type);
 				break;
 				
 				case 'outbox':
-		  		renderMessages(data, type);
-				break;
-				
-				case 'modules':
+		  		//renderMessages(data, type);
 					for(var n in data)
 					{
-						if (data[n].module != 'message')
+						if (data[n].module == 'message')
 						{
 							filtered.push(data[n]);
 						}
@@ -197,85 +256,8 @@ function loadMessages(type)
 		}
 	);
 	
-	
-/*
-	webpaige.con('get', url, null, status, null,
-	function(data)
-  { 
-  	// needing this for replying messages 
-  	localStorage.setItem("messages", data); 
-  		
-  	var filtered = [];
-  	var uniquesIdx = {};
-  	var uniques = [];
-  	
-  	var data = data ? JSON.parse(data) : undefined;
-		
-		data.reverse(
-			data.sort(
-				function(a,b)
-				{
-					return (a.creationTime - b.creationTime);
-				}
-			)
-		);
-  	
-  	var user = JSON.parse(localStorage.getItem('user'));
-  
-		switch(type)
-		{
-		
-			case 'inbox':
-				for(var n in data)
-				{
-					if (data[n].module == 'message' && data[n].requester != user.uuid)
-					{
-						filtered.push(data[n]);
-						for (var i in filtered)
-						{
-							if (!uniquesIdx[filtered[i].requester])
-							{
-								uniquesIdx[filtered[i].requester] = filtered[i];
-								uniques.push(filtered[i]);
-							}
-						}
-					}
-				}
-	  		renderMessages(uniques, type);
-			break;
-			
-			case 'outbox':
-	  		renderMessages(data, type);
-			break;
-			
-			case 'modules':
-				for(var n in data)
-				{
-					if (data[n].module != 'message')
-					{
-						filtered.push(data[n]);
-					}
-				}
-	  		renderMessages(filtered, type);
-			break;
-			
-			default:
-				for(var n in data)
-				{
-					if (data[n].module == 'message' && data[n].requester != user.uuid)
-					{
-						filtered.push(data[n]);
-					}
-				}
-	  		renderMessages(filtered, type);
-		}
-		
-	});
-*/
-	
 }
 
-//function 
 
 function renderMessages(data, type)
 {
@@ -294,10 +276,12 @@ function renderMessages(data, type)
 		
 		var direction = (type == 'outbox') ?  'To' : 'From';
 		
-		theadtr.append('<th></th>');
+		if (type == 'inbox')
+			theadtr.append('<th></th>');
+			
 		theadtr.append('<th>'+direction+'</th>');
-		theadtr.append('<th>Date</th>');
 		theadtr.append('<th>Subject</th>');
+		theadtr.append('<th>Date</th>');
 		theadtr.append('<th></th>');
 		thead.append(theadtr);
 		table.append(thead);
@@ -307,20 +291,23 @@ function renderMessages(data, type)
     	var tbodytr = $('<tr></tr>');
 			tbodytr.append('<td><input type="checkbox" class="checkbox" value="'+data[n].uuid+'" /></td>');
 		
-			var stateLabel = (data[n].state == 'NEW') ?  '<span class="label label-info">New</span>' : '';
-			var moduleLabel = (data[n].module == 'alarm') ?  '<span class="label label-warning"><i class="icon-bell icon-white"></i> Alarm</span>' : '';
-			var state = stateLabel + moduleLabel;
-			tbodytr.append('<td>'+state+'</td>');
+			if (type == 'inbox')
+			{
+				var stateLabel = (data[n].state == 'NEW') ?  '<span class="label label-info">New</span>' : '';
+				var moduleLabel = (data[n].module == 'alarm') ?  '<span class="label label-warning"><i class="icon-bell icon-white"></i> Alarm</span>' : '';
+				var state = stateLabel + moduleLabel;
+				tbodytr.append('<td>'+state+'</td>');
+			}
 			
 			var person = (type == 'outbox') ?  data[n].responder : data[n].requester;
 			tbodytr.append('<td>'+person+'</td>');
 			
+			var subject = (data[n].subject == null) ? 'No subject' : data[n].subject;
+			tbodytr.append('<td><a onclick="displayMessage(\''+data[n].uuid+'\', \''+type+'\');" rel="tooltip" title="'+data[n].question_text+'">'+subject+'</a></td>');
+			
 		  var date = new Date(data[n].creationTime * 1000);
 			tbodytr.append('<td>'+date.toString("dd-MMM-yyyy HH:mm")+'</td>');
 			
-			var subject = (data[n].subject == null) ? 'No subject' : data[n].subject;
-			
-			tbodytr.append('<td><a href="#" rel="tooltip" title="'+data[n].question_text+'">'+subject+'</a></td>');
 			tbodytr.append('<td><div class="btn-group"><a class="btn btn-mini" onclick="replyMessage(\''+data[n].uuid+'\');"><i class="icon-share-alt"></i></a><a class="btn btn-mini" onclick="removeMessage(\''+data[n].uuid+'\');"><i class="icon-trash"></i></a></div></td>');
 			tbody.append(tbodytr);
     }
@@ -339,12 +326,20 @@ function renderMessages(data, type)
 
 function loadUsers()
 {
-  var json = '{"key":""}';
-	webpaige.con('post', '/network/searchPaigeUser', json, 'Loading users..', null,
-	function(data)
-  {
-  	renderUsers(data);
-	});
+  var query = '{"key":""}';
+	webpaige.con(
+		options = {
+			type: 'post',
+			path: '/network/searchPaigeUser',
+			json: query,
+			loading: 'Searching for users in network..'
+			,session: session.getSession()	
+		},
+		function(data)
+	  {  
+			renderUsers(data);
+		}
+	); 
 }
 
 function renderUsers(data)

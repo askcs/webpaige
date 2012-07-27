@@ -12,16 +12,16 @@ ask.session = function(callback)
 	//var login = JSON.parse(cache.get('login'));
 	//this.uuid = login.user;
 	
-/*
+	/*
 	if (login = this.checkLogin)
 	{
 		this.uuid = login.user;
 	}
-*/
+	*/
 	
 	//this.uuid = 'ulusoy.cengiz@gmail.com';
 	
-/*
+	/*
 	this.checkLogin = function ()
 	{
 		if (cache.get('login') != null)
@@ -33,7 +33,7 @@ ask.session = function(callback)
 			return false;
 		}
 	}
-*/
+	*/
 
 
 	this.callback = callback;

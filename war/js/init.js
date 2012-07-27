@@ -1,25 +1,3 @@
-
-
-/*
-var ncache = new ASKCache("Groups", '/network', null, 'uuid', session);
-ncache.addRenderer(
-	function(data)
-	{
-		console.log('Groups ', data);
-	}
-);
-*/
-	
-
-/*
-function checkLogin() {
-	if (!localStorage.getItem('loggedIn')) {
-			document.location = "login.html";
-	}
-}
-*/
-
-
 function pageInit(active, logged)
 {
 	webpaige = new webpaige();	
@@ -54,6 +32,7 @@ function pageInit(active, logged)
 		var nav = $('<ul class="nav"></ul>');
 		var highlighter;
 		
+		/*
 		var unread = webpaige.config('unreadMessages');
 		if (unread != undefined)
 		{
@@ -66,19 +45,24 @@ function pageInit(active, logged)
 		{
 			unread = '';
 		}
+		*/
 		
 		for(var i in menuItems)
 		{
 			if (active == menuItems[i])
 				highlighter = '<li class="active">'; else highlighter = '<li>';
+				/*
 				if (menuItems[i] == 'messages')
 				{
 					var menu = menuItems[i].charAt(0).toUpperCase() + menuItems[i].slice(1) + ' ' + unread;
 				}
 				else
 				{
+				*/
 					var menu = menuItems[i].charAt(0).toUpperCase() + menuItems[i].slice(1);
+				/* 				
 				}
+				*/
 			nav.append(highlighter + '<a href="' + menuItems[i] + '.html">' + menu + '</a></li>');
 		}
 		
@@ -123,25 +107,22 @@ webpaige = function()
   	400: null,
   };  
 	window.data = [];
-	
 	if (localStorage)
 	{
-		if (!this.get('config'))
-		{
-			this.set('config', '{}');
-		}
+		// localStorage is supported..
 	}
 	else
 	{
 		// localStorage is not supported at all..
 	}
-	
 }
+
 
 webpaige.prototype.get = function(label)
 {
 	return localStorage.getItem(label);
 }
+
 
 webpaige.prototype.set = function(label, data)
 {
@@ -149,30 +130,46 @@ webpaige.prototype.set = function(label, data)
 	localStorage.setItem(label, data);
 }
 
+
 webpaige.prototype.config = function(key, value)
 {
-	var config = JSON.parse(webpaige.get('config'));
-	if (value)
+	/*
+	if (webpaige.get('config') == null)
 	{
-		config[key] = value;
-		webpaige.set('config', JSON.stringify(config));
-		return true;
+		webpaige.set('config', '{}');
+		console.log('there was no config');
 	}
 	else
 	{
-		return config[key];
-	}
+	*/
+		console.log(key, value);
+			
+		var config = JSON.parse(webpaige.get('config'));
+		if (value != null)
+		{
+			config[key] = value;
+			webpaige.set('config', JSON.stringify(config));
+			return true;
+		}
+		else
+		{
+			return config[key];
+		}
+/* 	} */
 }
+
 
 webpaige.prototype.remove = function(label)
 {
 	localStorage.removeItem(label);
 }
 
+
 webpaige.prototype.clear = function(label)
 {
 	localStorage.clear();
 }
+
 
 webpaige.prototype.con = function(options, callback)
 {
@@ -249,10 +246,12 @@ webpaige.prototype.stats = function(loading)
 	$('#status').show();
 }
 
+
 webpaige.prototype.loaded = function()
 {
 	$('#status').hide();
 }
+
 
 webpaige.prototype.message = function(message)
 {
@@ -261,6 +260,7 @@ webpaige.prototype.message = function(message)
 	$('#alert').show();
 }
 
+
 webpaige.prototype.alert = function(message)
 {
 	$('#message').remove();
@@ -268,9 +268,9 @@ webpaige.prototype.alert = function(message)
 	$('#alert').show();
 }
 
+
 webpaige.prototype.logout = function()
 {
-	//console.log('session: ', session.getSession());
 	webpaige.con(
 		options = {
 			path: '/logout',

@@ -133,7 +133,7 @@ links.Timeline = function(container) {
         'autoHeight': true,
 
         'eventMargin': 10,    // minimal margin between events 
-        'eventMarginAxis': 20, // minimal margin beteen events and the axis
+        'eventMarginAxis': 0, // minimal margin beteen events and the axis
         'dragAreaWidth': 2, // pixels
 
         'min': undefined,
