@@ -85,13 +85,13 @@
 		            </div>
 		          </div>
 		          <div class="control-group">
-		            <label class="control-label">Enter your email address</label>
+		            <label class="control-label">Email address</label>
 		            <div class="controls docs-input-sizes">
 		              <input id="email" class="span12" placeholder="Email address" type="text">
 		            </div>
 		          </div>
 		          <div class="control-group">
-		            <label class="control-label">Choose your password</label>
+		            <label class="control-label">Password</label>
 		            <div class="controls docs-input-sizes">
 		              <input id="pass" class="span12" placeholder="Password" type="text">
 		            </div>
@@ -126,17 +126,42 @@
 		            </div>
 		          </div>
 		          <div class="control-group">
-		            <label class="control-label">Enter your email address</label>
+		            <label class="control-label">Email address</label>
 		            <div class="controls docs-input-sizes">
 		              <input id="email" class="span12" placeholder="Email address" type="text">
 		            </div>
 		          </div>
+              <div class="control-group">
+                <label class="control-label">Address</label>
+                <div class="controls docs-input-sizes">
+                  <input id="address" class="span12" placeholder="" type="text">
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label">Postcode</label>
+                <div class="controls docs-input-sizes">
+                  <input id="postcode" class="span12" placeholder="" type="text">
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label">City</label>
+                <div class="controls docs-input-sizes">
+                  <input id="city" class="span12" placeholder="" type="text">
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label">Country</label>
+                <div class="controls docs-input-sizes">
+                  <input id="country" class="span12" placeholder="" type="text">
+                </div>
+              </div>
               <div class="clear"></div>
             </div>
             <div class="modal-footer">
               <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Cancel</a>
+              <input type="hidden" id="uuid" value="" />
               <input type="hidden" id="guuid" value="" />
-              <a id="saveNewMember" class="btn btn-success" href="#"><i class="icon-ok icon-white"></i> Save member</a>
+              <a id="editMemberBtn" class="btn btn-success" href="#"><i class="icon-ok icon-white"></i> Save member</a>
             </div>
           </form>
         </div>

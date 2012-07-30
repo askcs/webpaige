@@ -30,6 +30,11 @@ $(document).ready(function()
   {
   	saveNewMember();
   });
+
+	$('#editMemberBtn').click(function()
+  {
+  	editMember();
+  });
 	
 
   $('#editGroupSubmitter').click(function()
@@ -317,10 +322,8 @@ function saveNewMember()
 }
 
 
-function editMemberModalInit(uuid)
+function editMemberModalInit(guuid, uuid)
 {
-	$('form#editMemberForm')[0].reset();
-  $('#editMember').modal('show');
 	webpaige.con(
 		options = {
 			path: '/node/'+uuid+'/resource',
@@ -331,12 +334,75 @@ function editMemberModalInit(uuid)
 		},
 		function(data, label)
 	  {  
+			$('form#editMemberForm')[0].reset();
+  		$('#editMember').modal('show');
   		$('#editMember #name').val(data.name);	
   		$('#editMember #tel').val(data.PhoneAddress);	
-  		$('#editMember #email').val(data.uuid);	
+  		$('#editMember #email').val(data.EmailAddress);	
+  		$('#editMember #address').val(data.PostAddress);	
+  		$('#editMember #postcode').val(data.PostZip);	
+  		$('#editMember #city').val(data.PostCity);	
+  		$('#editMember #country').val(data.PostCountry);	
+  		$('#editMember #uuid').val(data.uuid);	
+  		$('#editMember #guuid').val(guuid);	
 		}
 	);	
 }
+
+
+
+function editMember()
+{
+	$('#editMember').modal('hide');
+	var name = $('#editMember #name').val();	
+	var tel = $('#editMember #tel').val();	
+	var email = $('#editMember #email').val();
+	var address = $('#editMember #address').val();
+	var postcode = $('#editMember #postcode').val();
+	var city = $('#editMember #city').val();
+	var country = $('#editMember #country').val();
+	var uuid = $('#editMember #uuid').val();
+	var guuid = $('#editMember #guuid').val();
+  	
+  var tags = '{' +
+  	'"name":"' + name + '", ' +
+  	'"PhoneAddress":"' + tel + '", ' +
+  	'"EmailAddress":"' + email + '", ' +
+  	'"PostAddress":"' + address + '", ' +
+  	'"PostZip":"' + postcode + '", ' +
+  	'"PostCity":"' + city + '", ' +
+  	'"PostCountry":"' + country + '"' +
+  	'}';
+		
+	webpaige.con(
+		options = {
+			type: 'put',
+			path: '/node/'+uuid+'/resource',
+			json: tags,
+			loading: 'Saving member information..',
+			message: 'Member information is updated.',
+			label: 'member'
+			,session: session.getSession()	
+		},
+		function(data, label)
+	  { 
+			// get group name for displaying later
+			webpaige.con(
+				options = {
+					path: '/network/'+guuid,
+					loading: 'Loading members..',
+					label: 'members'
+					,session: session.getSession()	
+				},
+				function(data, label)
+			  {
+	  			loadGroups(guuid, data.name); 
+			  }
+			);
+		}
+	);	
+}
+
 
 
 function removeMembers(uuid)
@@ -465,7 +531,7 @@ function renderMembers(json, name, uuid)
     {
     	var tbodytr = $('<tr></tr>');
 			tbodytr.append('<td><input type="checkbox" class="checkbox" value="'+data[n].uuid+'" /></td>');
-			tbodytr.append('<td><a onclick="editMemberModalInit(\''+data[n].uuid+'\');">'+data[n].name+'</a></td>');
+			tbodytr.append('<td><a onclick="editMemberModalInit(\''+uuid+'\', \''+data[n].uuid+'\');">'+data[n].name+'</a></td>');
 			tbodytr.append('<td>'+data[n].resources.EmailAddress+'</td>');
 			tbodytr.append('<td>'+data[n].resources.PhoneAddress+'</td>');
 			tbodytr.append('<td><a class="btn btn-mini" onclick="removeMember(\''+uuid+'\', \''+data[n].uuid+'\');"><i class="icon-trash"></i></a></td>');
