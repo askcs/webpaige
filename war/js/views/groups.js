@@ -25,6 +25,11 @@ $(document).ready(function()
   {
   	addGroup();
   });
+
+	$('#saveNewMember').click(function()
+  {
+  	saveNewMember();
+  });
 	
 
   $('#editGroupSubmitter').click(function()
@@ -61,20 +66,9 @@ function loadGroups(uuid, name)
 		},
 		function(data, label)
 	  {  
-			//local.set(label, data);
-    	//console.log(data, uuid, name);
     	renderGroups(data, uuid, name);
 		}
 	);
-	
-	
-	/*
-	webpaige.con('get', '/network', null, 'Loading groups..', null,
-	function(data)
-  {
-    renderGroups(data, uuid, name);
-	});
-	*/
 	/*
 	var cache = ASKCache("getGroups",'/network',null, 'uuid', session);
 	cache.addRenderer('group.html',function(json, oldData, data){
@@ -89,11 +83,8 @@ function addGroup()
   $('#newGroup').modal('hide');
   var name = $('#newGroupName').val();
   $('#newGroupForm')[0].reset();
-  
   var resources = JSON.parse(localStorage.getItem('resources')); 	
-	
   var body = '{"name": "' + name + '"}';	
-  
 	webpaige.con(
 		options = {
 			type: 'post',
@@ -114,10 +105,7 @@ function addGroup()
 
 function updateGroup(name, uuid)
 {
-  
-  //var resources = JSON.parse(localStorage.getItem('resources')); 	
   var body = '{"name": "' + name + '"}';	
-  
 	webpaige.con(
 		options = {
 			type: 'put',
@@ -133,14 +121,6 @@ function updateGroup(name, uuid)
     	loadGroups(uuid, name);
 		}
 	);
-	
-/*
-	webpaige.con('put', '/network/'+uuid, json, 'Updating group', 'Group updated.',
-	function(data)
-  {
-    loadGroups(uuid, name);
-	});
-*/
 }
 
 
@@ -168,30 +148,11 @@ function deleteGroup(uuid)
 	  	loadGroups();
 		}
 	);
-	
-	/*
-	webpaige.con('delete', '/network/'+uuid, null, 'Deleting group..', 'Group deleted',
-	function(data)
-  {
-	  loadGroups();
-	});
-	*/
 }
 
 
 function searchMembers(value)
 {
-	/*
-  var json = '{"key":"' + value + '"}';
-	webpaige.con('post', '/network/searchPaigeUser', json, 'Searching members..', null,
-	function(data)
-  {
-		renderSearch(data);
-  	renderAddGroupsList(window.groups);
-	});
-	*/
-	
-	
   var body = '{"key":"' + value + '"}';
 	webpaige.con(
 		options = {
@@ -223,7 +184,6 @@ function loadMembers(name, uuid)
 		function(data, label)
 	  {  
   		$('#live').remove();
-	  	//console.log(data, name, uuid);
 	  	renderMembers(data, name, uuid);
 		}
 	);
@@ -237,7 +197,6 @@ function addMembers()
   {
 	  if (this.value != 'on')
 	  {
-	  
 			webpaige.con(
 				options = {
 					type: 'post',
@@ -251,15 +210,6 @@ function addMembers()
 		  		loadGroups(uuid);
 				}
 			); 
-	
-			/*
-			webpaige.con('post', '/network/'+uuid+'/members/'+this.value, null, 'Adding member(s)..', 'Member(s) added',
-			function(data)
-		  {
-		  	loadGroups();
-		  });
-			*/
-		  
 	  }
 	}).get();
 }
@@ -269,6 +219,123 @@ function addNewMemberToGroup(name, uuid)
 {
 	$('#newMember').modal('show');
 	$('#newMember h3').html('New member (' + name + ')');
+	$('#newMember #guuid').val(uuid);
+}
+
+
+function saveNewMember()
+{
+	$('#newMember').modal('hide');
+	var fname = $('#newMember #fname').val();
+	var lname = $('#newMember #lname').val();
+	var name = fname + ' ' + lname;
+	var tel = $('#newMember #tel').val();
+	var uuid = $('#newMember #email').val();
+	var pass = $('#newMember #pass').val();
+	var guuid = $('#newMember #guuid').val();
+	
+	// get group name for displaying later
+	webpaige.con(
+		options = {
+			path: '/network/'+guuid,
+			loading: 'Loading members..',
+			label: 'members'
+			,session: session.getSession()	
+		},
+		function(data, label)
+	  {
+	  	var data = JSON.parse(data);  
+  		var gname = data.name;
+  		
+  		// register user in ask
+			webpaige.con(
+				options = {
+					path: '/register?uuid=' + uuid + '&pass=' + MD5(pass) + '&name=' + name + '&phone=' + tel + '&direct=true&module=default',
+					loading: 'Registering new user..',
+					label: 'New member'
+					,session: session.getSession()	
+				},
+				function(data, label)
+			  {
+			    // add user to the group
+					webpaige.con(
+						options = {
+							type: 'post',
+							path: '/network/'+guuid+'/members/'+uuid,
+							loading: 'Adding member to the group..',
+							label: 'Member added to the group'
+							,session: session.getSession()	
+						},
+						function(data, label)
+					  {  
+				  		loadGroups(guuid, gname);
+	
+							var body = {};
+							var user = {};
+							user.email = uuid;
+							user.username = uuid;
+							user.name = fname;
+							user.surname = lname;
+							user.mobile = tel;
+							user.password = MD5(pass);
+							
+							body.user = user;
+							
+							var body = JSON.stringify(body);
+							
+							var sense = JSON.parse(webpaige.get('sense'));
+							
+				  		// register user in sense environment
+							webpaige.con(
+								options = {
+									host: 'http://api.sense-os.nl',
+									path: '/users.json',
+									type: 'post',
+									json: body,
+									loading: 'Registering user in Sense environment..',
+									message: 'User registered in Sense.',
+									//session: sense.session,
+									session: null,
+									credentials: false,
+									label: 'Sense account'
+								},
+								function(data, label)
+							  {
+							  	console.log('Sense registration is successful..');  
+								}
+							);
+							
+						}
+					);
+					
+				}
+			);
+	
+		}
+	);
+	
+}
+
+
+function editMemberModalInit(uuid)
+{
+	$('form#editMemberForm')[0].reset();
+  $('#editMember').modal('show');
+	webpaige.con(
+		options = {
+			path: '/node/'+uuid+'/resource',
+			loading: 'Getting resources of the member..',
+			message: 'Resources are obtained.',
+			label: 'resource'
+			,session: session.getSession()	
+		},
+		function(data, label)
+	  {  
+  		$('#editMember #name').val(data.name);	
+  		$('#editMember #tel').val(data.PhoneAddress);	
+  		$('#editMember #email').val(data.uuid);	
+		}
+	);	
 }
 
 
@@ -287,11 +354,19 @@ function removeMembers(uuid)
 
 function removeMember(uuid, memberUuid)
 {
-	webpaige.con('delete', '/network/'+uuid+'/members/'+memberUuid, null, 'Removing member(s)..', 'Member(s) removed',
-	function(data)
-  {
-  	loadGroups(uuid, name);
-	});
+	webpaige.con(
+		options = {
+			type: 'delete',
+			path: '/network/'+uuid+'/members/'+memberUuid,
+			loading: 'Removing member(s)..',
+			label: 'Member(s) removed.'
+			,session: session.getSession()	
+		},
+		function(data, label)
+	  {  
+  		loadGroups(uuid, name);
+		}
+	);
 }
 
 	
@@ -390,7 +465,7 @@ function renderMembers(json, name, uuid)
     {
     	var tbodytr = $('<tr></tr>');
 			tbodytr.append('<td><input type="checkbox" class="checkbox" value="'+data[n].uuid+'" /></td>');
-			tbodytr.append('<td>'+data[n].name+'</td>');
+			tbodytr.append('<td><a onclick="editMemberModalInit(\''+data[n].uuid+'\');">'+data[n].name+'</a></td>');
 			tbodytr.append('<td>'+data[n].resources.EmailAddress+'</td>');
 			tbodytr.append('<td>'+data[n].resources.PhoneAddress+'</td>');
 			tbodytr.append('<td><a class="btn btn-mini" onclick="removeMember(\''+uuid+'\', \''+data[n].uuid+'\');"><i class="icon-trash"></i></a></td>');

@@ -1,6 +1,8 @@
 function loginAsk (user, pass, r)
 {
 	webpaige.set('config', '{}');
+	
+	// logging in ask
 	webpaige.con(
 		options = {
 			path: '/login?uuid=' + user + '&pass=' + MD5(pass),
@@ -21,6 +23,8 @@ function loginAsk (user, pass, r)
       }
       session.setSession(data["X-SESSION_ID"]);
       document.cookie = "sessionId=" + session;
+      
+      // loading resources
 			webpaige.con(
 				options = {
 					path: '/resources',
@@ -31,7 +35,31 @@ function loginAsk (user, pass, r)
 				function(data, label)
 			  {  	
 					webpaige.set(label, JSON.stringify(data));
-					document.location = "dashboard.html";
+					
+					// logging in Sense
+					var sense = {};
+					
+					webpaige.con(
+						options = {
+							host: 'http://api.sense-os.nl',
+							path: '/login?username=' + user + '&password=' + MD5(pass),
+							type: 'post',
+							credentials: false,
+							loading: 'Logging Sense OS..',
+							label: 'sense'
+							,session: session.getSession()	
+						},
+						function(data, label)
+					  {  
+				      sense.session = data["session_id"];
+				      webpaige.set('sense', JSON.stringify(sense));
+				      
+				      // finally redirect
+							document.location = "dashboard.html";
+						}
+					);
+ 	
+ 	
 				}
 			);
 		}

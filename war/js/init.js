@@ -183,7 +183,10 @@ webpaige.prototype.con = function(options, callback)
     beforeSend: function(xhr)
     {
     	w.stats(options.loading);
-      xhr.setRequestHeader('X-SESSION_ID', options.session);
+    	if (options.session != null)
+    	{
+      	xhr.setRequestHeader('X-SESSION_ID', options.session);
+    	}
       return true;
     },
     contentType: 'application/json',

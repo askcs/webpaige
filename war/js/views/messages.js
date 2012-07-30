@@ -339,7 +339,7 @@ function loadMessages(type)
 		function(data, label)
 	  {  
 	  	// needing this for replying messages 
-	  	localStorage.setItem("messages", data); 
+	  	localStorage.setItem("messages", JSON.stringify(data)); 
 	  		
 	  	var filtered = [];
 			/*
@@ -347,7 +347,7 @@ function loadMessages(type)
 	  	var uniques = [];
 			*/
 	  	
-	  	var data = data ? JSON.parse(data) : undefined;
+	  	//var data = data ? JSON.parse(data) : undefined;
 			
 			data.reverse(
 				data.sort(
@@ -512,7 +512,7 @@ function renderMessages(data, type)
     
     if (type == 'trash')
     {
-    	tbody.append('<tr><td colspan="6"><a class="btn btn-danger" onclick="emptyTrash();"><i class="icon-trash icon-white"></i> Empty trash</a></td></tr>');
+    	tbody.append('<tr><td colspan="6"><a class="btn btn-danger" onclick="emptyTrash();"><i class="icon-trash icon-white"></i> Delete permanently</a></td></tr>');
     }
     else
     {
