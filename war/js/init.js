@@ -89,6 +89,7 @@ function pageInit(active, logged)
 
 
 
+var session = new ask.session();
 
 
 

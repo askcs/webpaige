@@ -2,6 +2,8 @@ $(document).ready(function()
 {
  	pageInit('dashboard', 'true');
   
+  renderGroupsList();
+  
   $('#planningFrom').datetimepicker();
   $('#planningTill').datetimepicker();
   $('#eplanningFrom').datetimepicker();
@@ -18,6 +20,8 @@ $(document).ready(function()
   
   timelineInit();
   //groupTimelineInit();
+  
+  //getGroupSlots();
   
   $('#groupAvBtn').addClass('active');
   
@@ -214,7 +218,7 @@ function groupTimelineInit()
 {
   timeline_data2 = [];
   var options = {};
-  timeline2 = new links.Timeline(document.getElementById('grouptimeline'));
+  timeline2 = new links.Timeline(document.getElementById('memberTimeline'));
   
   google.visualization.events.addListener(timeline2, 'rangechange', onRangeChanged2);
   
@@ -230,19 +234,7 @@ function groupTimelineInit()
   
   onRangeChanged1();
   
-  renderGroupsList();
-  
   getGroupSlots();
-}
-
-
-function renderGroupsList()
-{
-	var groups = JSON.parse(webpaige.get('groups'));
-  for(var i in groups)
-  {		    
-  	$('#groupsList').append('<option value="'+groups[i].uuid+'">'+groups[i].name+'</option>');
-  }
 }
 
 
@@ -498,9 +490,10 @@ function updateSlot(oldSlot, newSlot)
 function getSlots()
 {
   var now = parseInt((new Date()).getTime() / 1000);
-	var resources = JSON.parse(webpaige.get('resources'));
   var range =	'start=' + (now - 86400 * 7 * 4 * 1) + 
-  						'&end=' + (now + 86400 * 7 * 4 * 1);  
+  						'&end=' + (now + 86400 * 7 * 4 * 1);
+
+	var resources = JSON.parse(webpaige.get('resources'));					
 	webpaige.con(
 		options = {
 			path: '/askatars/'+resources.uuid+'/slots?'+range,
@@ -527,12 +520,14 @@ function getSlots()
 			  	content, 
 			  	slots[i].recursive ? 'Re-occuring' : 'Plan'
 			  ]);
-			}     
+			}   
 		        
-			var options = {};
-			timeline.draw(timeline_data, options);
+			//var options = {};
+			timeline.draw(timeline_data, options); 
+		
 		}
 	); 
+	
 }
 
 
@@ -544,14 +539,16 @@ function getGroupSlots()
   						'&end=' + (now + 86400 * 7 * 4 * 1);  
 	webpaige.con(
 		options = {
-			path: '/askatars/'+resources.uuid+'/slots?'+range,
-			loading: 'Getting slots..',
+			path: '/parent/availability?'+range,
+			loading: 'Getting parent group slots..',
 			label: 'slots'
 			,session: session.getSession()	
 		},
 		function(data, label)
 	  {
-	  	var slots = JSON.parse(data);
+	  	//var slots = JSON.parse(data);
+	  	
+	  	//console.log('group slots: ', data);
 	  	
 			timeline_data2 = new google.visualization.DataTable();
 			
@@ -758,6 +755,16 @@ function timeline_helper_html2state(content)
 
 
 
+
+
+
+
+
+
+
+
+
+
 var timeline3;
 
 
@@ -807,6 +814,8 @@ function drawVisualization3() {
       var height = Math.round(num / maxNum * 80 + 20); // a percentage, with a lower bound on 20%
       
       var minHeight = height;
+              
+      //var wisher = '<div class="wisher" style="height:10px; width:10px; position:absolute; bottom:0px; background-color:black;"></div>';
       
       var style = 'height:' + height + 'px;';
       var requirement = '<div class="requirement" style="' + style + '" ' +
@@ -816,7 +825,9 @@ function drawVisualization3() {
       num = Math.round(Math.random() * maxNum);    // number of members available
       height = Math.round(num / maxNum * 70 + 20); // a percentage, with a lower bound on 20%
       
+      
       var color = (height < minHeight) ? 'red' : 'green';
+      
       
       var hue = Math.min(Math.max(height, 20), 80) * 1.2; // hue between 0 (red) and 120 (green)
       
@@ -829,11 +840,13 @@ function drawVisualization3() {
               'border-top: 2px solid ' + borderColor + ';';
       var actual = '<div class="bar" style="' + style + '" ' +
               ' title="Actual: ' + num + ' people">' + num + '</div>';
+              
+              
       var item = {
           'group': 'Team',
           'start': start,
           'end': end,
-          'content': requirement + actual
+          'content': requirement + actual //+ wisher
       };
       data.push(item);
 
@@ -862,4 +875,55 @@ function drawVisualization3() {
 }
         
         
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function renderGroupsList()
+{
+	webpaige.con(
+		options = {
+			path: '/network',
+			loading: 'Loading groups..',
+			label: 'groups'
+			,session: session.getSession()	
+		},
+		function(data, label)
+	  { 
+		  for(var i in data)
+		  {		    
+		  	$('#groupsList').append('<option value="'+data[i].uuid+'">'+data[i].name+'</option>');
+		  }
+		}
+	);
+}
+
+
+
+function loadGroupsList()
+{
+	webpaige.con(
+		options = {
+			path: '/network',
+			loading: 'Loading groups..',
+			label: 'groups'
+			,session: session.getSession()	
+		},
+		function(data, label)
+	  {  
+    	window.groups = data;
+		}
+	);
+}

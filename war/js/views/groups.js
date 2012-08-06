@@ -1,3 +1,31 @@
+/*
+(function(){
+	//'use strict';
+
+	window.addEventListener( 'load', windowInit, false );
+	
+	function windowInit()
+	{
+	 	pageInit('groups', 'true');
+	 	loadGroups();
+	  addEventListeners();		
+	}
+
+	function addEventListeners()
+	{
+		document.getElementById('alertClose').addEventListener('click', closeAlerts, false);
+		document.getElementById('updateProfileTrigger').addEventListener('click', updateProfile, false);
+	}
+	
+	function closeAlerts()
+	{
+		$("#alertDiv").hide();		
+	}
+	
+})();
+*/
+
+
 $(document).ready(function()
 {
  	pageInit('groups', 'true');

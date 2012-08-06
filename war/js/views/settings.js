@@ -1,7 +1,11 @@
-$(document).ready(function()
-{
- 	pageInit('settings', 'true');
-});
+(function(){
+	//'use strict';
 
-
-var session = new ask.session();
+	window.addEventListener( 'load', windowInit, false );
+	
+	function windowInit()
+	{
+	 	pageInit('settings', 'true');	
+	}
+	
+})();
