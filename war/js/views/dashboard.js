@@ -19,18 +19,32 @@ $(document).ready(function()
   });
   
   timelineInit();
-  //groupTimelineInit();
   
-  //getGroupSlots();
+  var guuid = webpaige.config('firstGroup');
+  groupTimelineInit(guuid);  
+  membersTimelineInit(guuid);
   
   $('#groupAvBtn').addClass('active');
+  
+  $("#groupsList").change(function()
+  {
+		var guuid = $(this).find(":selected").val();
+	  groupTimelineInit(guuid);  
+	  membersTimelineInit(guuid);
+	});
   
 });
 
 	
 var session = new ask.session();
+var timeline;
+var timeline2;
+var timeline3;
+var timeline_selected = null;
 
 
+
+// Submitters
 function planSubmit()
 {
   $('#newEvent').modal('hide');
@@ -51,7 +65,6 @@ function planSubmit()
   
   $('#newEventForm')[0].reset();
 }
-
 
 function editPlanSubmit()
 {
@@ -83,7 +96,6 @@ function editPlanSubmit()
   $('#editEventForm')[0].reset();
 }
 
-
 function deletePlanSubmit()
 {
   $('#editEvent').modal('hide');
@@ -92,6 +104,9 @@ function deletePlanSubmit()
 }
 
 
+
+
+// Loaders
 function loadGroupAvs()
 {
 	$('#groupAvBtn').addClass('active');
@@ -100,7 +115,6 @@ function loadGroupAvs()
 	
 	getGroupSlots();
 }
-
 
 function loadMemberAvs()
 {	
@@ -111,7 +125,6 @@ function loadMemberAvs()
 	var uuid = $('#groupsList option:selected').val();
 	getMemberSlots(uuid);
 }
-
 
 function loadCurrentAvs()
 {
@@ -124,53 +137,9 @@ function loadCurrentAvs()
 }
 
 
-var timeline;
-var timeline2;
 
 
-function timelineZoomIn()
-{
-  links.Timeline.preventDefault(event);
-  links.Timeline.stopPropagation(event);
-  timeline.zoom(0.4);
-  timeline.trigger("rangechange");
-  timeline.trigger("rangechanged");
-}
-
-
-
-function timelineZoomOut()
-{
-  links.Timeline.preventDefault(event);
-  links.Timeline.stopPropagation(event);
-  timeline.zoom(-0.4);
-  timeline.trigger("rangechange");
-  timeline.trigger("rangechanged");
-}
-
-
-
-function timelineMoveLeft()
-{
-  links.Timeline.preventDefault(event);
-  links.Timeline.stopPropagation(event);
-  timeline.move(-0.2);
-  timeline.trigger("rangechange");
-  timeline.trigger("rangechanged");
-}
-
-
-
-function timelineMoveRight()
-{
-  links.Timeline.preventDefault(event);
-  links.Timeline.stopPropagation(event);
-  timeline.move(0.2);
-  timeline.trigger("rangechange");
-  timeline.trigger("rangechanged");
-}
-
-
+// Timneline initators
 function timelineInit()
 {
   timeline_data = [];
@@ -186,7 +155,7 @@ function timelineInit()
   google.visualization.events.addListener(timeline, 'select', timelineOnSelect);
   google.visualization.events.addListener(timeline, 'rangechange', onRangeChanged1);
   
-  timeline.setVisibleChartRange( new Date(2012,05,10),new Date(2012,05,20) ); 
+  //timeline.setVisibleChartRange( new Date(2012,05,10),new Date(2012,05,20) ); 
   
   var lab = new Object();
   lab.start = new Date(0);
@@ -199,25 +168,13 @@ function timelineInit()
   getSlots();
 }
 
-
-function onRangeChanged1() 
+function groupTimelineInit(guuid)
 {
-  var range = timeline.getVisibleChartRange();
-  timeline3.setVisibleChartRange(range.start, range.end);
-}
-    
-      
-function onRangeChanged2() 
-{
-  var range = timeline3.getVisibleChartRange();
-  timeline.setVisibleChartRange(range.start, range.end);
-}
-
-
-function groupTimelineInit()
-{
+/*
   timeline_data2 = [];
-  var options = {};
+  var options = {
+  	'groupsWidth': '100px'
+  };
   timeline2 = new links.Timeline(document.getElementById('memberTimeline'));
   
   google.visualization.events.addListener(timeline2, 'rangechange', onRangeChanged2);
@@ -235,8 +192,161 @@ function groupTimelineInit()
   onRangeChanged1();
   
   getGroupSlots();
+*/
+  
+  
+  
+  
+  
+  // Create and populate a data table.
+/*
+  var data = [];
+
+  var maxNum = 20;
+  var d = new Date(2012, 7, 0);
+  
+  for (var i = 0; i < 20; i++) {
+      var hours = Math.round(1 + Math.random() * 7);
+      var start = new Date(d);
+      var end = new Date(d);
+      end.setHours(end.getHours() + hours);
+
+      // create item with minimum requirement
+      var num = Math.round(Math.random() * maxNum);    // number of members available
+      var height = Math.round(num / maxNum * 80 + 20); // a percentage, with a lower bound on 20%
+      
+      var minHeight = height;
+              
+      //var wisher = '<div class="wisher" style="height:10px; width:10px; position:absolute; bottom:0px; background-color:black;"></div>';
+      
+      var style = 'height:' + height + 'px;';
+      var requirement = '<div class="requirement" style="' + style + '" ' +
+              'title="Minimum requirement: ' + num + ' people"></div>';
+
+      // create item with actual number
+      num = Math.round(Math.random() * maxNum);    // number of members available
+      height = Math.round(num / maxNum * 70 + 20); // a percentage, with a lower bound on 20%
+      
+      
+      var color = (height < minHeight) ? 'red' : 'green';
+      
+      
+      var hue = Math.min(Math.max(height, 20), 80) * 1.2; // hue between 0 (red) and 120 (green)
+      
+      // var color = hsv2rgb(hue, 0.75, 0.95);
+      
+      var borderColor = 'black';
+      //var borderColor = hsv2rgb(hue, 0.9, 0.9);
+      style = 'height:' + height + 'px;' +
+              'background-color: ' + color + ';' +
+              'border-top: 2px solid ' + borderColor + ';';
+      var actual = '<div class="bar" style="' + style + '" ' +
+              ' title="Actual: ' + num + ' people">' + num + '</div>';
+              
+              
+      var item = {
+          'group': 'Team',
+          'start': start,
+          'end': end,
+          'content': requirement + actual //+ wisher
+      };
+      data.push(item);
+
+      d = new Date(end);
+  }
+
+  // specify options
+  var options = {
+      "width":  "100%",
+      "height": 'auto',
+      "style": "box",
+      'selectable': false,
+      'editable': false,
+      'groupsWidth': '100px',
+      'eventMarginAxis': 0
+  };
+
+  // Instantiate our timeline object.
+  timeline2 = new links.Timeline(document.getElementById('groupTimeline'));
+  google.visualization.events.addListener(timeline2, 'rangechange', onRangeChanged2);
+  
+  timeline2.setVisibleChartRange( new Date(2012,05,10),new Date(2012,05,20) ); 
+
+  // Draw our timeline with the created data and options
+  timeline2.draw(data, options);
+*/
+  
+  getGroupSlots(guuid);
+  
+  
+  
+  
+  
 }
 
+function membersTimelineInit(uuid)
+{
+  timeline_data3 = [];
+  var options = {
+  	'groupsWidth': '100px'
+  };
+  timeline3 = new links.Timeline(document.getElementById('memberTimeline'));
+  google.visualization.events.addListener(timeline3, 'rangechange', onRangeChanged3);
+  
+  //timeline3.setVisibleChartRange( new Date(2012,05,10),new Date(2012,05,20) );
+  
+  var lab = new Object();
+  lab.start = new Date(0);
+  lab.content = '';
+  lab.group = '<div>Plan</div>';
+  timeline3.addItem(lab);
+  timeline3.addGroup("<div>Plan</div>");
+  timeline3.draw(timeline_data3, options);
+  
+  //onRangeChanged1();
+  
+  
+  getMemberSlots(uuid);
+  
+}
+
+
+
+
+
+
+
+function onRangeChanged1() 
+{
+  var range = timeline.getVisibleChartRange();
+  timeline2.setVisibleChartRange(range.start, range.end);
+ timeline3.setVisibleChartRange(range.start, range.end);
+}   
+      
+function onRangeChanged2() 
+{
+  var range = timeline2.getVisibleChartRange();
+  timeline.setVisibleChartRange(range.start, range.end);
+  timeline3.setVisibleChartRange(range.start, range.end);
+} 
+      
+function onRangeChanged3() 
+{
+  var range = timeline3.getVisibleChartRange();
+  timeline.setVisibleChartRange(range.start, range.end);
+  timeline2.setVisibleChartRange(range.start, range.end);
+}
+
+
+
+
+
+
+
+// Timeline events
+function timelineOnAdd()
+{
+}
 
 function timelineOnEdit()
 {
@@ -244,58 +354,11 @@ function timelineOnEdit()
   var row = sel[0].row;
   var curItem = timeline.getItem(row);
   var content = timeline_data.getValue(row, 2);
+  
+  //console.log(timeline_helper_html2state(content));
+  
   editSlotModal(curItem.start, curItem.end, curItem.group, timeline_helper_html2state(content));
 }
-
-
-function editSlotModal(efrom, etill, ereoc, evalue)
-{
-  var eoldSlotValue;
-  var eoldRecursive;
-  var eoldSlotFrom;
-  var eoldSlotTill;
-  $('#editEvent').modal('show');
-  if (evalue == 'available')
-  {
-    $('input#eplanningType')[0].checked = true;
-  	eoldSlotValue = 'available';
-  }
-  else if (evalue == 'unavailable')
-  {
-    $('input#eplanningType')[1].checked = true;
-  	eoldSlotValue = 'unavailable';
-  }
-  efrom = new Date(efrom.getTime());
-  eoldSlotFrom = Math.round(efrom/1000);
-  efrom = efrom.toString("dd-MMM-yyyy HH:mm");
-  $('#eplanningFrom').val(efrom);
-  etill = new Date(etill.getTime());
-  eoldSlotTill = Math.round(etill/1000);
-  etill = etill.toString("dd-MMM-yyyy HH:mm");
-  $('#eplanningTill').val(etill);
-  if (ereoc == 'Re-occuring')
-  {
-    $('input#eplanningReoccuring')[0].checked = true;
-    eoldRecursive = true;
-  }
-  else if (ereoc == 'Plan')
-  {
-    $('input#eplanningReoccuring')[0].checked = false;
-    eoldRecursive = false;
-  }
-	window.oldslot = {
-		from: eoldSlotFrom,
-		till: eoldSlotTill,
-		reoc: eoldRecursive,
-		type: eoldSlotValue
-	};
-}
-
-
-function timelineOnAdd()
-{
-}
-
 
 function timelineOnDelete()
 {
@@ -306,17 +369,12 @@ function timelineOnDelete()
   timeline.cancelDelete();
 }
 
-
-var timeline_selected = null;
-
-
 function timelineOnSelect()
 {
   var sel = timeline.getSelection();
   var row = sel[0].row;
   timeline_selected = timeline.getItem(row);
 }
-
 
 function timelineOnChange()
 {
@@ -327,6 +385,9 @@ function timelineOnChange()
 }
 
 
+
+
+// Timeline CRUD's
 function addSlot(from, till, reoc, value)
 {
 	var resources = JSON.parse(webpaige.get('resources'));
@@ -348,7 +409,6 @@ function addSlot(from, till, reoc, value)
 		}
 	); 
 }
-
 
 function deleteSlot(from, till, reoc, value)
 {
@@ -375,7 +435,6 @@ function deleteSlot(from, till, reoc, value)
 	); 
 }
 
-
 function deleteSlotModal(from, till, reoc, value)
 {
 	var resources = JSON.parse(webpaige.get('resources'));
@@ -399,7 +458,6 @@ function deleteSlotModal(from, till, reoc, value)
 		}
 	); 
 }
-
 
 function updateSlotModal()
 {
@@ -444,7 +502,6 @@ function updateSlotModal()
 	}
 }
 
-
 function updateSlot(oldSlot, newSlot)
 {
 	var endof = Math.round(oldSlot.end / 1000);
@@ -486,7 +543,56 @@ function updateSlot(oldSlot, newSlot)
 	}
 }
 
+function editSlotModal(efrom, etill, ereoc, evalue)
+{
+  var eoldSlotValue;
+  var eoldRecursive;
+  var eoldSlotFrom;
+  var eoldSlotTill;
+  
+  $('#editEvent').modal('show');
+  
+  if (evalue == 'ask.state.1')
+  {
+    $('input#eplanningType')[0].checked = true;
+  	eoldSlotValue = 'available';
+  }
+  else if (evalue == 'ask.state.2')
+  {
+    $('input#eplanningType')[1].checked = true;
+  	eoldSlotValue = 'unavailable';
+  }
+  
+  efrom = new Date(efrom.getTime());
+  eoldSlotFrom = Math.round(efrom/1000);
+  efrom = efrom.toString("dd-MMM-yyyy HH:mm");
+  $('#eplanningFrom').val(efrom);
+  etill = new Date(etill.getTime());
+  eoldSlotTill = Math.round(etill/1000);
+  etill = etill.toString("dd-MMM-yyyy HH:mm");
+  $('#eplanningTill').val(etill);
+  if (ereoc == 'Re-occuring')
+  {
+    $('input#eplanningReoccuring')[0].checked = true;
+    eoldRecursive = true;
+  }
+  else if (ereoc == 'Plan')
+  {
+    $('input#eplanningReoccuring')[0].checked = false;
+    eoldRecursive = false;
+  }
+	window.oldslot = {
+		from: eoldSlotFrom,
+		till: eoldSlotTill,
+		reoc: eoldRecursive,
+		type: eoldSlotValue
+	};
+}
 
+
+
+
+// Timeline slots
 function getSlots()
 {
   var now = parseInt((new Date()).getTime() / 1000);
@@ -514,6 +620,9 @@ function getSlots()
 			for (var i in slots)
 			{
 			  var content = colorState(slots[i].text);
+			  
+			  // console.log('content :', content);
+			  
 			  timeline_data.addRow([
 			  	new Date(slots[i].start * 1000), 
 			  	new Date(slots[i].end * 1000), 
@@ -530,17 +639,20 @@ function getSlots()
 	
 }
 
-
-function getGroupSlots()
+function getGroupSlots(guuid)
 {
   var now = parseInt((new Date()).getTime() / 1000);
 	var resources = JSON.parse(webpaige.get('resources'));
   var range =	'start=' + (now - 86400 * 7 * 4 * 1) + 
   						'&end=' + (now + 86400 * 7 * 4 * 1);  
+  						
+  // console.log('/calc_planning/'+guuid+'?'+range);						
+  						
 	webpaige.con(
 		options = {
-			path: '/parent/availability?'+range,
-			loading: 'Getting parent group slots..',
+			path: '/calc_planning/'+guuid+'?'+range,
+			//path: '/parent/availability?'+range,
+			loading: 'Getting group aggregiated slots..',
 			label: 'slots'
 			,session: session.getSession()	
 		},
@@ -548,8 +660,134 @@ function getGroupSlots()
 	  {
 	  	//var slots = JSON.parse(data);
 	  	
-	  	//console.log('group slots: ', data);
+	  	// console.log('group aggregiated slots: ', data);
 	  	
+	  	var ndata = [];
+			
+			for (var i in data)
+			{
+				
+				
+				
+
+	      // create item with minimum requirement
+	      
+/*
+	      if (data[i].wish == 0)
+	      {
+	      	var maxNum = 0;
+	      	var num = 0;
+	      }
+	      else
+	      {
+*/
+	      	var maxNum = data[i].wish;
+	      	var num = data[i].wish + data[i].diff;
+/* 	      } */
+	      
+	      
+	      // console.log('num :', num);
+	      // console.log('maxNum :', maxNum);
+	      
+	      //var num = Math.round(Math.random() * maxNum);    // number of members available
+	      
+	      
+	      if (maxNum == 0)
+	      {
+		      var height = Math.round(num * 80 + 20); // a percentage, with a lower bound on 20% 
+	      }
+	      else
+	      {
+		      var height = Math.round(num / maxNum * 80 + 20); // a percentage, with a lower bound on 20%
+	      }
+	      
+	      // console.log('first height :', height);
+	      
+	      var minHeight = height;
+	              
+	      //var wisher = '<div class="wisher" style="height:10px; width:10px; position:absolute; bottom:0px; background-color:black;"></div>';
+	      
+	      var style = 'height:' + height + 'px;';
+	      var requirement = '<div class="requirement" style="' + style + '" ' +
+	              'title="Minimum requirement: ' + num + ' people"></div>';
+	
+	      // create item with actual number
+	      //num = Math.round(Math.random() * maxNum);    // number of members available
+	      
+	      if (maxNum == 0)
+	      {
+		      height = Math.round(num * 70 + 20); // a percentage, with a lower bound on 20% 
+	      }
+	      else
+	      {
+		      height = Math.round(num / maxNum * 70 + 20); // a percentage, with a lower bound on 20%
+	      }
+	      
+	      //height = Math.round(num / maxNum * 70 + 20); // a percentage, with a lower bound on 20%
+	      
+	      
+	      // console.log('second height :', height);
+	      
+	      if (height < minHeight)
+	      {
+	      	var color = 'red';
+	      }
+	      else if (height == minHeight)
+	      {
+		      var color = 'gray';
+	      }
+	      else if (height > minHeight)
+	      {
+		      var color = 'green';
+	      }
+	      
+	      
+	      // var hue = Math.min(Math.max(height, 20), 80) * 1.2; // hue between 0 (red) and 120 (green)
+	      
+	      // var color = hsv2rgb(hue, 0.75, 0.95);
+	      
+	      var borderColor = 'black';
+	      //var borderColor = hsv2rgb(hue, 0.9, 0.9);
+	      style = 'height:' + height + 'px;' +
+	              'background-color: ' + color + ';' +
+	              'border: 1px solid ' + borderColor + ';';
+	      var actual = '<div class="bar" style="' + style + '" ' +
+	              ' title="Actual: ' + num + ' people">' + num + '</div>';
+	              
+	              
+	      var item = {
+	          'group': 'Team',
+	          'start': Math.round(data[i].start * 1000),
+	          'end': Math.round(data[i].end * 1000),
+	          'content': requirement + actual //+ wisher
+	      };
+	      ndata.push(item);
+			}  
+	  	
+	  	
+	  	// console.log('new data :', ndata);
+
+		  // specify options
+		  var options = {
+		      "width":  "100%",
+		      "height": 'auto',
+		      "style": "box",
+		      'selectable': false,
+		      'editable': false,
+		      'groupsWidth': '100px',
+		      'eventMarginAxis': 0
+		  };
+		
+		  // Instantiate our timeline object.
+		  timeline2 = new links.Timeline(document.getElementById('groupTimeline'));
+		  google.visualization.events.addListener(timeline2, 'rangechange', onRangeChanged2);
+		  
+		  //timeline2.setVisibleChartRange( new Date(2012,05,10),new Date(2012,05,20) ); 
+		
+		  // Draw our timeline with the created data and options
+		  timeline2.draw(ndata, options);
+	  	
+/*
 			timeline_data2 = new google.visualization.DataTable();
 			
 			timeline_data2.addColumn('datetime', 'start');
@@ -577,10 +815,12 @@ function getGroupSlots()
 		  };
 		  
 			timeline2.draw(timeline_data2, options);
+*/
+			
+			
 		}
 	); 
 }
-
 
 function getMemberSlots(uuid)
 {
@@ -593,17 +833,18 @@ function getMemberSlots(uuid)
 		},
 		function(data, label)
 	  {  
-			timeline_data2 = new google.visualization.DataTable();
-			timeline_data2.addColumn('datetime', 'start');
-			timeline_data2.addColumn('datetime', 'end');
-			timeline_data2.addColumn('string', 'content');
-			timeline_data2.addColumn('string', 'groups');
+			timeline_data3 = new google.visualization.DataTable();
+			timeline_data3.addColumn('datetime', 'start');
+			timeline_data3.addColumn('datetime', 'end');
+			timeline_data3.addColumn('string', 'content');
+			timeline_data3.addColumn('string', 'groups');
 	  	var members = JSON.parse(data);
 	  	for (var i in members)
 	  	{
 				//renderMemberSlots(members[i].name, members[i].uuid);
 				renderMemberSlots(members[i]);
 	  	}
+	  	/*
 			var height = (members.length * 40) + 20;
 			height += 'px';
 			var options = {
@@ -614,11 +855,17 @@ function getMemberSlots(uuid)
 		    'groupChangeable': false,
       	'eventMarginAxis': 0
 		  };
-			timeline2.draw(timeline_data2, options);
+		  */
+			var options = {
+		    'selectable': false,
+		    'editable': false,
+		    'snapEvents': false,
+		    'groupChangeable': false
+		  };
+			timeline3.draw(timeline_data3, options);
 		}
 	);
 }
-
 
 function renderMemberSlots(member)
 {  
@@ -638,7 +885,7 @@ function renderMemberSlots(member)
 			for (var i in slots)
 			{
 			  var content = colorState(slots[i].text);
-				timeline2.addItem({
+				timeline3.addItem({
 					'start':new Date(slots[i].start * 1000),
 					'end':new Date(slots[i].end * 1000),
 					'content':content,
@@ -648,7 +895,6 @@ function renderMemberSlots(member)
 		}
 	);     
 }
-
 
 function getCurrentSlots(uuid)
 {
@@ -692,7 +938,6 @@ function getCurrentSlots(uuid)
 	);
 }
 
-
 function renderCurrentSlots(member)
 {
   var now = parseInt((new Date()).getTime() / 1000);
@@ -716,6 +961,9 @@ function renderCurrentSlots(member)
 }
 
 
+
+
+// Slot makeups
 function colorState(state)
 {
   var content = '?';
@@ -723,12 +971,11 @@ function colorState(state)
   if (state == 'unavailable') return '<div style="color:red">' + state + '</div>';
 }
 
-
 function timeline_helper_state2html(state)
 {
   var state_map = {
-	    'ask.state.13': ['nr13', 'red'],
-	    'ask.state.14': ['nr14', 'green']
+	    'ask.state.1': ['available', 'green'],
+	    'ask.state.2': ['unavailable', 'red']
 	 };
   var content = '?';
   if (state_map[state])
@@ -736,14 +983,16 @@ function timeline_helper_state2html(state)
   /* return "<div style='color:black;'>" + state + "</div>"; */
 }
 
-
 function timeline_helper_html2state(content)
 {
   var state_map = {
-	    'ask.state.13': ['nr13', 'red'],
-	    'ask.state.14': ['nr14', 'green']
+	    'ask.state.1': ['available', 'green'],
+	    'ask.state.2': ['unavailable', 'red']
 	 };
   var state = content.split('>')[1].split('<')[0];
+  
+  //console.log('content: ', content, state);
+  
   //reverse map search..
   for (var i in state_map)
   {
@@ -752,20 +1001,6 @@ function timeline_helper_html2state(content)
   return state;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-var timeline3;
 
 
 /**
@@ -873,24 +1108,11 @@ function drawVisualization3() {
   // Draw our timeline with the created data and options
   timeline3.draw(data, options);
 }
+    
+    
         
-        
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Group list producers
 function renderGroupsList()
 {
 	webpaige.con(
@@ -903,14 +1125,16 @@ function renderGroupsList()
 		function(data, label)
 	  { 
 		  for(var i in data)
-		  {		    
-		  	$('#groupsList').append('<option value="'+data[i].uuid+'">'+data[i].name+'</option>');
+		  {
+		  	(i == 0) ? webpaige.config('firstGroup', data[i].uuid) : null;	  	
+		  	
+		  	$('#groupsList').append('<option value="'+data[i].uuid+'">'+data[i].name+'</option>');		    
 		  }
 		}
 	);
+  
+	
 }
-
-
 
 function loadGroupsList()
 {
@@ -926,4 +1150,44 @@ function loadGroupsList()
     	window.groups = data;
 		}
 	);
+}
+
+
+
+
+// Timeline navigations
+function timelineZoomIn()
+{
+  links.Timeline.preventDefault(event);
+  links.Timeline.stopPropagation(event);
+  timeline.zoom(0.4);
+  timeline.trigger("rangechange");
+  timeline.trigger("rangechanged");
+}
+
+function timelineZoomOut()
+{
+  links.Timeline.preventDefault(event);
+  links.Timeline.stopPropagation(event);
+  timeline.zoom(-0.4);
+  timeline.trigger("rangechange");
+  timeline.trigger("rangechanged");
+}
+
+function timelineMoveLeft()
+{
+  links.Timeline.preventDefault(event);
+  links.Timeline.stopPropagation(event);
+  timeline.move(-0.2);
+  timeline.trigger("rangechange");
+  timeline.trigger("rangechanged");
+}
+
+function timelineMoveRight()
+{
+  links.Timeline.preventDefault(event);
+  links.Timeline.stopPropagation(event);
+  timeline.move(0.2);
+  timeline.trigger("rangechange");
+  timeline.trigger("rangechanged");
 }

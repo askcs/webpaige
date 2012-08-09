@@ -13,23 +13,23 @@
 	  #groupTimeline {
 	  	z-index:10;
 	  }
-	  #mytimelineHolder {
+	  #memberTimeline {
 	  	z-index: 20;
 	  	margin-top: -50px;
 	  }
-	  #groupTimeline div.timeline-event {
+	  #groupTimelineHolder div.timeline-event {
 	      border: none;
 	      background: none;
 	      border-radius: 0;
 	  }
-	  #groupTimeline div.timeline-event-selected {
+	  #groupTimelineHolder div.timeline-event-selected {
 	      border: none;
 	      background: none;
 	  }
-	  #groupTimeline div.timeline-event-content {
+	  #groupTimelineHolder div.timeline-event-content {
 	      margin: 0;
 	  }
-	  #groupTimeline div.timeline-event-range {
+	  #groupTimelineHolder div.timeline-event-range {
 	      border: none;
 	      border-radius: 0;
 	      height: 100px;
@@ -37,7 +37,7 @@
 	      position: relative;
 	      overflow: visible;
 	  }
-	  #groupTimeline div.bar {
+	  #groupTimelineHolder div.bar {
 	      position: absolute;
 	      bottom: 0;
 	      left: 0;
@@ -46,7 +46,7 @@
 	      color: white;
 	      /* height and color is set for each individual bar */
 	  }
-	  #groupTimeline div.requirement {
+	  #groupTimelineHolder div.requirement {
 	      position: absolute;
 	      bottom: 0;
 	      left: 0;
@@ -88,7 +88,7 @@
     
     
 </head>
-<body onload="drawVisualization3();">
+<body>
 	<div id="navbar"></div>
   <div class="container-fluid">       
   
@@ -123,15 +123,7 @@
         <div class="btn-group btn-hanging">
           <a class="btn" data-toggle="modal" href="#newEvent"><i class="icon-plus-sign"></i> New availability</a>
           <!-- <a class="btn" href="appointments.html"><i class="icon-calendar"></i> My appointments</a> -->
-        </div>
-        
-        <div class="btn-group btn-hanging">
-          <a onclick="loadGroupAvs();" id="groupAvBtn" class="btn">Group availability</a>
-          <a onclick="loadMemberAvs();" id="memberAvBtn" class="btn">Member availabilities</a>
-          <a onclick="loadCurrentAvs();" id="currentAvBtn" class="btn">Current statuses</a>
-        </div>
-        
-        <form class="form-inline btn-hanging" style="margin-bottom:0px;"><div class="control-group"><div class="controls docs-input-sizes"><select id="groupsList"></select></div></div></form>       
+        </div>      
         
         <div class="modal hide" id="newEvent">
           <div class="modal-header">
@@ -229,18 +221,51 @@
         </div>
         
         <h2><span class="entypo eMedium">P</span> Planboard</h2>
+        <hr>
         
-        <div id="membersTimelineHolder">
-        	<div id="memberTimeline"></div>
-        </div>
+        <div id="mytimeline"></div>
         
-        <div id="groupTimeline">
-        	<div id="groupTimelineGraph"></div>
+      </div><!--/span-->
+      
+    </div>  
+    <div class="row-fluid">
+    
+      <div class="span12 well">
+      
+        <div class="btn-group btn-hanging">
+          <a id="tmlZoomInBtn" class="btn" onClick="timelineZoomIn();"><i class="icon-zoom-in"></i></a>
+          <a id="tmlZoomOutBtn" class="btn" onClick="timelineZoomOut();"><i class="icon-zoom-out"></i></a>
+          <a id="tmlMoveLeftBtn" class="btn" onClick="timelineMoveLeft();"><i class="icon-arrow-left"></i></a>
+          <a id="tmlMoveRightBtn" class="btn" onClick="timelineMoveRight();"><i class="icon-arrow-right"></i></a> 
+          <a id="tmlTodayBtn" class="btn" onClick="timelineInit();">Today</a>  
         </div>
+        <!--
+        <div class="btn-group btn-hanging">
+          <a class="btn" data-toggle="modal" href="#newEvent"><i class="icon-plus-sign"></i> New availability</a>
+        </div>
+				-->     
+				<!--
+        <div class="btn-group btn-hanging">
+          <a onclick="loadGroupAvs();" id="groupAvBtn" class="btn">Group availability</a>
+          <a onclick="loadMemberAvs();" id="memberAvBtn" class="btn">Member availabilities</a>
+          <a onclick="loadCurrentAvs();" id="currentAvBtn" class="btn">Current statuses</a>
+        </div>
+        -->
+        <form class="form-inline btn-hanging" style="margin-bottom:0px;">
+        	<div class="control-group">
+        		<div class="controls docs-input-sizes">
+        			<select id="groupsList"></select>
+        		</div>
+        	</div>
+        </form>
+         
+        <h2><span class="entypo eMedium">P</span> Group Planboard</h2>
+        <hr>
         
-        <div id="mytimelineHolder">
-        	<div id="mytimeline"></div>
+        <div id="groupTimelineHolder">
+        	<div id="groupTimeline"></div>
         </div>
+        <div id="memberTimeline"></div>
         
       </div><!--/span-->
       

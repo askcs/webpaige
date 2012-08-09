@@ -143,7 +143,7 @@ webpaige.prototype.config = function(key, value)
 	else
 	{
 	*/
-		console.log(key, value);
+		//console.log(key, value);
 			
 		var config = JSON.parse(webpaige.get('config'));
 		if (value != null)

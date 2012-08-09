@@ -43,12 +43,26 @@
             <div class="modal-body">
           		<form id="compose">
 	              <div class="control-group">
-	                <label class="control-label">Receiver</label>
+	                <label class="control-label">Message type</label>
 	                <div class="controls docs-input-sizes">
-	                  <select id="receivers" class="chzn-select" data-placeholder="Choose a contact.." multiple style="width:530%" tabindex="4"></select>
+                  	<input id="sms" type="checkbox" value="true" checked="checked"> SMS
 	                </div>
 	              </div>
-	              <div class="control-group">
+	              <!--
+	              <div id="groups" class="control-group">
+	                <label class="control-label">Groups</label>
+	                <div class="controls docs-input-sizes">
+	                  <select class="chzn-select" data-placeholder="Choose a group.." multiple style="width:530%" tabindex="4"></select>
+	                </div>
+	              </div>
+	              -->
+	              <div id="receivers" class="control-group">
+	                <label class="control-label">Receiver</label>
+	                <div class="controls docs-input-sizes">
+	                  <select class="chzn-select" data-placeholder="Choose a contact.." multiple style="width:530%" tabindex="4"></select>
+	                </div>
+	              </div>
+	              <div id="subjectDiv" class="control-group" style="display:none;">
 	                <label class="control-label">Subject</label>
 	                <div class="controls docs-input-sizes">
 	                  <input id="title" class="span12" placeholder="" type="text">
@@ -57,7 +71,7 @@
 	              <div class="control-group">
 	                <label class="control-label">Message</label>
 	                <div class="controls docs-input-sizes">
-	                  <textarea id="" class="span12" id="" name="" rows="6"></textarea>
+	                  <textarea id="msgcontent" class="span12" name="msgcontent" rows="6"></textarea>
 	                </div>
 	              </div>
           		</form>

@@ -1,6 +1,7 @@
 
 //var host='http://sven.ask-services.appspot.com';
 //var host='http://10.200.200.102:9000';
+//var host='http://3rc2.ask-services.appspot.com/ns_knrm';
 var host = 'http://localhost:9000';
 
 if (ask == undefined)

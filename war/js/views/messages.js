@@ -24,8 +24,44 @@
 	    resetForms();
 			sendMessage(receivers, title, message);
 	  });
+	  
+	  
+	  $('#sms').click(function () {
+			if(this.checked)
+			{
+				$('#subjectDiv').hide();
+				$('.counter').show();
+			}
+			else
+			{
+				$('#subjectDiv').show();
+				$('.counter').hide();
+			}
+		});
+		
+		
+		
+		/*
+		$("#groups .chzn-select").chosen().change(
+			function() {
+				console.log('groups changed');
+			}
+		);
+		*/
+		
+		
+		//default usage
+		//$("#msgcontent").charCount();
+		//custom usage
+		$("#msgcontent").charCount({
+			allowed: 160,		
+			warning: 20,
+			counterText: 'Characters left: '	
+		});
+
 		
 	  loadUsers(); 
+	  //loadGroups(); 
 		loadMessages();
 		addEventListeners();
 	}
@@ -36,6 +72,9 @@
 		$('#inbox a').click(function(){ loadMessages('inbox'); });
 		$('#outbox a').click(function(){ loadMessages('outbox'); });
 		$('#trash a').click(function(){ loadMessages('trash'); });
+		
+		
+		
 	}
 
 
@@ -50,9 +89,9 @@
 	{
 	  $('#composeMessage').modal('hide');
 	  
-	  var receivers = $('#receivers').val(); 
+	  var receivers = $('#compose select').val(); 
 		
-	  var subject = $('#title').val();
+	  var subject = $('#compose #title').val();
 	  //var content = $('#compose textarea').val().replace( /\r?\n/g, "\r\n" );
 	  var content = $('#compose textarea').val();
 	  
@@ -66,7 +105,12 @@
 			receivers[n] = '"' + receivers[n] + '"';
 		*/ 
 		
+		
+		console.log('receivers', receivers);
+		console.log('subject', subject);
+		console.log('content', content);
 			
+/*
 	  var query = '{"members":[' + 
 	  						receivers + 
 	  						'],"content":"' + 
@@ -89,6 +133,11 @@
 				loadMessages('inbox');
 			}
 		); 
+*/
+		
+		
+		
+		
 	}
 	
 	function replyMessage(uuid)
@@ -537,6 +586,66 @@
 	}
 	
 	function loadUsers()
+	{ 
+		
+		
+	  var query = '{"key":""}';
+		webpaige.con(
+			options = {
+				type: 'post',
+				path: '/network/searchPaigeUser',
+				json: query,
+				loading: 'Searching for users in network..'
+				,session: session.getSession()	
+			},
+			function(data)
+		  {  
+			  var data = data ? JSON.parse(data) : undefined;
+			  
+			  var users = $('<optgroup label="USERS"></optgroup>');
+			  
+				if (data && data.length > 0)
+				{
+			    for(var n in data)
+			    {
+			    	$(users).append("<option value=" + data[n].id + ">" + data[n].name + "</option>");
+			    }
+			    $("#receivers .chzn-select").append(users);
+			    //$("#receivers .chzn-select").trigger("liszt:updated");
+				} 
+			}
+		);
+		
+		webpaige.con(
+			options = {
+				path: '/network',
+				loading: 'Loading group lists..'
+				,session: session.getSession()	
+			},
+			function(data)
+		  {  
+			  //var data = data ? JSON.parse(data) : undefined;
+			  var groups = $('<optgroup label="GROUPS"></optgroup>');
+			  
+				if (data && data.length > 0)
+				{
+			    for(var n in data)
+			    {
+			    	$(groups).append("<option value=" + data[n].uuid + ">" + data[n].name + "</option>");
+			    }
+			    $("#receivers .chzn-select").append(groups);
+			    $("#receivers .chzn-select").trigger("liszt:updated");
+				} 
+			}
+		); 
+		
+		
+	}
+	
+	
+	
+/*
+	function loadUsers()
 	{
 	  var query = '{"key":""}';
 		webpaige.con(
@@ -562,11 +671,41 @@
 		{
 	    for(var n in data)
 	    {
-	    	$('.chzn-select').append("<option value=" + data[n].id + ">" + data[n].name + "</option>");
+	    	$('#receivers .chzn-select').append("<option value=" + data[n].id + ">" + data[n].name + "</option>");
 	    }
-	    $(".chzn-select").trigger("liszt:updated");
+	    $("#receivers .chzn-select").trigger("liszt:updated");
 		}  
 	}
+	
+	function loadGroups()
+	{
+		webpaige.con(
+			options = {
+				path: '/network',
+				loading: 'Loading group lists..'
+				,session: session.getSession()	
+			},
+			function(data)
+		  {  
+				renderGroups(data);
+			}
+		); 
+	}
+	
+	function renderGroups(data)
+	{
+	  //var data = data ? JSON.parse(data) : undefined;
+	  
+		if (data && data.length > 0)
+		{
+	    for(var n in data)
+	    {
+	    	$('#groups .chzn-select').append("<option value=" + data[n].uuid + ">" + data[n].name + "</option>");
+	    }
+	    $("#groups .chzn-select").trigger("liszt:updated");
+		}  
+	}
+*/
 	
 		
 	function toggleChecked(uuid, status)
@@ -583,4 +722,68 @@
 
 
 
+
+
+
+
+
+
+/*
+ * 	Character Count Plugin - jQuery plugin
+ * 	Dynamic character count for text areas and input fields
+ *	written by Alen Grakalic	
+ *	http://cssglobe.com/post/7161/jquery-plugin-simplest-twitterlike-dynamic-character-count-for-textareas
+ *
+ *	Copyright (c) 2009 Alen Grakalic (http://cssglobe.com)
+ *	Dual licensed under the MIT (MIT-LICENSE.txt)
+ *	and GPL (GPL-LICENSE.txt) licenses.
+ *
+ *	Built for jQuery library
+ *	http://jquery.com
+ *
+ */
+ 
+(function($) {
+
+	$.fn.charCount = function(options){
+	  
+		// default configuration properties
+		var defaults = {	
+			allowed: 140,		
+			warning: 25,
+			css: 'counter',
+			counterElement: 'span',
+			cssWarning: 'warning',
+			cssExceeded: 'exceeded',
+			counterText: ''
+		}; 
+			
+		var options = $.extend(defaults, options); 
+		
+		function calculate(obj){
+			var count = $(obj).val().length;
+			var available = options.allowed - count;
+			if(available <= options.warning && available >= 0){
+				$(obj).next().addClass(options.cssWarning);
+			} else {
+				$(obj).next().removeClass(options.cssWarning);
+			}
+			if(available < 0){
+				$(obj).next().addClass(options.cssExceeded);
+			} else {
+				$(obj).next().removeClass(options.cssExceeded);
+			}
+			$(obj).next().html(options.counterText + available);
+		};
+				
+		this.each(function() {  			
+			$(this).after('<'+ options.counterElement +' class="' + options.css + '">'+ options.counterText +'</'+ options.counterElement +'>');
+			calculate(this);
+			$(this).keyup(function(){calculate(this)});
+			$(this).change(function(){calculate(this)});
+		});
+	  
+	};
+
+})(jQuery);
 

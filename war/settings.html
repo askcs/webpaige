@@ -8,11 +8,27 @@
   <link href="css/bootstrap/bootstrap.css" rel="stylesheet">
   <link href="css/bootstrap/bootstrap-responsive.css" rel="stylesheet">
   <link href="css/styles.css" rel="stylesheet">
+  
   <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
   
   <script src="js/jquery/jquery-1.7.2.min.js" type="text/javascript"></script>
   <script src="js/bootstrap/bootstrap.js" type="text/javascript"></script>
+  
   <script src="js/libs/ask.session.js" type="text/javascript"></script>
+  
+  <script type="text/javascript" src="js/libs/json2.js"></script>
+  <script type="text/javascript" src="js/libs/date.js"></script>
+
+  <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+  <script>google.load("visualization", "1");</script>
+  <script type="text/javascript" src="js/timeline/timeline.js"></script>
+  <link href="js/timeline/timeline.css" rel="stylesheet" type="text/css">
+		
+	<link rel="stylesheet" media="all" type="text/css" href="js/datetimepicker/ui-lightness/jquery-ui-1.8.16.custom.css" />
+	<link rel="stylesheet" media="all" type="text/css" href="js/datetimepicker/jquery-ui-timepicker-addon.css" />
+	<script type="text/javascript" src="js/datetimepicker/jquery-ui-1.8.16.custom.min.js"></script>
+	<script type="text/javascript" src="js/datetimepicker/jquery-ui-timepicker-addon.js"></script>
+	<script type="text/javascript" src="js/datetimepicker/jquery-ui-sliderAccess.js"></script>
   
   <script src="js/init.js" type="text/javascript"></script>
   <script src="js/views/settings.js" type="text/javascript"></script>
@@ -23,10 +39,139 @@
     <div class="row-fluid">
     
       <div class="span12 well">
+      
+        <div class="btn-group btn-hanging">
+          <a id="tmlZoomInBtn" class="btn" onClick="timelineZoomIn();"><i class="icon-zoom-in"></i></a>
+          <a id="tmlZoomOutBtn" class="btn" onClick="timelineZoomOut();"><i class="icon-zoom-out"></i></a>
+          <a id="tmlMoveLeftBtn" class="btn" onClick="timelineMoveLeft();"><i class="icon-arrow-left"></i></a>
+          <a id="tmlMoveRightBtn" class="btn" onClick="timelineMoveRight();"><i class="icon-arrow-right"></i></a> 
+          <a id="tmlTodayBtn" class="btn" onClick="timelineInit();">Today</a>  
+        </div>
+        
+        <div class="btn-group btn-hanging">
+          <a class="btn" data-toggle="modal" href="#newWish"><i class="icon-plus-sign"></i> New wish</a>
+        </div>  
+				  
+				<!--
+        <div class="btn-group btn-hanging">
+          <a onclick="loadGroupAvs();" id="groupAvBtn" class="btn">Group availability</a>
+          <a onclick="loadMemberAvs();" id="memberAvBtn" class="btn">Member availabilities</a>
+          <a onclick="loadCurrentAvs();" id="currentAvBtn" class="btn">Current statuses</a>
+        </div>
+        -->
+        
+        <!--
+        <form class="form-inline btn-hanging" style="margin-bottom:0px;">
+        	<div class="control-group">
+        		<div class="controls docs-input-sizes">
+        			<select id="groupsList"></select>
+        		</div>
+        	</div>
+        </form>
+        -->   
+        
+        
+        
+         
+        
+        <div class="modal hide" id="newWish">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">×</button>
+            <h3>New wish</h3>
+          </div>
+          <form id="newWishForm" class="">
+            <div class="modal-body">
+              <div class="control-group">
+                <label class="control-label">Group</label>
+                <div class="controls">
+                  <select id="groupsList"></select>
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label">From</label>
+                <div class="controls">
+                  <input id="from" class="span4" type="text" style="display:inline;">
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label">Till</label>
+                <div class="controls">
+                  <input id="till" class="span4" type="text" style="display:inline;">
+                </div>
+              </div>
+              <div class="control-group" style="float:left; margin-right:30px;">
+                <label class="control-label">Wish</label>
+                <div class="controls">
+                  <input id="wish" class="span4" type="text">
+                </div>
+              </div>
+              <div class="clear"></div>
+            </div>
+            <div class="modal-footer">
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Cancel</a>
+              <a onclick="wishSubmit()" class="btn btn-success"><i class="icon-ok icon-white"></i> Save wish</a>
+            </div>
+          </form>
+        </div>
+        
+        
+        
+        
+        
+        
+        <div class="modal hide" id="editEvent">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">×</button>
+            <h3>Edit availability</h3>
+          </div>
+          <form id="editEventForm" class="">
+            <div class="modal-body">
+              <div class="control-group">
+                <label class="control-label">Status</label>
+                <div class="controls">
+                  <input id="eplanningType" type="radio" name="eplanningType" value="available"> <span style="margin-right:20px;">available</span>
+                  <input id="eplanningType" type="radio" name="eplanningType" value="unavailable"> unavailable
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label">From</label>
+                <div class="controls">
+                  <input id="eplanningFrom" class="span4" type="text" style="display:inline;">
+                </div>
+              </div>
+              <div id="plTill" class="control-group">
+                <label class="control-label">Till</label>
+                <div class="controls">
+                  <input id="eplanningTill" class="span4" type="text" style="display:inline;">
+                </div>
+              </div>
+              <div class="control-group" style="float:left; margin-right:30px;">
+                <label class="control-label">Weekly occurring?</label>
+                <div class="controls">
+                  <input id="eplanningReoccuring" type="checkbox" value="true">
+                </div>
+              </div>
+              <div class="control-group" style="float:left;">
+                <label class="control-label">All day?</label>
+                <div class="controls">
+                  <input id="eplanningAllDay" type="checkbox" value="true">
+                </div>
+              </div>
+              <div class="clear"></div>
+            </div>
+            <div class="modal-footer">
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Cancel</a>
+              <a onclick="deletePlanSubmit()" class="btn btn-warning"><i class="icon-remove icon-white"></i> Delete planning</a>
+              <a onclick="editPlanSubmit()" class="btn btn-success"><i class="icon-ok icon-white"></i> Save planning</a>
+            </div>
+          </form>
+        </div>
+        
         <h2><span class="entypo eMedium">@</span> Settings</h2>
         <hr>
-
-        <p>Some more information comes here.</p>
+        
+        <div id="wishesTimeline"></div>
+        
       </div><!--/span-->
       
     </div><!--/row-->
