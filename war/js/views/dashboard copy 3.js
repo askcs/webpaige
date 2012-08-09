@@ -20,18 +20,11 @@ $(document).ready(function()
   
   timelineInit();
   
-  var guuid = webpaige.config('firstGroup');
-  groupTimelineInit(guuid);  
-  membersTimelineInit(guuid);
+  groupTimelineInit();
+  
+  //getGroupSlots();
   
   $('#groupAvBtn').addClass('active');
-  
-  $("#groupsList").change(function()
-  {
-		var guuid = $(this).find(":selected").val();
-	  groupTimelineInit(guuid);  
-	  membersTimelineInit(guuid);
-	});
   
 });
 
@@ -155,14 +148,8 @@ function timelineInit()
   google.visualization.events.addListener(timeline, 'select', timelineOnSelect);
   google.visualization.events.addListener(timeline, 'rangechange', onRangeChanged1);
   
+  timeline.setVisibleChartRange( new Date(2012,05,10),new Date(2012,05,20) ); 
   
-  //var now = parseInt((new Date()).getTime() / 1000);
-  //timeline.setVisibleChartRange(now - 86400 * 7 * 4 * 1, now + 86400 * 7 * 4 * 1);
-  
-  
-  //timeline.setVisibleChartRangeNow(); 
-  
-/*
   var lab = new Object();
   lab.start = new Date(0);
   lab.content = '';
@@ -170,18 +157,14 @@ function timelineInit()
   timeline.addItem(lab);
   timeline.addGroup("<div>Plan</div>");
   timeline.draw(timeline_data, options);
-*/
   
   getSlots();
 }
 
-function groupTimelineInit(guuid)
+function groupTimelineInit()
 {
-/*
   timeline_data2 = [];
-  var options = {
-  	'groupsWidth': '100px'
-  };
+  var options = {};
   timeline2 = new links.Timeline(document.getElementById('memberTimeline'));
   
   google.visualization.events.addListener(timeline2, 'rangechange', onRangeChanged2);
@@ -199,130 +182,6 @@ function groupTimelineInit(guuid)
   onRangeChanged1();
   
   getGroupSlots();
-*/
-  
-  
-  
-  
-  
-  // Create and populate a data table.
-/*
-  var data = [];
-
-  var maxNum = 20;
-  var d = new Date(2012, 7, 0);
-  
-  for (var i = 0; i < 20; i++) {
-      var hours = Math.round(1 + Math.random() * 7);
-      var start = new Date(d);
-      var end = new Date(d);
-      end.setHours(end.getHours() + hours);
-
-      // create item with minimum requirement
-      var num = Math.round(Math.random() * maxNum);    // number of members available
-      var height = Math.round(num / maxNum * 80 + 20); // a percentage, with a lower bound on 20%
-      
-      var minHeight = height;
-              
-      //var wisher = '<div class="wisher" style="height:10px; width:10px; position:absolute; bottom:0px; background-color:black;"></div>';
-      
-      var style = 'height:' + height + 'px;';
-      var requirement = '<div class="requirement" style="' + style + '" ' +
-              'title="Minimum requirement: ' + num + ' people"></div>';
-
-      // create item with actual number
-      num = Math.round(Math.random() * maxNum);    // number of members available
-      height = Math.round(num / maxNum * 70 + 20); // a percentage, with a lower bound on 20%
-      
-      
-      var color = (height < minHeight) ? 'red' : 'green';
-      
-      
-      var hue = Math.min(Math.max(height, 20), 80) * 1.2; // hue between 0 (red) and 120 (green)
-      
-      // var color = hsv2rgb(hue, 0.75, 0.95);
-      
-      var borderColor = 'black';
-      //var borderColor = hsv2rgb(hue, 0.9, 0.9);
-      style = 'height:' + height + 'px;' +
-              'background-color: ' + color + ';' +
-              'border-top: 2px solid ' + borderColor + ';';
-      var actual = '<div class="bar" style="' + style + '" ' +
-              ' title="Actual: ' + num + ' people">' + num + '</div>';
-              
-              
-      var item = {
-          'group': 'Team',
-          'start': start,
-          'end': end,
-          'content': requirement + actual //+ wisher
-      };
-      data.push(item);
-
-      d = new Date(end);
-  }
-
-  // specify options
-  var options = {
-      "width":  "100%",
-      "height": 'auto',
-      "style": "box",
-      'selectable': false,
-      'editable': false,
-      'groupsWidth': '100px',
-      'eventMarginAxis': 0
-  };
-
-  // Instantiate our timeline object.
-  timeline2 = new links.Timeline(document.getElementById('groupTimeline'));
-  google.visualization.events.addListener(timeline2, 'rangechange', onRangeChanged2);
-  
-  timeline2.setVisibleChartRange( new Date(2012,05,10),new Date(2012,05,20) ); 
-
-  // Draw our timeline with the created data and options
-  timeline2.draw(data, options);
-*/
-  
-  getGroupSlots(guuid);
-  
-  
-  
-  
-  
-}
-
-function membersTimelineInit(uuid)
-{
-  timeline_data3 = [];
-  var options = {
-  	'groupsWidth': '100px'
-  };
-  timeline3 = new links.Timeline(document.getElementById('memberTimeline'));
-  google.visualization.events.addListener(timeline3, 'rangechange', onRangeChanged3);
-  
-  //timeline3.setVisibleChartRange( new Date(2012,05,10),new Date(2012,05,20) );
-  
-  //var now = parseInt((new Date()).getTime() / 1000);
-  //timeline3.setVisibleChartRange(now - 86400 * 7 * 4 * 1, now + 86400 * 7 * 4 * 1);
-  
-  //timeline3.setVisibleChartRangeNow(); 
-  
-/*
-  var lab = new Object();
-  lab.start = new Date(0);
-  lab.content = '';
-  lab.group = '<div>Plan</div>';
-  timeline3.addItem(lab);
-  timeline3.addGroup("<div>Plan</div>");
-*/
-  
-  timeline3.draw(timeline_data3, options);
-  
-  //onRangeChanged1();
-  
-  
-  getMemberSlots(uuid);
-  
 }
 
 
@@ -334,22 +193,13 @@ function membersTimelineInit(uuid)
 function onRangeChanged1() 
 {
   var range = timeline.getVisibleChartRange();
-  timeline2.setVisibleChartRange(range.start, range.end);
   timeline3.setVisibleChartRange(range.start, range.end);
 }   
       
 function onRangeChanged2() 
 {
-  var range = timeline2.getVisibleChartRange();
-  timeline.setVisibleChartRange(range.start, range.end);
-  timeline3.setVisibleChartRange(range.start, range.end);
-} 
-      
-function onRangeChanged3() 
-{
   var range = timeline3.getVisibleChartRange();
   timeline.setVisibleChartRange(range.start, range.end);
-  timeline2.setVisibleChartRange(range.start, range.end);
 }
 
 
@@ -369,9 +219,6 @@ function timelineOnEdit()
   var row = sel[0].row;
   var curItem = timeline.getItem(row);
   var content = timeline_data.getValue(row, 2);
-  
-  //console.log(timeline_helper_html2state(content));
-  
   editSlotModal(curItem.start, curItem.end, curItem.group, timeline_helper_html2state(content));
 }
 
@@ -526,12 +373,10 @@ function updateSlot(oldSlot, newSlot)
 	  var oldState = oldSlot.content.split('>')[1].split('<')[0];
 	  var newState = newSlot.content.split('>')[1].split('<')[0];
 		var resources = JSON.parse(webpaige.get('resources'));
-		
 	  var query =	'start=' + Math.round(newSlot.start / 1000) + 
 	  						'&end=' + Math.round(newSlot.end / 1000) + 
 	  						'&text=' + newState + 
 	  						'&recursive=' + (newSlot.group == 'Re-occuring');
-	  						
 	  var body = 	'{"color":null' + 
 	  						',"count":0' + 
 	  						',"end":' + Math.round(oldSlot.end / 1000) + 
@@ -539,7 +384,6 @@ function updateSlot(oldSlot, newSlot)
 	  						',"start":' + Math.round(oldSlot.start/1000) + 
 	  						',"text":"' + oldState + '"' +
 	  						',"wish":0}';
-	  						
 		webpaige.con(
 			options = {
 				type: 'put',
@@ -567,20 +411,17 @@ function editSlotModal(efrom, etill, ereoc, evalue)
   var eoldRecursive;
   var eoldSlotFrom;
   var eoldSlotTill;
-  
   $('#editEvent').modal('show');
-  
-  if (evalue == 'ask.state.1')
+  if (evalue == 'available')
   {
     $('input#eplanningType')[0].checked = true;
   	eoldSlotValue = 'available';
   }
-  else if (evalue == 'ask.state.2')
+  else if (evalue == 'unavailable')
   {
     $('input#eplanningType')[1].checked = true;
   	eoldSlotValue = 'unavailable';
   }
-  
   efrom = new Date(efrom.getTime());
   eoldSlotFrom = Math.round(efrom/1000);
   efrom = efrom.toString("dd-MMM-yyyy HH:mm");
@@ -638,9 +479,6 @@ function getSlots()
 			for (var i in slots)
 			{
 			  var content = colorState(slots[i].text);
-			  
-			  // console.log('content :', content);
-			  
 			  timeline_data.addRow([
 			  	new Date(slots[i].start * 1000), 
 			  	new Date(slots[i].end * 1000), 
@@ -657,18 +495,16 @@ function getSlots()
 	
 }
 
-function getGroupSlots(guuid)
+function getGroupSlots()
 {
   var now = parseInt((new Date()).getTime() / 1000);
 	var resources = JSON.parse(webpaige.get('resources'));
-	
   var range =	'start=' + (now - 86400 * 7 * 4 * 1) + 
-  						'&end=' + (now + 86400 * 7 * 4 * 1);  					
-  						
+  						'&end=' + (now + 86400 * 7 * 4 * 1);  
 	webpaige.con(
 		options = {
-			path: '/calc_planning/'+guuid+'?'+range,
-			loading: 'Getting group aggregiated slots..',
+			path: '/parent/availability?'+range,
+			loading: 'Getting parent group slots..',
 			label: 'slots'
 			,session: session.getSession()	
 		},
@@ -676,86 +512,35 @@ function getGroupSlots(guuid)
 	  {
 	  	//var slots = JSON.parse(data);
 	  	
-	  	// console.log('group aggregiated slots: ', data);
+	  	//console.log('group slots: ', data);
 	  	
-	  	var ndata = [];
+			timeline_data2 = new google.visualization.DataTable();
 			
-			var maxh = 0;
-			for (var i in data)
-			{
-				if(data[i].wish>maxh)
-					maxh=data[i].wish;
-			}
+			timeline_data2.addColumn('datetime', 'start');
+			timeline_data2.addColumn('datetime', 'end');
+			timeline_data2.addColumn('string', 'content');
+			timeline_data2.addColumn('string', 'groups');
 			
-			for (var i in data)
+			for (var i in slots)
 			{
-	      var maxNum = maxh;
-	      var num = data[i].wish;
-	      
-	      var xwish = num;
-	      	
-		    var height = Math.round(num / maxNum * 80 + 20); // a percentage, with a lower bound on 20%
-	      
-	      var minHeight = height;
-	      
-	      //var style = 'height:' + Math.round(height + 2) + 'px;';
-	      var style = 'height:' + height + 'px;';
-	      //var requirement = '<div class="requirement" style="' + style + '" ' +
-	              'title="Minimum requirement: ' + num + ' people"><span>' + num + '</span></div>';
-	      var requirement = '<div class="requirement" style="' + style + '" ' +
-	              'title="Minimum requirement: ' + num + ' people"></div>';
-	              
-				num = data[i].wish + data[i].diff;
-				
-				var xcurrent = num;
-				
-		    height = Math.round(num / maxNum * 70 + 20); // a percentage, with a lower bound on 20%
-	      
-	      
-	      if (xcurrent < xwish)
-	      {
-	      	var color = '#a93232';
-	      }
-	      else if (xcurrent == xwish)
-	      {
-		      var color = '#e0c100';
-	      }
-	      else if (xcurrent > xwish)
-	      {
-		      var color = '#4f824f';
-	      }
-	      
-	      
-	      //var borderColor = 'black';
-	      style = 'height:' + height + 'px;' + 'background-color: ' + color + ';';
-	      var actual = '<div class="bar" style="' + style + '" ' +
-	              ' title="Actual: ' + num + ' people"><span class="badge badge-inverse">' + num + '</span></div>';
-	              
-	              
-	      var item = {
-	          'group': 'Team',
-	          'start': Math.round(data[i].start * 1000),
-	          'end': Math.round(data[i].end * 1000),
-	          'content': requirement + actual //+ wisher
-	      };
-	      ndata.push(item);
-			}  
-
-		  // specify options
-		  var options = {
-		      "width":  "100%",
-		      "height": 'auto',
-		      "style": "box",
-		      'selectable': false,
-		      'editable': false,
-		      'groupsWidth': '100px',
-		      'eventMarginAxis': 0
+			  var content = colorState(slots[i].text);
+			  timeline_data2.addRow([
+			  	new Date(slots[i].start * 1000), 
+			  	new Date(slots[i].end * 1000), 
+			  	content, 
+			  	slots[i].recursive ? 'Re-occuring' : 'Plan'
+			  ]);
+			}     
+			
+			var options = {
+		    'selectable': false,
+		    'editable': false,
+		    'snapEvents': false,
+		    'groupChangeable': false,
+      	'eventMarginAxis': 0
 		  };
-		
-		  timeline2 = new links.Timeline(document.getElementById('groupTimeline'));
-		  google.visualization.events.addListener(timeline2, 'rangechange', onRangeChanged2);
-		  timeline2.draw(ndata, options);
-			
+		  
+			timeline2.draw(timeline_data2, options);
 		}
 	); 
 }
@@ -771,22 +556,17 @@ function getMemberSlots(uuid)
 		},
 		function(data, label)
 	  {  
-			timeline_data3 = new google.visualization.DataTable();
-			timeline_data3.addColumn('datetime', 'start');
-			timeline_data3.addColumn('datetime', 'end');
-			timeline_data3.addColumn('string', 'content');
-			timeline_data3.addColumn('string', 'groups');
+			timeline_data2 = new google.visualization.DataTable();
+			timeline_data2.addColumn('datetime', 'start');
+			timeline_data2.addColumn('datetime', 'end');
+			timeline_data2.addColumn('string', 'content');
+			timeline_data2.addColumn('string', 'groups');
 	  	var members = JSON.parse(data);
-	  	
-	  	
-	  	console.log('members :', members);
-	  	
 	  	for (var i in members)
 	  	{
 				//renderMemberSlots(members[i].name, members[i].uuid);
-				renderMemberSlots(members[i], members[i].name);
+				renderMemberSlots(members[i]);
 	  	}
-	  	/*
 			var height = (members.length * 40) + 20;
 			height += 'px';
 			var options = {
@@ -797,62 +577,34 @@ function getMemberSlots(uuid)
 		    'groupChangeable': false,
       	'eventMarginAxis': 0
 		  };
-		  */
-			var options = {
-		    'selectable': false,
-		    'editable': false,
-		    'snapEvents': false,
-		    'groupChangeable': false
-		  };
-			timeline3.draw(timeline_data3, options);
+			timeline2.draw(timeline_data2, options);
 		}
 	);
 }
 
-function renderMemberSlots(member, name)
+function renderMemberSlots(member)
 {  
   var now = parseInt((new Date()).getTime() / 1000);
-  
   var range =	'start=' + (now - 86400 * 7 * 4 * 1) + 
   						'&end=' + (now + 86400 * 7 * 4 * 1);  
-  						
 	webpaige.con(
 		options = {
 			path: '/askatars/'+member.uuid+'/slots?'+range,
 			loading: 'Getting slots..',
-			label: name
+			label: 'slots'
 			,session: session.getSession()	
 		},
 		function(data, label)
 	  {
 	  	var slots = JSON.parse(data); 
-	  	
-	  	console.log('label :', label);
-	  	console.log('member slots:', slots);
-	  	
-				timeline3.addItem({
-					'start':new Date(0),
-					'end':new Date(0),
-					'content':'available',
-					'group': label + ' Re-occuring'
-				});
-			
-				timeline3.addItem({
-					'start':new Date(0),
-					'end':new Date(0),
-					'content':'available',
-					'group': label + ' Plan'
-				});
-	  	
 			for (var i in slots)
 			{
-				
 			  var content = colorState(slots[i].text);
-				timeline3.addItem({
+				timeline2.addItem({
 					'start':new Date(slots[i].start * 1000),
 					'end':new Date(slots[i].end * 1000),
 					'content':content,
-					'group':slots[i].recursive ? label + ' Re-occuring' : label + ' Plan'
+					'group':slots[i].recursive ? member.name+' Re-occuring' : member.name+' Plan'
 				});
 			}  
 		}
@@ -930,32 +682,29 @@ function renderCurrentSlots(member)
 function colorState(state)
 {
   var content = '?';
-  if (state == 'available') return '<div class="available">' + state + '</div>';
-  if (state == 'unavailable') return '<div class="unavailable">' + state + '</div>';
+  if (state == 'available') return '<div style="color:green">' + state + '</div>';
+  if (state == 'unavailable') return '<div style="color:red">' + state + '</div>';
 }
 
 function timeline_helper_state2html(state)
 {
   var state_map = {
-	    'ask.state.1': ['available', 'green'],
-	    'ask.state.2': ['unavailable', 'red']
+	    'ask.state.13': ['nr13', 'red'],
+	    'ask.state.14': ['nr14', 'green']
 	 };
   var content = '?';
   if (state_map[state])
-  	return '<div style="background-color:' + state_map[state][1] + '">' + state_map[state][3] + '</div>';
+  	return '<div style="color:' + state_map[state][1] + '">' + state_map[state][3] + '</div>';
   /* return "<div style='color:black;'>" + state + "</div>"; */
 }
 
 function timeline_helper_html2state(content)
 {
   var state_map = {
-	    'ask.state.1': ['available', 'green'],
-	    'ask.state.2': ['unavailable', 'red']
+	    'ask.state.13': ['nr13', 'red'],
+	    'ask.state.14': ['nr14', 'green']
 	 };
   var state = content.split('>')[1].split('<')[0];
-  
-  //console.log('content: ', content, state);
-  
   //reverse map search..
   for (var i in state_map)
   {
@@ -963,31 +712,6 @@ function timeline_helper_html2state(content)
   }
   return state;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1017,32 +741,6 @@ var hsv2rgb = function(H, S, V) {
 
   return "RGB(" + parseInt(R*255) + "," + parseInt(G*255) + "," + parseInt(B*255) + ")";
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Called when the Visualization API is loaded.
 function drawVisualization3() {
@@ -1078,7 +776,7 @@ function drawVisualization3() {
       var color = (height < minHeight) ? 'red' : 'green';
       
       
-      // var hue = Math.min(Math.max(height, 20), 80) * 1.2; // hue between 0 (red) and 120 (green)
+      var hue = Math.min(Math.max(height, 20), 80) * 1.2; // hue between 0 (red) and 120 (green)
       
       // var color = hsv2rgb(hue, 0.75, 0.95);
       
@@ -1088,7 +786,8 @@ function drawVisualization3() {
               'background-color: ' + color + ';' +
               'border-top: 2px solid ' + borderColor + ';';
       var actual = '<div class="bar" style="' + style + '" ' +
-              ' title="Actual: ' + num + ' people">' + num + '</div>';       
+              ' title="Actual: ' + num + ' people">' + num + '</div>';
+              
               
       var item = {
           'group': 'Team',
@@ -1116,7 +815,7 @@ function drawVisualization3() {
   timeline3 = new links.Timeline(document.getElementById('groupTimelineGraph'));
   google.visualization.events.addListener(timeline3, 'rangechange', onRangeChanged2);
   
-  //timeline3.setVisibleChartRange( new Date(2012,05,10),new Date(2012,05,20) ); 
+  timeline3.setVisibleChartRange( new Date(2012,05,10),new Date(2012,05,20) ); 
 
   // Draw our timeline with the created data and options
   timeline3.draw(data, options);
@@ -1138,15 +837,11 @@ function renderGroupsList()
 		function(data, label)
 	  { 
 		  for(var i in data)
-		  {
-		  	(i == 0) ? webpaige.config('firstGroup', data[i].uuid) : null;	  	
-		  	
-		  	$('#groupsList').append('<option value="'+data[i].uuid+'">'+data[i].name+'</option>');		    
+		  {		    
+		  	$('#groupsList').append('<option value="'+data[i].uuid+'">'+data[i].name+'</option>');
 		  }
 		}
 	);
-  
-	
 }
 
 function loadGroupsList()

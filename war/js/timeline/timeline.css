@@ -34,14 +34,18 @@ div.timeline-axis-text-major {
 }
 
 div.timeline-event {
+	padding: 0;
+/*
   display: inline-block;
   *display: inline;
   padding: 1px 1px;
   margin-bottom: 0;
   *margin-left: .3em;
   font-size: 11px;
+
   line-height: 13px;
   *line-height: 20px;
+
   color: #333333;
   text-align: center;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
@@ -49,6 +53,7 @@ div.timeline-event {
   cursor: pointer;
   background-color: #d9d6cd;
   border: 1px solid #a29e93;
+*/
 /*
   background-color: #f5f5f5;
   *background-color: #e6e6e6;
@@ -77,6 +82,11 @@ div.timeline-event {
 }
 
 .available {
+	margin:0;
+	/* padding: 5px; */
+	background-color: #4f824f;
+	text-indent: -9999px;
+/*
   color: #333333;
   text-align: center;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
@@ -105,6 +115,13 @@ div.timeline-event {
   -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
      -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
           box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+*/
+}
+
+.unavailable {
+	margin: 0;
+	background-color: #a93232;	
+	text-indent: -9999px;
 }
 
 
@@ -117,27 +134,33 @@ div.timeline-event-selected {
 
 div.timeline-event-box {
   text-align: center;   
+/*
   border-style: solid;
   border-width: 1px;  
   border-radius: 5px;  
-  -moz-border-radius: 5px; /* For Firefox 3.6 and older */ 
+  -moz-border-radius: 5px; 
+*/
 }  
 
 div.timeline-event-dot {
+/*
   border-style: solid;
   border-width: 1px;
   border-radius: 1px;
-  -moz-border-radius: 1px;  /* For Firefox 3.6 and older */
+  -moz-border-radius: 1px;  
+*/
   text-shadow: none; 
   border-color: #bfbfbf;
   background-color: #bfbfbf;
 }
 
 div.timeline-event-range {
+/*
   border-style: solid;
   border-width: 1px;
   border-radius: 2px;
-  -moz-border-radius: 2px;  /* For Firefox 3.6 and older */
+  -moz-border-radius: 2px; 
+*/ 
 }
 
 div.timeline-event-line {
@@ -152,7 +175,7 @@ div.timeline-event-line {
 } 
 
 div.timeline-event-content {
-  margin: 5px;
+  /* margin: 5px; */
   white-space: nowrap;
   overflow: hidden;
 }

@@ -95,30 +95,69 @@ function deletePlanSubmit()
 
 
 
+function editWishModal(start, end, group, wish)
+{
+  $('#editWish').modal('show');
+  $('#editWish span#groupName').html(group);  
+  start = new Date(start.getTime());
+  start = start.toString("dd-MMM-yyyy HH:mm");
+  $('#editWish #efrom').val(start);
+  end = new Date(end.getTime());
+  end = end.toString("dd-MMM-yyyy HH:mm");
+  $('#editWish #etill').val(end);
+  $('#editWish #ewish').val(wish);
+}
+
+
+
+function editWishSubmit()
+{
+  $('#editWish').modal('hide');
+  var group = $('#editWish span#groupName').html();  
+  var start = $('#editWish #efrom').val();
+  var end = $('#editWish #etill').val();
+  var wish = $('#editWish #ewish').val();
+  
+  start = Date.parse(start, "dd-MMM-yyyy HH:mm");
+  start = start.getTime();
+  
+  end = Date.parse(end, "dd-MMM-yyyy HH:mm");
+  end = end.getTime();
+  
+	var groups = JSON.parse(webpaige.get('groups'));
+  
+  for (var i in groups)
+  {
+	  if (groups[i].name == group)
+	  {
+		  var guuid = groups[i].uuid;
+	  }	  
+  }
+  
+  //console.log(guuid, start, end, wish);
+  addWish(start, end, wish, guuid);
+}
+
+
 
 function addWish(from, till, wish, group)
 {
-	var resources = JSON.parse(webpaige.get('resources'));
-	
   var body = 	'{"end":' + (till / 1000) + 
-  						',"recursive":' + reoc + 
   						',"start":' + (from / 1000) + 
-  						',"text":"' + value + '"}';
-  						
+  						',"wish":"' + wish + '"}';
 	webpaige.con(
 		options = {
-			type: 'post',
-			path: '/slots',
+			type: 'put',
+			path: '/network/'+group+'/wish',
 			json: body,
-			loading: 'Adding new slot..'
+			loading: 'Adding new wish..'
 			,session: session.getSession()	
 		},
 		function(data)
 	  {  
-			getSlots();
+			getWishes();
 		}
 	); 
-	
 } 
 
 
@@ -127,8 +166,8 @@ function addWish(from, till, wish, group)
 function wishesTimelineInit()
 {
   timeline_data = [];
-  var options = {
-  	// 'groupsWidth': '100px'
+  var options = { 
+  	// 'groupsWidth': '100px' 
   };
   timeline = new links.Timeline(document.getElementById('wishesTimeline'));
   
@@ -139,16 +178,6 @@ function wishesTimelineInit()
   google.visualization.events.addListener(timeline, 'change', timelineOnChange);
   google.visualization.events.addListener(timeline, 'select', timelineOnSelect);
   
-/*
-  var lab = new Object();
-  lab.start = new Date(0);
-  lab.content = '';
-  lab.group = '<div>Plan</div>';
-  timeline.addItem(lab);
-  timeline.addGroup("<div>Plan</div>");
-  timeline.draw(timeline_data, options);
-*/
-  
   getWishes();
 }
 
@@ -157,9 +186,15 @@ function getWishes()
 	
   var now = parseInt((new Date()).getTime() / 1000);
 	//var resources = JSON.parse(webpaige.get('resources'));
-  var range =	'start=' + (now - 86400 * 7 * 4 * 1) + 
-  						'&end=' + (now + 86400 * 7 * 4 * 1);  
-			  						
+  var range =	'start=' + (now - 86400 * 7 * 4 * 4) + 
+  						'&end=' + (now + 86400 * 7 * 4 * 4);  
+	
+	timeline_data = new google.visualization.DataTable();
+	timeline_data.addColumn('datetime', 'start');
+	timeline_data.addColumn('datetime', 'end');
+	timeline_data.addColumn('string', 'content');
+	timeline_data.addColumn('string', 'groups');
+						 						
 	webpaige.con(
 		options = {
 			path: '/network',
@@ -168,31 +203,19 @@ function getWishes()
 			,session: session.getSession()	
 		},
 		function(data, label)
-	  { 
+	  { 		
 		  for(var i in data)
-		  { 	
-		  	
-		  	var gname = data[i].name;					
-			  						
+		  { 						
 				webpaige.con(
 					options = {
 						path: '/network/'+data[i].uuid+'/wish?'+range,
 						//path: '/parent/availability?'+range,
 						loading: 'Getting '+data[i].name+' wishes..',
-						label: 'wishes'
+						label: data[i].name
 						,session: session.getSession()	
 					},
 					function(data, label)
 				  {
-			
-				  	//var slots = JSON.parse(data); 
-						timeline_data = new google.visualization.DataTable();
-						
-						timeline_data.addColumn('datetime', 'start');
-						timeline_data.addColumn('datetime', 'end');
-						timeline_data.addColumn('string', 'content');
-						timeline_data.addColumn('string', 'groups');
-						
 						for (var i in data)
 						{
 						  var content = '<div style="color: green;">' + data[i].count + '</div>';
@@ -200,17 +223,18 @@ function getWishes()
 						  	new Date(data[i].start * 1000), 
 						  	new Date(data[i].end * 1000), 
 						  	content, 
-						  	gname
+						  	label
 						  ]
 						  );
-						}   
-					        
-						//var options = {};
+						}        
+					  var options = {
+					      'selectable': true,
+					      'editable': true,
+					      'groupsWidth': '100px'
+					  };
 						timeline.draw(timeline_data, options); 
 					}
 				); 
-	
-		    
 		  }
 		}
 	);
@@ -243,21 +267,22 @@ function timelineOnEdit()
 {
   var sel = timeline.getSelection();
   var row = sel[0].row;
-  var curItem = timeline.getItem(row);
-  var content = timeline_data.getValue(row, 2);
+  var item = timeline.getItem(row);
+  var wish = timeline_data.getValue(row, 2).split('>')[1].split('<')[0];
   
-  //console.log(timeline_helper_html2state(content));
-  
-  editSlotModal(curItem.start, curItem.end, curItem.group, timeline_helper_html2state(content));
+  editWishModal(item.start, item.end, item.group, wish);
 }
 
 function timelineOnDelete()
 {
+	timeline.cancelChange();
+/*
   var sel = timeline.getSelection();
   var row = sel[0].row;
   var oldItem = timeline.getItem(row);
   deleteSlot(oldItem.start / 1000, oldItem.end / 1000, oldItem.group, oldItem.content);
   timeline.cancelDelete();
+*/
 }
 
 function timelineOnSelect()
@@ -269,10 +294,14 @@ function timelineOnSelect()
 
 function timelineOnChange()
 {
+	timeline.cancelChange();
+	
+/*
   var sel = timeline.getSelection();
   var row = sel[0].row;
   var newItem = timeline.getItem(row);
   updateSlot(timeline_selected, newItem);
+*/
 }
 
 
@@ -339,7 +368,8 @@ function renderGroupsList()
 			,session: session.getSession()	
 		},
 		function(data, label)
-	  { 
+	  {
+	  	webpaige.set(label, JSON.stringify(data)); 
 		  for(var i in data)
 		  {  
 		  	$('#groupsList').append('<option value="'+data[i].uuid+'">'+data[i].name+'</option>');		    

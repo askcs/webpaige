@@ -28,6 +28,7 @@
 	  }
 	  #groupTimelineHolder div.timeline-event-content {
 	      margin: 0;
+	      border:none;
 	  }
 	  #groupTimelineHolder div.timeline-event-range {
 	      border: none;
@@ -45,6 +46,7 @@
 	      text-align: center;
 	      color: white;
 	      /* height and color is set for each individual bar */
+	      border: none;
 	  }
 	  #groupTimelineHolder div.requirement {
 	      position: absolute;
@@ -54,12 +56,11 @@
 	      border-top: 2px solid gray;
 	      background: #e5e5e5;
 	      opacity: 0.5;
+	      text-align: center;
 	  }
-/*
-	  #groupTimeline div.timeline-axis {
-	  	display: none;
+	  #groupTimelineHolder div.bar span {
+	      font-size: 9px;
 	  }
-*/
   </style>
   
   <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
@@ -232,6 +233,7 @@
     
       <div class="span12 well">
       
+	      <!--
         <div class="btn-group btn-hanging">
           <a id="tmlZoomInBtn" class="btn" onClick="timelineZoomIn();"><i class="icon-zoom-in"></i></a>
           <a id="tmlZoomOutBtn" class="btn" onClick="timelineZoomOut();"><i class="icon-zoom-out"></i></a>
@@ -239,6 +241,7 @@
           <a id="tmlMoveRightBtn" class="btn" onClick="timelineMoveRight();"><i class="icon-arrow-right"></i></a> 
           <a id="tmlTodayBtn" class="btn" onClick="timelineInit();">Today</a>  
         </div>
+        -->
         <!--
         <div class="btn-group btn-hanging">
           <a class="btn" data-toggle="modal" href="#newEvent"><i class="icon-plus-sign"></i> New availability</a>
