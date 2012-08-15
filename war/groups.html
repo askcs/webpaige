@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title></title>
+  <title>KNRM Web Administration :: Groups</title>
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  
+  <link href="img/favicon.ico" rel="shortcut icon">
   
   <link href="css/bootstrap/bootstrap.css" rel="stylesheet">
   <link href="css/bootstrap/bootstrap-responsive.css" rel="stylesheet">
@@ -19,8 +21,12 @@
   <script src="js/libs/json2.js" type="text/javascript"></script>
   <script src="js/libs/date.js" type="text/javascript"></script>
   
+  <link href="js/chosen/chosen.css" rel="stylesheet">
+  <script src="js/chosen/chosen.jquery.js" type="text/javascript"></script>
+  
   <script src="js/init.js" type="text/javascript"></script>
   <script src="js/views/groups.js" type="text/javascript"></script>
+  
 </head>
 <body>
 	<div id="navbar"></div>
@@ -46,12 +52,14 @@
         </div>
         <!--/.well -->
         
+<!--
         <div class="well sidebar-nav">
         	<div class="btn-group" style="margin-top:5px; margin-left:15px; margin-bottom:5px;">
-          	<a data-toggle="modal" href="#newGroup" class="btn">Add new group</a>
-          	<a data-toggle="modal" href="#newGroup" class="btn">Add new member</a>
+          	<a data-toggle="modal" href="#newGroup" class="btn"><i class="icon-list-alt"></i> New group</a>
+          	<a data-toggle="modal" href="#newMember" onclick="addNewMember()" class="btn"><i class="icon-user"></i> New member</a>
           </div>
         </div>
+-->
         <!--/.well -->
         
         <div class="well sidebar-nav">
@@ -66,19 +74,39 @@
           </div>
           <form id="newMemberForm" class="">
             <div class="modal-body">
-		          <div class="control-group">
+            
+              <div id="rolesList" class="control-group">
+                <label class="control-label">Role</label>
+                <div class="controls docs-input-sizes">
+                  <select id="roles" name="role">
+	                  <option value="3">Volunteer</option>
+	                  <option value="2">Schipper</option>
+	                  <option value="1">Planner</option>
+                  </select>
+                </div>
+              </div> 
+            
+              <div id="groupsListNew" class="control-group">
+                <label class="control-label">Groups</label>
+                <div class="controls docs-input-sizes">
+                  <select class="chzn-select" data-placeholder="Choose a group.." multiple style="width:530%" tabindex="4"></select>
+                </div>
+              </div>            
+              
+		          
+		          <div class="control-group" style="float:left; margin-right: 20px;">
 		            <label class="control-label">First name</label>
 		            <div class="controls docs-input-sizes">
-		              <input id="fname" class="span12" placeholder="First name" type="text">
+		              <input id="fname" placeholder="First name" type="text">
 		            </div>
 		          </div>
 		          <div class="control-group">
 		            <label class="control-label">Last name</label>
 		            <div class="controls docs-input-sizes">
-		              <input id="lname" class="span12" placeholder="Last name" type="text">
+		              <input id="lname" placeholder="Last name" type="text">
 		            </div>
 		          </div>
-		          <div class="control-group">
+		          <div class="control-group" style="clear: both;">
 		            <label class="control-label">Telephone number</label>
 		            <div class="controls docs-input-sizes">
 		              <input id="tel" class="span12" placeholder="+31" type="text">
@@ -93,7 +121,7 @@
 		          <div class="control-group">
 		            <label class="control-label">Password</label>
 		            <div class="controls docs-input-sizes">
-		              <input id="pass" class="span12" placeholder="Password" type="text">
+		              <input id="pass" class="span12" placeholder="Password" type="password">
 		            </div>
 		          </div>
               <div class="clear"></div>
@@ -113,6 +141,18 @@
           </div>
           <form id="editMemberForm" class="">
             <div class="modal-body">
+            
+              <div id="rolesList" class="control-group">
+                <label class="control-label">Role</label>
+                <div class="controls docs-input-sizes">
+                  <select id="roles" name="role">
+	                  <option value="3">Volunteer</option>
+	                  <option value="2">Schipper</option>
+	                  <option value="1">Planner</option>
+                  </select>
+                </div>
+              </div>  
+              
 		          <div class="control-group">
 		            <label class="control-label">First and last name</label>
 		            <div class="controls docs-input-sizes">
@@ -137,24 +177,28 @@
                   <input id="address" class="span12" placeholder="" type="text">
                 </div>
               </div>
-              <div class="control-group">
+              <div class="control-group" style="float:left; margin-right: 20px;">
                 <label class="control-label">Postcode</label>
                 <div class="controls docs-input-sizes">
-                  <input id="postcode" class="span12" placeholder="" type="text">
+                  <input id="postcode" placeholder="" type="text">
                 </div>
               </div>
-              <div class="control-group">
+              <div class="control-group" style="float:left; margin-right: 20px;">
                 <label class="control-label">City</label>
                 <div class="controls docs-input-sizes">
-                  <input id="city" class="span12" placeholder="" type="text">
+                  <input id="city" placeholder="" type="text">
                 </div>
               </div>
-              <div class="control-group">
+              
+              <!--
+              <div class="control-group" style="float:left;">
                 <label class="control-label">Country</label>
                 <div class="controls docs-input-sizes">
-                  <input id="country" class="span12" placeholder="" type="text">
+                  <input id="country" class="span3" placeholder="" type="text">
                 </div>
               </div>
+              -->
+              
               <div class="clear"></div>
             </div>
             <div class="modal-footer">

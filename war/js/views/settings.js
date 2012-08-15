@@ -218,7 +218,7 @@ function getWishes()
 				  {
 						for (var i in data)
 						{
-						  var content = '<div style="color: green;">' + data[i].count + '</div>';
+						  var content = '<div class="wishslot c-' + data[i].count + '">' + data[i].count + '</div>';
 						  timeline_data.addRow([
 						  	new Date(data[i].start * 1000), 
 						  	new Date(data[i].end * 1000), 

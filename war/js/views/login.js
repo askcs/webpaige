@@ -1,3 +1,23 @@
+// new version
+function loginAs(type)
+{
+	var user, pass='askask';
+	switch (type)
+	{
+		case 'planner':
+			user = 'ulusoy.cengiz@gmail.com';
+		break;
+		case 'schipper':
+			user = '4170durinck';
+		break;
+		case 'volunteer':
+			user = '4780aldewereld';
+		break;		
+	}
+	loginAsk(user, pass, true);
+}
+
+
 function loginAsk (user, pass, r)
 {
 	webpaige.set('config', '{}');
@@ -36,6 +56,106 @@ function loginAsk (user, pass, r)
 			  {  	
 					webpaige.set(label, JSON.stringify(data));
 					
+					webpaige.config('userRole', data.role);					
+					
+					var trange = {};	
+					
+				  now = parseInt((new Date()).getTime() / 1000);
+				  trange.bstart = (now - 86400 * 7 * 1);
+				  trange.bend = (now + 86400 * 7 * 1);					
+					
+				  trange.start = new Date();
+				  trange.start = Date.today().addWeeks(-1);
+				  trange.end = new Date();
+				  trange.end = Date.today().addWeeks(1);
+				  
+				  webpaige.config('trange', trange);		
+				  
+				  	
+					// logging in Sense
+/*
+					var sense = {};
+					
+					webpaige.con(
+						options = {
+							host: 'http://api.sense-os.nl',
+							path: '/login?username=' + user + '&password=' + MD5(pass),
+							type: 'post',
+							credentials: false,
+							loading: 'Logging Sense OS..',
+							label: 'sense'
+							,session: session.getSession()	
+						},
+						function(data, label)
+					  {  
+				      sense.session = data["session_id"];
+				      webpaige.set('sense', JSON.stringify(sense));
+*/
+				  
+				      
+				      
+							if (webpaige.config('userRole') < 3)
+							{
+								webpaige.con(
+									options = {
+										path: '/network',
+										loading: 'Loading groups..',
+										label: 'groups'
+										,session: session.getSession()	
+									},
+									function(data, label)
+								  { 
+									  for(var i in data)
+									  {
+									  	if (i == 0)
+									  	{
+									  		webpaige.config('firstGroupUUID', data[i].uuid);
+									  		webpaige.config('firstGroupName', data[i].name);
+									  	}	 	    
+									  }
+									
+							      // finally redirect
+										document.location = "dashboard.html";
+									}
+								);
+							}
+							else
+							{
+								webpaige.con(
+									options = {
+										path: '/parent',
+										loading: 'Getting parent group..',
+										label: 'parent group: '
+										,session: session.getSession()	
+									},
+									function(data, label)
+								  {
+									  var datas = JSON.parse(data);	
+								  	for (var i in datas)
+								  	{	  		
+								  		webpaige.config('parentGroupUUID', datas[i].uuid);	
+								  		webpaige.config('parentGroupName', datas[i].name);		  	
+								  	}
+									
+							      // finally redirect
+										document.location = "dashboard.html";
+									}
+								); 
+							}
+					
+					
+/*
+						}
+					);
+*/
+					// end of sense login	  
+					
+					
+					
+				      
+					
+					
+/*
 					// logging in Sense
 					var sense = {};
 					
@@ -58,6 +178,13 @@ function loginAsk (user, pass, r)
 							document.location = "dashboard.html";
 						}
 					);
+*/
+					
+					
+					
+					
+					
+					
  	
  	
 				}

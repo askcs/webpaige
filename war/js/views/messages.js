@@ -9,6 +9,11 @@
  	
 	 	$('a[rel=tooltip]').tooltip();
 	 	
+	 	if (webpaige.getRole() != 1)
+	 	{
+		 	$('#smsCheck').hide();
+	 	}
+	 	
 		$(".chzn-select").chosen();
 		$(".chzn-select-deselect").chosen(
 		{
@@ -26,6 +31,7 @@
 	  });
 	  
 	  
+/*
 	  $('#sms').click(function () {
 			if(this.checked)
 			{
@@ -38,6 +44,7 @@
 				$('.counter').hide();
 			}
 		});
+*/
 		
 		
 		
@@ -53,17 +60,31 @@
 		//default usage
 		//$("#msgcontent").charCount();
 		//custom usage
+/*
 		$("#msgcontent").charCount({
 			allowed: 160,		
 			warning: 20,
 			counterText: 'Characters left: '	
 		});
+*/
 
 		
 	  loadUsers(); 
 	  //loadGroups(); 
 		loadMessages();
 		addEventListeners();
+		
+/*
+		if(confirmUser('ulusoy.cengiz@gmail.com'))
+		{
+			console.log('returned true');
+		}
+		else
+		{
+			console.log('returned false');			
+		}
+*/
+
 	}
 
 
@@ -105,20 +126,53 @@
 			receivers[n] = '"' + receivers[n] + '"';
 		*/ 
 		
-		
-		console.log('receivers', receivers);
-		console.log('subject', subject);
-		console.log('content', content);
-			
 /*
+		var receivers = [];
+		
+		console.log(rawReceivers);
+		
+		
+		for(var n in rawReceivers)
+		{
+			if (confirmGroup(rawReceivers[n]))
+			{
+				
+			}
+			else
+			{
+				console.log(rawReceivers[n]);
+			}
+		}
+*/
+		
+		var sms = $('input#sms[name="sms"]:checked').val();
+		var paigem = $('input#paigem[name="paigem"]:checked').val();
+		var email = $('input#email[name="email"]:checked').val();
+		
+		var types = [];
+		
+		if (sms) types.push('sms');
+		if (paigem) types.push('paige');
+		if (email) types.push('email');
+		
+		for(var n in types)
+			types[n] = '"' + types[n] + '"';
+		
+		for(var n in receivers)
+			receivers[n] = '"' + receivers[n] + '"';
+			
 	  var query = '{"members":[' + 
 	  						receivers + 
 	  						'],"content":"' + 
 	  						content + 
 	  						'","subject":"' + 
-	  						subject + 
-	  						'"}';
-	  						
+	  						subject +
+	  						'","types":[' + 
+	  						types + 
+	  						']}';
+	  
+	  //console.log('query :', query);
+	  
 		webpaige.con(
 			options = {
 				type: 'post',
@@ -133,7 +187,6 @@
 				loadMessages('inbox');
 			}
 		); 
-*/
 		
 		
 		
@@ -183,6 +236,7 @@
 		
 		
 		$('#displayMessageModal').modal('show');
+		
 		var messages = localStorage.getItem('messages');
 	  var messages = messages ? JSON.parse(messages) : undefined;
 		for (var n in messages)
@@ -211,15 +265,18 @@
 				if (type == 'inbox')
 				{
 					$('#messageDirection').html('From');
-					$('#messageReceiver').html(messages[n].requester);
+					$('#messageReceiver').html(messages[n].requester.split('personalagent/')[1].split('/')[0]);
 				}
 				else
 				{
 					$('#messageDirection').html('To');
 					$('#messageReceiver').html(messages[n].responder);
 				}
-				var date = new Date(messages[n].creationTime * 1000);
-				$('#messageDate').html(date.toString("dd-MMM-yyyy HH:mm"));
+				
+				var datetime = new Date(messages[n].creationTime);
+				//var date = new Date(messages[n].creationTime * 1000);
+				$('#messageDate').html(datetime.toString("ddd dd MMM yyyy HH:mm"));
+				
 				if (messages[n].subject != null)
 				{
 					var subject = messages[n].subject;
@@ -320,7 +377,7 @@
 	  {
 		  if (this.value != 'on')
 		  {
-		  	ids.push(this.value); 
+		  	ids.push('"' + this.value + '"'); 
 		  }
 		}).get();
 		
@@ -420,7 +477,8 @@
 					case 'inbox':
 						for(var n in data)
 						{
-							if (data[n].module == 'message' && data[n].requester != resources.uuid && data[n].state != 'TRASH')
+							//if (data[n].module == 'message' && data[n].requester != resources.uuid && data[n].state != 'TRASH')
+							if (data[n].box == 'inbox' && data[n].requester != resources.uuid && data[n].state != 'TRASH')
 							{
 								filtered.push(data[n]);
 								/*
@@ -442,7 +500,8 @@
 			  		//renderMessages(data, type);
 						for(var n in data)
 						{
-							if (data[n].module == 'message' && data[n].state != 'TRASH')
+							//if (data[n].module == 'message' && data[n].state != 'TRASH')
+							if (data[n].box == 'outbox' && data[n].state != 'TRASH')
 							{
 								filtered.push(data[n]);
 							}
@@ -454,7 +513,7 @@
 			  		//renderMessages(data, type);
 						for(var n in data)
 						{
-							if (data[n].module == 'message' && data[n].state == 'TRASH')
+							if (data[n].state == 'TRASH')
 							{
 								filtered.push(data[n]);
 							}
@@ -465,7 +524,8 @@
 					default:
 						for(var n in data)
 						{
-							if (data[n].module == 'message' && data[n].requester != resources.uuid)
+							if (data[n].box == 'inbox' && data[n].requester != resources.uuid)
+							//if (data[n].module == 'message' && data[n].requester != resources.uuid)
 							{
 								filtered.push(data[n]);
 							}
@@ -513,6 +573,7 @@
 			thead.append(theadtr);
 			table.append(thead);
 			var tbody = $('<tbody></tbody>');
+			
 	    for(var n in data)
 	    { 			
 	    	var tbodytr = $('<tr></tr>');
@@ -526,20 +587,53 @@
 				
 				if (type == 'trash')
 				{
-					tbodytr.append('<td>'+data[n].responder+'</td>');
-					tbodytr.append('<td>'+data[n].requester+'</td>');
+					tbodytr.append('<td>'+data[n].responder[0].split('personalagent/')[1].split('/')[0]+'</td>');
+					tbodytr.append('<td>'+data[n].requester.split('personalagent/')[1].split('/')[0]+'</td>');
 				}
 				else
 				{
-					var person = (type == 'outbox') ?  data[n].responder : data[n].requester;
+					var responders = '';
+					
+					if (data[n].responder.length > 1)
+					{
+						responders = 'More than one user';
+						/*
+						for (var m in data[n].responder)
+						{
+							responders = responders + ', ' + data[n].responder[m].split('personalagent/')[1].split('/')[0];
+						}
+						*/
+					}
+					else
+					{
+						responders = data[n].responder[0].split('personalagent/')[1].split('/')[0];
+						/*
+						var groups = JSON.parse(webpaige.get('groups'));
+						for (var d in groups)
+						{
+							if (groups[d].uuid == responders)
+							{
+								responders = groups[d].name;
+							}
+						}
+						*/
+					}
+					
+					var person = (type == 'outbox') ?  responders : data[n].requester.split('personalagent/')[1].split('/')[0];
+					
+					/*
+					var person = (type == 'outbox') ?  data[n].responder.split('personalagent/')[1].split('/')[0] : data[n].requester.split('personalagent/')[1].split('/')[0];
+					*/
+
 					tbodytr.append('<td>'+person+'</td>');
 				}			
 				
 				var subject = (data[n].subject == null) ? 'No subject' : data[n].subject;
 				tbodytr.append('<td><a onclick="displayMessage(\''+data[n].uuid+'\', \''+type+'\');" rel="tooltip" title="'+data[n].question_text+'">'+subject+'</a></td>');
 				
-			  var date = new Date(data[n].creationTime * 1000);
-				tbodytr.append('<td>'+date.toString("dd-MMM-yyyy HH:mm")+'</td>');
+				var datetime = new Date(data[n].creationTime);
+				datetime = datetime.toString("ddd dd MMM yyyy HH:mm");
+				tbodytr.append('<td>'+datetime+'</td>');
 				
 				tdbtns = $('<td></td>');
 				btngroup = $('<div class="btn-group"></div>');
@@ -585,10 +679,10 @@
 		
 	}
 	
+	
+	
 	function loadUsers()
 	{ 
-		
-		
 	  var query = '{"key":""}';
 		webpaige.con(
 			options = {
@@ -606,15 +700,21 @@
 			  
 				if (data && data.length > 0)
 				{
+				
+					//webpaige.set('users', JSON.stringify(data));
+					
 			    for(var n in data)
 			    {
 			    	$(users).append("<option value=" + data[n].id + ">" + data[n].name + "</option>");
 			    }
 			    $("#receivers .chzn-select").append(users);
 			    //$("#receivers .chzn-select").trigger("liszt:updated");
+			    
+			    //
 				} 
 			}
 		);
+		
 		
 		webpaige.con(
 			options = {
@@ -629,6 +729,9 @@
 			  
 				if (data && data.length > 0)
 				{
+					// this is needed for checking group uuid's for sending messages
+					webpaige.config('groups', data);
+					
 			    for(var n in data)
 			    {
 			    	$(groups).append("<option value=" + data[n].uuid + ">" + data[n].name + "</option>");
@@ -716,6 +819,75 @@
 			$(this).attr("checked",status);
 		})
 	}
+	
+	
+/*
+	function confirmGroup(guuid)
+	{
+	
+		//debugger;
+		
+		var groups = webpaige.config('groups');
+		
+		for (var i in groups)
+		{
+			if (groups[i].uuid == guuid)
+			{					
+				webpaige.con(
+					options = {
+						path: '/network/'+groups[i].uuid+'/members',
+						loading: 'Loading members..',
+						label: 'members'
+						,session: session.getSession()	
+					},
+					function(data, label)
+				  {
+				  	data = JSON.parse(data);
+				  	  
+			  		//console.log('group members :', JSON.parse(data));
+			  		
+			  		for (var m in data)
+			  		{
+				  		//receivers.push(data[m].uuid);
+				  		
+				  		console.log(data[m].uuid);
+			  		}
+					}
+				);
+				
+				return true;				
+			}
+			else
+			{
+				return false;
+			}
+		}		
+	}
+*/
+	
+	
+	
+/*
+	function confirmUser(uuid)
+	{
+		var users = JSON.parse(webpaige.get('users'));
+		
+		console.log(users);
+		
+		for (var i in users)
+		{
+			//console.log(users[i].id);
+			if (users[i].id == uuid)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+*/
 
 	
 /* })(); */
@@ -743,6 +915,7 @@
  *
  */
  
+/*
 (function($) {
 
 	$.fn.charCount = function(options){
@@ -786,4 +959,5 @@
 	};
 
 })(jQuery);
+*/
 

@@ -1,4 +1,4 @@
-(function(){
+//(function(){
 	//'use strict';
 
 	window.addEventListener( 'load', windowInit, false );
@@ -51,8 +51,6 @@
 				dl.append('<dd>'+data.PostZip+'</dd>');
 				dl.append('<dt>City:</dt>');
 				dl.append('<dd>'+data.PostCity+'</dd>');
-				dl.append('<dt>Country:</dt>');
-				dl.append('<dd>'+data.PostCountry+'</dd>');
 				para.append(dl);
 				$(live).append(para);
 				$('#content').html(live);
@@ -78,7 +76,6 @@
 			  $('#address').val(data.PostAddress); 
 			  $('#postcode').val(data.PostZip); 
 			  $('#city').val(data.PostCity); 
-			  $('#country').val(data.PostCountry); 
 			}
 		);	
 	}
@@ -91,15 +88,15 @@
 	  
 	  if (pass1 == '' || pass2 == '')
 	  {
-	    $("#alertDiv").show();
-	    $("#alertMessage").html("<strong>Password reset failed!</strong><br>Please fill the compulsory fields.");
+	    $("#changePassword #alertDiv").show();
+	    $("#changePassword #alertMessage").html("<strong>Password reset failed!</strong><br>Please fill the compulsory fields.");
 	    return false;
 	  }
 	  
 	  if (pass1 != pass2)
 	  {
-	    $("#alertDiv").show();
-	    $("#alertMessage").html("<strong>Password reset failed!</strong><br>Passwords do not match. Please try again.");
+	    $("#changePassword #alertDiv").show();
+	    $("#changePassword #alertMessage").html("<strong>Password reset failed!</strong><br>Passwords do not match. Please try again.");
 	    return false;
 	  }
 	  else
@@ -150,10 +147,10 @@
 								},
 								function(data, label)
 							  {
-					    		$("#successDiv").show();
-					    		$("#successMessage").html("<strong>Password changed!</strong><br>Your new password is set up.");
-					    		$('#changePasswordButtons').hide();
-					    		$('#passwordChangedButton').show();
+					    		$("#changePassword #successDiv").show();
+					    		$("#changePassword #successMessage").html("<strong>Password changed!</strong><br>Your new password is set up.");
+					    		$('#changePassword #changePasswordButtons').hide();
+					    		$('#changePassword #passwordChangedButton').show();
 								}
 							);
 						}
@@ -161,8 +158,8 @@
 	  		}
 	  		else
 	  		{
-	    		$("#alertDiv").show();
-	    		$("#alertMessage").html("<strong>Password reset failed!</strong><br>You typed a wrong password.");
+	    		$("#changePassword #alertDiv").show();
+	    		$("#changePassword #alertMessage").html("<strong>Password reset failed!</strong><br>You typed a wrong password.");
 	  		}
 			}
 		);
@@ -176,15 +173,13 @@
 	  var address = $('#address').val(); 
 	  var postcode = $('#postcode').val(); 
 	  var city = $('#city').val(); 
-	  var country = $('#country').val(); 
 	  $('#updateProfile').modal('hide');
 	  var tags = '{' +
 	  	'"name":"' + name + '", ' +
 	  	'"PhoneAddress":"' + phone + '", ' +
 	  	'"PostAddress":"' + address + '", ' +
 	  	'"PostZip":"' + postcode + '", ' +
-	  	'"PostCity":"' + city + '", ' +
-	  	'"PostCountry":"' + country + '"' +
+	  	'"PostCity":"' + city + '"' +
 	  	'}';
 		webpaige.con(
 			options = {
@@ -203,4 +198,4 @@
 		);
 	}
 	
-})();
+//})();

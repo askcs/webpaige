@@ -23,7 +23,10 @@ function pageInit(active, logged)
 		
 		var userdrop = $('<ul class="dropdown-menu"></ul>');
 		userdrop.append('<li><a href="profile.html"><i class="icon-user"></i> Profile</a></li>');
-		userdrop.append('<li><a href="settings.html"><i class="icon-cog"></i> Settings</a></li>');
+		
+		if (webpaige.getRole() == 1)
+			userdrop.append('<li><a href="settings.html"><i class="icon-cog"></i> Settings</a></li>');
+			
 		userdrop.append('<li class="divider"></li>');
 		userdrop.append('<li><a onclick="webpaige.logout()"><i class="icon-off"></i> Sign Out</a></li>');
 		usermenu.append(userdrop);
@@ -49,21 +52,25 @@ function pageInit(active, logged)
 		
 		for(var i in menuItems)
 		{
-			if (active == menuItems[i])
-				highlighter = '<li class="active">'; else highlighter = '<li>';
-				/*
-				if (menuItems[i] == 'messages')
-				{
-					var menu = menuItems[i].charAt(0).toUpperCase() + menuItems[i].slice(1) + ' ' + unread;
-				}
-				else
-				{
-				*/
-					var menu = menuItems[i].charAt(0).toUpperCase() + menuItems[i].slice(1);
-				/* 				
-				}
-				*/
-			nav.append(highlighter + '<a href="' + menuItems[i] + '.html">' + menu + '</a></li>');
+			if (menuItems[i] != 'groups' || webpaige.config('userRole') < 2)
+			{
+				if (active == menuItems[i])
+					highlighter = '<li class="active">'; else highlighter = '<li>';
+					/*
+					if (menuItems[i] == 'messages')
+					{
+						var menu = menuItems[i].charAt(0).toUpperCase() + menuItems[i].slice(1) + ' ' + unread;
+					}
+					else
+					{
+					*/
+						var menu = menuItems[i].charAt(0).toUpperCase() + menuItems[i].slice(1);
+					/* 				
+					}
+					*/
+				nav.append(highlighter + '<a href="' + menuItems[i] + '.html">' + menu + '</a></li>');
+				
+			}
 		}
 		
 		navcollapse.append(nav);
@@ -262,6 +269,7 @@ webpaige.prototype.message = function(message)
 	$('#message').remove();
 	$('#alert').append('<div id="message">Success! ' + message + "</div>");
 	$('#alert').show();
+	$('#alert').delay(900).fadeOut(400);
 }
 
 
@@ -270,6 +278,7 @@ webpaige.prototype.alert = function(message)
 	$('#message').remove();
 	$('#alert').append('<div id="message">Error! ' + message + "</div>");
 	$('#alert').show();
+	$('#alert').delay(900).fadeOut(400);
 }
 
 
@@ -293,9 +302,10 @@ webpaige.prototype.logout = function()
 
 
 
-
-
-
+webpaige.prototype.getRole = function()
+{
+	return webpaige.config('userRole');		
+}
 
 
 
