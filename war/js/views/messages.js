@@ -204,14 +204,19 @@
 		{
 			if (messages[n].uuid === uuid)
 			{
-		    $('#composeMessage').modal('show');
+		    $('#replyMessage').modal('show');
+		    
+		    //console.log('requester :', messages[n].requester.split('personalagent/')[1].split('/')[0]);
+		    
+		    var requester = messages[n].requester.split('personalagent/')[1].split('/')[0];
 		    
 		    $('#receivers').append(
 			    $('<option></option>')
-					        .val(messages[n].requester)
-					        .html(messages[n].requester)
+					        .val(requester)
+					        .html(requester)
 					        .attr("selected", "selected"));
 				$("#receivers").trigger("liszt:updated");
+
 	
 		    //$('#receivers:selected').val(messages[n].requester); 
 	    	//$(".chzn-select").trigger("liszt:updated");
@@ -237,17 +242,18 @@
 		
 		$('#displayMessageModal').modal('show');
 		
-		var messages = localStorage.getItem('messages');
-	  var messages = messages ? JSON.parse(messages) : undefined;
+		//debugger;
+		
+		var messages = JSON.parse(webpaige.get('messages'));
+	  //var messages = messages ? JSON.parse(messages) : undefined;
+	  
 		for (var n in messages)
 		{
-			if (messages[n].uuid === uuid)
+			if (messages[n].uuid == uuid)
 			{
 				if (messages[n].state == 'NEW')
 				{
-					var query = '{"ids":[' + 
-				  						messages[n].uuid + 
-				  						'],"state":"SEEN"}';
+					var query = '{"ids":[' + messages[n].uuid + '],"state":"SEEN"}';
 					webpaige.con(
 						options = {
 							type: 'post',
@@ -258,10 +264,11 @@
 						},
 						function(data)
 					  {  
-							loadMessages('inbox');
+							loadMessages(type);
 						}
 					); 
 				}
+				
 				if (type == 'inbox')
 				{
 					$('#messageDirection').html('From');
@@ -270,7 +277,19 @@
 				else
 				{
 					$('#messageDirection').html('To');
-					$('#messageReceiver').html(messages[n].responder);
+					
+					var responders = '';
+					
+					if (messages[n].responder.length > 1)
+					{
+						responders = 'More than one user';
+					}
+					else
+					{
+						responders = messages[n].responder[0].split('personalagent/')[1].split('/')[0];
+					}
+					
+					$('#messageReceiver').html(responders);
 				}
 				
 				var datetime = new Date(messages[n].creationTime);
@@ -296,9 +315,7 @@
 	function removeMessage(uuid, type)
 	{
 		$('#displayMessageModal').modal('hide');
-	  var query = '{"ids":[' + 
-	  						uuid + 
-	  						'],"state":"TRASH"}';
+	  var query = '{"ids":[' + uuid + '],"state":"TRASH"}';
 		webpaige.con(
 			options = {
 				type: 'post',
@@ -328,9 +345,7 @@
 		  }
 		}).get();
 		
-	  var query = '{"ids":[' + 
-	  						ids + 
-	  						'],"state":"TRASH"}';
+	  var query = '{"ids":[' + ids + '],"state":"TRASH"}';
 	  						
 		webpaige.con(
 			options = {
@@ -450,7 +465,10 @@
 			function(data, label)
 		  {  
 		  	// needing this for replying messages 
-		  	localStorage.setItem("messages", JSON.stringify(data)); 
+		  	//webpaige.set('messages', ''); 
+		  	webpaige.set('messages', JSON.stringify(data)); 
+		  	
+		  	//console.log('msg stored');
 		  		
 		  	var filtered = [];
 				/*
@@ -469,7 +487,7 @@
 					)
 				);
 		  	
-		  	var resources = JSON.parse(localStorage.getItem('resources'));
+		  	var resources = JSON.parse(webpaige.get('resources'));
 		  
 				switch(type)
 				{
@@ -694,7 +712,10 @@
 			},
 			function(data)
 		  {  
-			  var data = data ? JSON.parse(data) : undefined;
+			  //var data = data ? JSON.parse(data) : undefined;
+			  
+			  //console.log('loaded users :', data)
+			  //debugger;
 			  
 			  var users = $('<optgroup label="USERS"></optgroup>');
 			  

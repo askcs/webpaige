@@ -1,20 +1,78 @@
+$(document).ready(function()
+{
+ 	pageInit('login', 'false');
+ 	var login = JSON.parse(webpaige.get('login'));
+ 	if (login != null)
+ 	{
+	  $('#username').val(login.user);
+	  //$('#password').val(login.pass);
+	  $('#remember').attr('checked', login.remember);
+ 	}
+  $("#alertClose").click(function()
+  {
+    $("#alertDiv").hide();
+  });
+  $("#loginBtn").click(function()
+  {
+  	loginHandler();
+  });
+	window.addEventListener( 'keypress', KeyPressHandler );
+});
+
+
+function KeyPressHandler( event ) {
+	if ( event.keyCode === 13 ) {
+		loginHandler();
+	}
+}
+
+
+function loginHandler()
+{
+  $("#ajaxLoader").show();
+  var userDef = "Username";
+  var passDef = "password";
+  var user = $('#username').val();
+  var pass = $('#password').val();
+  var r = $('#remember:checked').val();
+  if (user == '' || user == userDef)
+  {
+    $("#alertDiv").show();
+    $("#alertMessage").html("<strong>Login failed!</strong><br>No username given.");
+    $("#ajaxLoader").hide();
+    return false;
+  }
+  if (pass == '' || pass == passDef)
+  {
+    $("#alertDiv").show();
+    $("#alertMessage").html("<strong>Login failed!</strong><br>No password given.");
+    $("#ajaxLoader").hide();
+    return false;
+  }
+  loginAsk (user, pass, r);
+}
+
+	
 // new version
 function loginAs(type)
 {
-	var user, pass='askask';
+	var user, pass=MD5('askask');
 	switch (type)
 	{
 		case 'planner':
-			user = 'ulusoy.cengiz@gmail.com';
+			user = 'beheer';
+			pass = '319fcaa585c17eff5dcc2a57e8fc853f';
 		break;
 		case 'schipper':
 			user = '4170durinck';
+			pass = 'f5212ff3f9bac5439368462f2e791558';
 		break;
 		case 'volunteer':
 			user = '4780aldewereld';
+			pass = 'd9a6c9bad827746190792cf6f30d5271';
 		break;		
 	}
-	loginAsk(user, pass, true);
+	loginAskWithOutMD5 (user, pass, true);
 }
 
 
@@ -73,7 +131,7 @@ function loginAsk (user, pass, r)
 				  
 				  	
 					// logging in Sense
-/*
+					/*
 					var sense = {};
 					
 					webpaige.con(
@@ -90,72 +148,45 @@ function loginAsk (user, pass, r)
 					  {  
 				      sense.session = data["session_id"];
 				      webpaige.set('sense', JSON.stringify(sense));
-*/
-				  
-				      
-				      
-							if (webpaige.config('userRole') < 3)
-							{
-								webpaige.con(
-									options = {
-										path: '/network',
-										loading: 'Loading groups..',
-										label: 'groups'
-										,session: session.getSession()	
-									},
-									function(data, label)
-								  { 
-									  for(var i in data)
-									  {
-									  	if (i == 0)
-									  	{
-									  		webpaige.config('firstGroupUUID', data[i].uuid);
-									  		webpaige.config('firstGroupName', data[i].name);
-									  	}	 	    
-									  }
-									
-							      // finally redirect
-										document.location = "dashboard.html";
-									}
-								);
-							}
-							else
-							{
-								webpaige.con(
-									options = {
-										path: '/parent',
-										loading: 'Getting parent group..',
-										label: 'parent group: '
-										,session: session.getSession()	
-									},
-									function(data, label)
+				      */
+							
+				      var url = (data.role < 3) ? '/network' : '/parent';
+							
+							webpaige.con(
+								options = {
+									path: url,
+									loading: 'Loading groups..',
+									label: 'groups'
+									,session: session.getSession()	
+								},
+								function(data, label)
+							  { 
+								  for(var i in data)
 								  {
-									  var datas = JSON.parse(data);	
-								  	for (var i in datas)
-								  	{	  		
-								  		webpaige.config('parentGroupUUID', datas[i].uuid);	
-								  		webpaige.config('parentGroupName', datas[i].name);		  	
-								  	}
-									
-							      // finally redirect
-										document.location = "dashboard.html";
-									}
-								); 
-							}
+								  	if (i == 0)
+								  	{
+								  		webpaige.config('firstGroupUUID', data[i].uuid);
+								  		webpaige.config('firstGroupName', data[i].name);
+								  	}	 	    
+								  }
+						      // finally redirect
+									//document.location = "dashboard.html";
+								}
+							);
 					
 					
-/*
+							/*
 						}
 					);
-*/
-					// end of sense login	  
+					*/
+					// end of sense login	 
 					
 					
 					
-				      
 					
 					
-/*
+					/*
+					// Changed order
 					// logging in Sense
 					var sense = {};
 					
@@ -178,11 +209,153 @@ function loginAsk (user, pass, r)
 							document.location = "dashboard.html";
 						}
 					);
-*/
+					*/
+					
+					
+ 	
+ 	
+				}
+			);
+		}
+	);
+}
+
+function loginAskWithOutMD5 (user, pass, r)
+{
+	webpaige.set('config', '{}');
+	
+	// logging in ask
+	webpaige.con(
+		options = {
+			path: '/login?uuid=' + user + '&pass=' + pass,
+			loading: 'Logging in..'
+		},
+		function(data, label)
+	  {  	
+      if (r != null)
+      {
+      	var login = {};
+      	login.user = user;
+      	login.remember = r;
+      	webpaige.set('login', JSON.stringify(login));
+      }
+      else
+      {
+      	webpaige.remove('login');
+      }
+      session.setSession(data["X-SESSION_ID"]);
+      document.cookie = "sessionId=" + session;
+      
+      // loading resources
+			webpaige.con(
+				options = {
+					path: '/resources',
+					loading: 'Loading resources..',
+					label: 'resources',
+					session: session.getSession()	
+				},
+				function(data, label)
+			  {  	
+					webpaige.set(label, JSON.stringify(data));
+					
+					webpaige.config('userRole', data.role);					
+					
+					var trange = {};	
+					
+				  now = parseInt((new Date()).getTime() / 1000);
+				  trange.bstart = (now - 86400 * 7 * 1);
+				  trange.bend = (now + 86400 * 7 * 1);					
+					
+				  trange.start = new Date();
+				  trange.start = Date.today().addWeeks(-1);
+				  trange.end = new Date();
+				  trange.end = Date.today().addWeeks(1);
+				  
+				  webpaige.config('trange', trange);		
+				  
+				  	
+					// logging in Sense
+					/*
+					var sense = {};
+					
+					webpaige.con(
+						options = {
+							host: 'http://api.sense-os.nl',
+							path: '/login?username=' + user + '&password=' + MD5(pass),
+							type: 'post',
+							credentials: false,
+							loading: 'Logging Sense OS..',
+							label: 'sense'
+							,session: session.getSession()	
+						},
+						function(data, label)
+					  {  
+				      sense.session = data["session_id"];
+				      webpaige.set('sense', JSON.stringify(sense));
+				      */
+				      
+				      var url = (data.role < 3) ? '/network' : '/parent';				      				      
+				      
+							//debugger;
+							
+							webpaige.con(
+								options = {
+									path: url,
+									loading: 'Loading groups..',
+									label: 'groups'
+									,session: session.getSession()	
+								},
+								function(data, label)
+							  { 
+								  for(var i in data)
+								  {
+								  	if (i == 0)
+								  	{
+								  		webpaige.config('firstGroupUUID', data[i].uuid);
+								  		webpaige.config('firstGroupName', data[i].name);
+								  	}	 	    
+								  }
+						      // finally redirect
+									document.location = "dashboard.html";
+								}
+							);
+					
+					
+							/*
+						}
+					);
+					*/
+					// end of sense login	 
 					
 					
 					
 					
+					
+					/*
+					// Changed order
+					// logging in Sense
+					var sense = {};
+					
+					webpaige.con(
+						options = {
+							host: 'http://api.sense-os.nl',
+							path: '/login?username=' + user + '&password=' + MD5(pass),
+							type: 'post',
+							credentials: false,
+							loading: 'Logging Sense OS..',
+							label: 'sense'
+							,session: session.getSession()	
+						},
+						function(data, label)
+					  {  
+				      sense.session = data["session_id"];
+				      webpaige.set('sense', JSON.stringify(sense));
+				      
+				      // finally redirect
+							document.location = "dashboard.html";
+						}
+					);
+					*/
 					
 					
  	
@@ -195,41 +368,7 @@ function loginAsk (user, pass, r)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// These codes are depreciated
 
 function loginAskOriginal (user, pass, r)
 {

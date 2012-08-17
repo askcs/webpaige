@@ -2,13 +2,8 @@ $(document).ready(function()
 {
   
  	pageInit('dashboard', 'true');
- 	
-  var trange = webpaige.config('trange');
-  window.range =	'start=' + trange.bstart + 
-  								'&end=' + trange.bend;
-  						
   
-  //getParentGroup();
+  getParentGroup();
   /*
   if (webpaige.getRole() == 3)
   {
@@ -36,24 +31,20 @@ $(document).ready(function()
   
   
   
-	var guuid = webpaige.config('firstGroupUUID');
-	var gname = webpaige.config('firstGroupName');
-	groupTimelineInit(guuid, gname);
-	// Depreciated 
-	/*
-  if (webpaige.getRole() > 2)
+  if (webpaige.getRole() != 1)
   {
   	groupTimelineInit(webpaige.config('parentGroupUUID'), webpaige.config('parentGroupName'));
-  	//groupTimelineInit(webpaige.config('parentGroupUUID'), webpaige.config('parentGroupName'));
   }
   else
   {
+  
 	  var guuid = webpaige.config('firstGroupUUID');
 	  var gname = webpaige.config('firstGroupName');
-	  //console.log(gname, guuid);
+	  
+	  console.log(gname, guuid);
+	  
 	  groupTimelineInit(guuid, gname);  
   }  
-  */
   
   
   
@@ -68,22 +59,10 @@ $(document).ready(function()
   
   $("#groupsList").change(function()
   {
-  	timelineInit();
 		var guuid = $(this).find(":selected").val();
-		var gname = $(this).find(":selected").text();
-	  groupTimelineInit(guuid, gname);
-	  if (webpaige.getRole() < 3)  
-	  	membersTimelineInit(guuid);
+	  groupTimelineInit(guuid, gname);  
+	  membersTimelineInit(guuid);
 	});
-  
-  
-  
-  $(window).bind('resize', function () {
-	  timeline.redraw();
-	  timeline2.redraw();
-	  timeline3.redraw();
-  });
-  
   
 });
 
@@ -92,7 +71,6 @@ $(document).ready(function()
 
 
 
-/*
 function getParentGroup()
 {
 	var resources = JSON.parse(webpaige.get('resources'));					
@@ -114,12 +92,11 @@ function getParentGroup()
 		}
 	); 
 }
-*/
 
 
 
 	
-//var session = new ask.session();
+var session = new ask.session();
 var timeline;
 var timeline2;
 var timeline3;
@@ -180,7 +157,6 @@ function deletePlanSubmit()
 
 
 // Loaders
-/*
 function loadGroupAvs()
 {
 	$('#groupAvBtn').addClass('active');
@@ -206,7 +182,6 @@ function loadCurrentAvs()
 	var uuid = $('#groupsList option:selected').val();
 	getCurrentSlots(uuid);
 }
-*/
 
 
 
@@ -216,6 +191,9 @@ function loadCurrentAvs()
 function timelineInit()
 {
   timeline_data = [];
+  var options = {
+  	'groupsWidth': '100px'
+  };
   timeline = new links.Timeline(document.getElementById('mytimeline'));
   // Add event listeners
   google.visualization.events.addListener(timeline, 'edit', 	timelineOnEdit);
@@ -224,7 +202,6 @@ function timelineInit()
   google.visualization.events.addListener(timeline, 'change', timelineOnChange);
   google.visualization.events.addListener(timeline, 'select', timelineOnSelect);
   google.visualization.events.addListener(timeline, 'rangechange', onRangeChanged1);
-  
   getSlots();
 }
 
@@ -243,9 +220,6 @@ function membersTimelineInit(uuid)
   };
   timeline3 = new links.Timeline(document.getElementById('memberTimeline'));
   google.visualization.events.addListener(timeline3, 'rangechange', onRangeChanged3);
-  
-	timeline3.setVisibleChartRange( window.tstart, window.tend ); 
-			
   timeline3.draw(timeline_data3, options);
   getMemberSlots(uuid);
 }
@@ -254,11 +228,7 @@ function onRangeChanged1()
 {
   var range = timeline.getVisibleChartRange();
   timeline2.setVisibleChartRange(range.start, range.end);
-  
-  if (webpaige.getRole() != 3)
-  {
   timeline3.setVisibleChartRange(range.start, range.end);
-  }
 }  
       
 function onRangeChanged2() 
@@ -308,7 +278,7 @@ function timelineOnDelete()
 
 function timelineOnSelect()
 {
-  var sel = timeline.getSelection();  
+  var sel = timeline.getSelection();
   var row = sel[0].row;
   timeline_selected = timeline.getItem(row);
 }
@@ -348,8 +318,6 @@ function addSlot(from, till, reoc, value)
 	); 
 }
 
-
-// check delete slot
 function deleteSlot(from, till, reoc, value)
 {
 	var resources = JSON.parse(webpaige.get('resources'));
@@ -357,7 +325,8 @@ function deleteSlot(from, till, reoc, value)
   						+ resources.uuid + '/slots?start=' 
   						+ from + '&end=' 
   						+ till + '&text=' 
-  						+ timeline_helper_html2state2(value) 
+  						+ timeline_helper_html2state(value) 
+  						
   						+ '&recursive=' 
   						+ (reoc == 'Re-occuring');
 	webpaige.con(
@@ -531,17 +500,20 @@ function editSlotModal(efrom, etill, ereoc, evalue)
 // Timeline slots
 function getSlots()
 {
+  var now = parseInt((new Date()).getTime() / 1000);
+  var range =	'start=' + (now - 86400 * 7 * 0.5) + 
+  						'&end=' + (now + 86400 * 7 * 0.5);
 	var resources = JSON.parse(webpaige.get('resources'));					
 	webpaige.con(
 		options = {
-			path: '/askatars/'+resources.uuid+'/slots?'+window.range,
+			path: '/askatars/'+resources.uuid+'/slots?'+range,
 			loading: 'Getting slots..',
 			label: 'slots'
 			,session: session.getSession()	
 		},
 		function(data, label)
 	  {
-	  	var slots = data;  
+	  	var slots = JSON.parse(data);  
 			timeline_data = new google.visualization.DataTable();
 			timeline_data.addColumn('datetime', 'start');
 			timeline_data.addColumn('datetime', 'end');
@@ -556,35 +528,24 @@ function getSlots()
 			  	content, 
 			  	slots[i].recursive ? 'Re-occuring' : 'Plan'
 			  ]);
-			}      
-			
-		  var options = {
-		    'selectable': true,
-		    'editable': true,
-		  	'height': 'auto',
-		  	'groupsWidth': '100px',
-        'min': new Date(2012, 0, 1),                 // lower limit of visible range
-        'max': new Date(2012, 11, 31),               // upper limit of visible range
-        'intervalMin': 1000 * 60 * 60 * 24,          // one day in milliseconds
-        'intervalMax': 1000 * 60 * 60 * 24 * 31 * 3  // about three months in milliseconds
-		  };
-			
+			}       
+			var options = {
+				editable: true
+			};
 			timeline.draw(timeline_data, options); 
-		  
-		  var trange = webpaige.config('trange');
-		  timeline.setVisibleChartRange(trange.start, trange.end);
-			
-		  //console.log('user :', JSON.stringify(trange));
 		}
 	); 
 }
 
 function getGroupSlots(guuid, gname)
 {
+  var now = parseInt((new Date()).getTime() / 1000);
 	var resources = JSON.parse(webpaige.get('resources'));
+  var range =	'start=' + (now - 86400 * 7 * 0.5) + 
+  						'&end=' + (now + 86400 * 7 * 0.5);  
 	webpaige.con(
 		options = {
-			path: '/calc_planning/'+guuid+'?'+window.range,
+			path: '/calc_planning/'+guuid+'?'+range,
 			loading: 'Getting group aggregiated slots..',
 			label: gname
 			,session: session.getSession()	
@@ -650,21 +611,11 @@ function getGroupSlots(guuid, gname)
 		      'selectable': false,
 		      'editable': false,
 		      'groupsWidth': '100px',
-		      'eventMarginAxis': 0,
-	        'min': new Date(2012, 0, 1),                 // lower limit of visible range
-	        'max': new Date(2012, 11, 31),               // upper limit of visible range
-	        'intervalMin': 1000 * 60 * 60 * 24,          // one day in milliseconds
-	        'intervalMax': 1000 * 60 * 60 * 24 * 31 * 3  // about three months in milliseconds
+		      'eventMarginAxis': 0
 		  };
 		  timeline2 = new links.Timeline(document.getElementById('groupTimeline'));
 		  google.visualization.events.addListener(timeline2, 'rangechange', onRangeChanged2);
-			
 		  timeline2.draw(ndata, options);
-		  var trange = webpaige.config('trange');
-		  timeline2.setVisibleChartRange(trange.start, trange.end);
-		  
-		  //console.log('grp :', JSON.stringify(trange));
-  
 		}
 	); 
 }
@@ -685,8 +636,7 @@ function getMemberSlots(uuid)
 			timeline_data3.addColumn('datetime', 'end');
 			timeline_data3.addColumn('string', 'content');
 			timeline_data3.addColumn('string', 'groups');
-	  	//var members = JSON.parse(data);
-	  	var members = data;
+	  	var members = JSON.parse(data);
 	  	for (var i in members)
 	  	{
 				renderMemberSlots(members[i], members[i].name);
@@ -695,34 +645,28 @@ function getMemberSlots(uuid)
 		    'selectable': false,
 		    'editable': false,
 		    'snapEvents': false,
-		    'groupChangeable': false,
-        'min': new Date(2012, 0, 1),                 // lower limit of visible range
-        'max': new Date(2012, 11, 31),               // upper limit of visible range
-        'intervalMin': 1000 * 60 * 60 * 24,          // one day in milliseconds
-        'intervalMax': 1000 * 60 * 60 * 24 * 31 * 3  // about three months in milliseconds
+		    'groupChangeable': false
 		  };
-			
 			timeline3.draw(timeline_data3, options);
-		  var trange = webpaige.config('trange');
-		  timeline3.setVisibleChartRange(trange.start, trange.end);
-		  
-		  //console.log('mem :', JSON.stringify(trange));
 		}
 	);
 }
 
 function renderMemberSlots(member, name)
 {  
+  var now = parseInt((new Date()).getTime() / 1000);
+  var range =	'start=' + (now - 86400 * 7 * 0.5) + 
+  						'&end=' + (now + 86400 * 7 * 0.5);  
 	webpaige.con(
 		options = {
-			path: '/askatars/'+member.uuid+'/slots?'+window.range,
+			path: '/askatars/'+member.uuid+'/slots?'+range,
 			loading: 'Getting slots..',
 			label: name
 			,session: session.getSession()	
 		},
 		function(data, label)
 	  {
-	  	var slots = data; 
+	  	var slots = JSON.parse(data); 
 				timeline3.addItem({
 					'start':new Date(0),
 					'end':new Date(0),
@@ -749,7 +693,6 @@ function renderMemberSlots(member, name)
 	);     
 }
 
-/*
 function getCurrentSlots(uuid)
 {
 	webpaige.con(
@@ -812,7 +755,6 @@ function renderCurrentSlots(member)
 		}
 	); 
 }
-*/
 
 
 
@@ -850,21 +792,6 @@ function timeline_helper_html2state(content)
   }
   return state;
 }
-
-function timeline_helper_html2state2(content)
-{
-  var state_map = {
-	    'ask.state.1': ['available', 'green'],
-	    'ask.state.2': ['unavailable', 'red']
-	 };
-  var state = content.split('>')[1].split('<')[0];
-  //reverse map search..
-  for (var i in state_map)
-  {
-    if (state == state_map[i][0]) return state_map[i][0];
-  }
-  return state;
-}
     
     
     
@@ -872,46 +799,7 @@ function timeline_helper_html2state2(content)
 
 // Group list producers
 function renderGroupsList()
-{			
-	if (webpaige.getRole() < 3)
-	{
-		webpaige.con(
-			options = {
-				path: '/network',
-				loading: 'Loading groups..',
-				label: 'groups'
-				,session: session.getSession()	
-			},
-			function(data, label)
-		  { 
-			  for(var i in data)
-			  {
-		  		$('#groupsList').append('<option value="'+data[i].uuid+'">'+data[i].name+'</option>'); 	    
-			  }
-			}
-		);
-	}
-	else
-	{
-		webpaige.con(
-			options = {
-				path: '/parent',
-				loading: 'Getting parent group..',
-				label: 'parent group: '
-				,session: session.getSession()	
-			},
-			function(data, label)
-		  {
-			  //var data = JSON.parse(data);	
-		  	for (var i in data)
-		  	{	  		
-		  		$('#groupsList').append('<option value="'+data[i].uuid+'">'+data[i].name+'</option>'); 		  	
-		  	}
-			}
-		); 
-	}			
-					
-/*
+{
 	webpaige.con(
 		options = {
 			path: '/network',
@@ -923,15 +811,19 @@ function renderGroupsList()
 	  { 
 		  for(var i in data)
 		  {
+			  /*
+		  	if (i == 0)
+		  	{
+		  		webpaige.config('firstGroupUUID', data[i].uuid);
+		  		webpaige.config('firstGroupName', data[i].name);
+		  	}	
+		  	*/ 
 		  	$('#groupsList').append('<option value="'+data[i].uuid+'">'+data[i].name+'</option>');		    
 		  }
 		}
 	);
-*/
-	
 }
 
-/*
 function loadGroupsList()
 {
 	webpaige.con(
@@ -947,18 +839,7 @@ function loadGroupsList()
 		}
 	);
 }
-*/
 
-
-
-
-function goToday()
-{
-  var trange = webpaige.config('trange');
-  timeline.setVisibleChartRange(trange.start, trange.end);
-  timeline2.setVisibleChartRange(trange.start, trange.end);
-  timeline3.setVisibleChartRange(trange.start, trange.end);
-}
 
 
 

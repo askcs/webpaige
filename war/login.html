@@ -22,50 +22,6 @@
   
   <script src="js/init.js" type="text/javascript"></script>
   <script src="js/views/login.js" type="text/javascript"></script>
-  
-  <script type="text/javascript">
-  $(document).ready(function()
-	{
-		session = new ask.session();
-	 	pageInit('login', 'false');
-	 	var login = JSON.parse(webpaige.get('login'));
-	 	if (login != null)
-	 	{
-		  $('#username').val(login.user);
-		  //$('#password').val(login.pass);
-		  $('#remember').attr('checked', login.remember);
-	 	}
-	  $("#alertClose").click(function()
-	  {
-	    $("#alertDiv").hide();
-	  });
-	  $("#loginBtn").click(function()
-	  {
-	    $("#ajaxLoader").show();
-	    var userDef = "Username";
-	    var passDef = "password";
-	    var user = $('#username').val();
-	    var pass = $('#password').val();
-	    var r = $('#remember:checked').val();
-	    if (user == '' || user == userDef)
-	    {
-	      $("#alertDiv").show();
-	      $("#alertMessage").html("<strong>Login failed!</strong><br>No username given.");
-	      $("#ajaxLoader").hide();
-	      return false;
-	    }
-	    
-	    if (pass == '' || pass == passDef)
-	    {
-	      $("#alertDiv").show();
-	      $("#alertMessage").html("<strong>Login failed!</strong><br>No password given.");
-	      $("#ajaxLoader").hide();
-	      return false;
-	    }
-	    loginAsk (user, pass, r);
-	  });
-	});
-  </script>
 </head>
 <body>
 	<div id="navbar"></div>

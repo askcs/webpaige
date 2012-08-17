@@ -8,37 +8,11 @@ if (ask == undefined)
 /* Initialize functions */
 ask.session = function(callback)
 {
-	//var login = JSON.parse(cache.get('login'));
-	//this.uuid = login.user;
-	
-	/*
-	if (login = this.checkLogin)
-	{
-		this.uuid = login.user;
-	}
-	*/
-	
-	//this.uuid = 'ulusoy.cengiz@gmail.com';
-	
-	/*
-	this.checkLogin = function ()
-	{
-		if (cache.get('login') != null)
-		{
-			return JSON.parse(cache.get('login'));
-		}
-		else
-		{
-			return false;
-		}
-	}
-	*/
-
-
 	this.callback = callback;
 	this.name="";
 	this.checkSession = function()
 	{
+		//debugger;
 		if(this.sessionId==null)
 			return false;
 		var time = new Date();
@@ -63,10 +37,13 @@ ask.session = function(callback)
 			break;
 		}
 	}
+	
+	// this.checkSession();
 }
 
 ask.session.prototype.getSession = function()
 {
+	//debugger;
 	if(!this.checkSession())
 		this.callback();
 	this.setSession(this.sessionId);

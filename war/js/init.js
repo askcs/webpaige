@@ -1,3 +1,9 @@
+var session = new ask.session(relogin);
+function relogin() {
+	window.location = "login.html";
+}
+
+
 function pageInit(active, logged)
 {
 	webpaige = new webpaige();	
@@ -96,10 +102,6 @@ function pageInit(active, logged)
 
 
 
-var session = new ask.session();
-
-
-
 webpaige = function()
 {
   this.options = {
@@ -161,6 +163,7 @@ webpaige.prototype.config = function(key, value)
 		}
 		else
 		{
+			//console.log(config[key]);
 			return config[key];
 		}
 /* 	} */
@@ -208,6 +211,10 @@ webpaige.prototype.con = function(options, callback)
     	{
     		webpaige.message(options.message);
     	}
+    	
+      if(data && typeof data == 'string' && data != 'ok')
+      	data = JSON.parse(data);
+      	
     	callback(data, options.label);
     },
     error: function(jqXHR, exception)
@@ -295,7 +302,8 @@ webpaige.prototype.logout = function()
 	  	var login = webpaige.get('login');  
 			webpaige.clear();
 			webpaige.set('login', login);
-			document.location = "login.html";
+			session.clear();
+			window.location = "login.html";
 		}
 	); 
 }

@@ -594,7 +594,8 @@ function renderGroups(data, uuid, name)
 
 function renderMembers(json, name, uuid)
 {
- 	var data = json ? JSON.parse(json) : undefined;
+ 	//var data = json ? JSON.parse(json) : undefined;
+ 	var data = json;
  	
  	$('#live').remove();
  	
@@ -619,6 +620,7 @@ function renderMembers(json, name, uuid)
   $(live).append(title);
   
  	if (data && data.length > 0)
+ 	//if (data)
  	{
 		var table = $('<table id="tb-'+uuid+'" class="table table-striped"></table>');
 		var thead = $('<thead><tr></tr></thead>');
@@ -685,7 +687,7 @@ function renderMembers(json, name, uuid)
 
 function renderSearch(data)
 {
-	var data = data ? JSON.parse(data) : undefined;
+	//var data = data ? JSON.parse(data) : undefined;
 	
 	$('#groupsList li').removeClass('active');
  	
