@@ -210,12 +210,38 @@
 		    
 		    var requester = messages[n].requester.split('personalagent/')[1].split('/')[0];
 		    
-		    $('#receivers').append(
+		    console.log('to whom: ', requester);
+		    
+		    
+/*
+				webpaige.con(
+					options = {
+						path: '/node/'+requester+'/resource',
+						loading: 'Getting resources of the sender..',
+						message: 'Resources are obtained.',
+						label: 'resource'
+						,session: session.getSession()	
+					},
+					function(data, label)
+				  {
+		    
+				    $('#replyMessage .receivers .chzn-select').append(
+					    $('<option></option>')
+							        .val(requester)
+							        .html(data.name)
+							        .attr("selected", "selected"));
+						$("#replyMessage .receivers .chzn-select").trigger("liszt:updated");
+				
+					}
+				);
+*/
+		    
+		    $('#replyMessage .receivers .chzn-select').append(
 			    $('<option></option>')
 					        .val(requester)
 					        .html(requester)
 					        .attr("selected", "selected"));
-				$("#receivers").trigger("liszt:updated");
+				$("#replyMessage .receivers .chzn-select").trigger("liszt:updated");
 
 	
 		    //$('#receivers:selected').val(messages[n].requester); 
@@ -728,7 +754,7 @@
 			    {
 			    	$(users).append("<option value=" + data[n].id + ">" + data[n].name + "</option>");
 			    }
-			    $("#receivers .chzn-select").append(users);
+			    $(".receivers .chzn-select").append(users);
 			    //$("#receivers .chzn-select").trigger("liszt:updated");
 			    
 			    //
@@ -757,8 +783,8 @@
 			    {
 			    	$(groups).append("<option value=" + data[n].uuid + ">" + data[n].name + "</option>");
 			    }
-			    $("#receivers .chzn-select").append(groups);
-			    $("#receivers .chzn-select").trigger("liszt:updated");
+			    $(".receivers .chzn-select").append(groups);
+			    $(".receivers .chzn-select").trigger("liszt:updated");
 				} 
 			}
 		); 

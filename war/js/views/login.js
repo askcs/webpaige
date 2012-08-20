@@ -170,7 +170,8 @@ function loginAsk (user, pass, r)
 								  	}	 	    
 								  }
 						      // finally redirect
-									//document.location = "dashboard.html";
+						      //debugger;
+									document.location = "dashboard.html";
 								}
 							);
 					
