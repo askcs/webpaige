@@ -84,6 +84,12 @@ $(document).ready(function()
 	  timeline3.redraw();
   });
   
+
+	var local = {
+		title: 'dashboard_title',
+		statics: ['dashboard_today', 'dashboard_new_availability', 'dashboard_status', 'dashboard_available', 'dashboard_unavailable', 'dashboard_from', 'dashboard_till', 'dashboard_weekly', 'dashboard_cancel', 'dashboard_save_planning', 'dashboard_edit_availability', 'dashboard_delete_planning', 'dashboard_save_planning', 'dashboard_planboard']		
+	}
+	webpaige.i18n(local);
   
 });
 
@@ -338,7 +344,7 @@ function addSlot(from, till, reoc, value)
 			type: 'post',
 			path: '/slots',
 			json: body,
-			loading: 'Adding new slot..'
+			loading: 'Nieuwe beschiekbaarheid aan het toevoegen..'
 			,session: session.getSession()	
 		},
 		function(data)
@@ -364,7 +370,7 @@ function deleteSlot(from, till, reoc, value)
 		options = {
 			type: 'delete',
 			path: path,
-			loading: 'Deleting slot..'
+			loading: 'De beschiekbaarheid wordt verwijderd..'
 			,session: session.getSession()	
 		},
 		function(data)
@@ -388,7 +394,7 @@ function deleteSlotModal(from, till, reoc, value)
 		options = {
 			type: 'delete',
 			path: path,
-			loading: 'Deleting slot..'
+			loading: 'De beschiekbaarheid wordt verwijderd..'
 			,session: session.getSession()	
 		},
 		function(data)
@@ -421,14 +427,14 @@ function updateSlotModal()
 				type: 'put',
 				path: '/askatars/'+resources.uuid+'/slots?'+query,
 				json: body,
-				loading: 'Updating slot..'
+				loading: 'De beschiekbaarheid wordt gewijzigd..'
 				,session: session.getSession()	
 			},
 			function(data)
 		  { 
 		  	if (data)
 		  	{
-		  		webpaige.message("Slot updated successfully!");
+		  		webpaige.message("De beschiekbaarheid is gewijzigd!");
 		  	} 
 				getSlots();
 			}
@@ -437,7 +443,7 @@ function updateSlotModal()
 	else
 	{
 		timeline.cancelChange();
-		alert('You are not allowed to change past events.');
+		alert('Het is niet toegestaan ​​om gebeurtenissen uit het verleden te veranderen.');
 	}
 }
 
@@ -466,7 +472,7 @@ function updateSlot(oldSlot, newSlot)
 				type: 'put',
 				path: '/askatars/'+resources.uuid+'/slots?'+query,
 				json: body,
-				loading: 'Updating slot..'
+				loading: 'De beschiekbaarheid wordt gewijzigd..'
 				,session: session.getSession()	
 			},
 			function(data)
@@ -478,7 +484,7 @@ function updateSlot(oldSlot, newSlot)
 	else
 	{
 		timeline.cancelChange();
-		alert('You are not allowed to change past events.');
+		alert('Het is niet toegestaan ​​om gebeurtenissen uit het verleden te veranderen.');
 	}
 }
 
@@ -535,7 +541,7 @@ function getSlots()
 	webpaige.con(
 		options = {
 			path: '/askatars/'+resources.uuid+'/slots?'+window.range,
-			loading: 'Getting slots..',
+			loading: 'De beschiekbaarheiden worden opgeladen..',
 			label: 'slots'
 			,session: session.getSession()	
 		},
@@ -546,7 +552,7 @@ function getSlots()
 			timeline_data.addColumn('datetime', 'start');
 			timeline_data.addColumn('datetime', 'end');
 			timeline_data.addColumn('string', 'content');
-			timeline_data.addColumn('string', 'groups');
+			timeline_data.addColumn('string', 'group');
 			for (var i in slots)
 			{
 			  var content = colorState(slots[i].text);
@@ -554,7 +560,7 @@ function getSlots()
 			  	new Date(slots[i].start * 1000), 
 			  	new Date(slots[i].end * 1000), 
 			  	content, 
-			  	slots[i].recursive ? 'Re-occuring' : 'Plan'
+			  	slots[i].recursive ? 'Periodiek' : 'Plan'
 			  ]);
 			}      
 			
@@ -585,7 +591,7 @@ function getGroupSlots(guuid, gname)
 	webpaige.con(
 		options = {
 			path: '/calc_planning/'+guuid+'?'+window.range,
-			loading: 'Getting group aggregiated slots..',
+			loading: 'Groepsbeschiekbaarheid wordt geladen..',
 			label: gname
 			,session: session.getSession()	
 		},
@@ -674,7 +680,7 @@ function getMemberSlots(uuid)
 	webpaige.con(
 		options = {
 			path: '/network/'+uuid+'/members',
-			loading: 'Loading group member slots..',
+			loading: 'De groep lidden beschiekbaarheiden worden opgeladen..',
 			label: uuid
 			,session: session.getSession()	
 		},
@@ -684,7 +690,7 @@ function getMemberSlots(uuid)
 			timeline_data3.addColumn('datetime', 'start');
 			timeline_data3.addColumn('datetime', 'end');
 			timeline_data3.addColumn('string', 'content');
-			timeline_data3.addColumn('string', 'groups');
+			timeline_data3.addColumn('string', 'group');
 	  	//var members = JSON.parse(data);
 	  	var members = data;
 	  	for (var i in members)
@@ -716,7 +722,7 @@ function renderMemberSlots(member, name)
 	webpaige.con(
 		options = {
 			path: '/askatars/'+member.uuid+'/slots?'+window.range,
-			loading: 'Getting slots..',
+			loading: 'De beschiebaarheiden worden opgeladen..',
 			label: name
 			,session: session.getSession()	
 		},
@@ -727,13 +733,13 @@ function renderMemberSlots(member, name)
 					'start':new Date(0),
 					'end':new Date(0),
 					'content':'available',
-					'group': label + ' Re-occuring'
+					'group': label + ' (periodiek)'
 				});
 				timeline3.addItem({
 					'start':new Date(0),
 					'end':new Date(0),
 					'content':'available',
-					'group': label + ' Plan'
+					'group': label + ' (plan)'
 				});
 			for (var i in slots)
 			{
@@ -742,7 +748,7 @@ function renderMemberSlots(member, name)
 					'start':new Date(slots[i].start * 1000),
 					'end':new Date(slots[i].end * 1000),
 					'content':content,
-					'group':slots[i].recursive ? label + ' Re-occuring' : label + ' Plan'
+					'group':slots[i].recursive ? label + ' (periodiek)' : label + ' (plan)'
 				});
 			}  
 		}
@@ -878,7 +884,7 @@ function renderGroupsList()
 		webpaige.con(
 			options = {
 				path: '/network',
-				loading: 'Loading groups..',
+				loading: 'De groep informatie wordt opgeladen..',
 				label: 'groups'
 				,session: session.getSession()	
 			},
@@ -896,7 +902,7 @@ function renderGroupsList()
 		webpaige.con(
 			options = {
 				path: '/parent',
-				loading: 'Getting parent group..',
+				loading: 'Parent groep informatie wordt opgeladen..',
 				label: 'parent group: '
 				,session: session.getSession()	
 			},

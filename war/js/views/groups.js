@@ -87,6 +87,13 @@ $(document).ready(function()
 	{
 		allow_single_deselect:true
 	});
+
+
+	var local = {
+		title: 'groups_title',
+		statics: ['groups_search_members', 'groups_search', 'groups_new_member', 'groups_role', 'groups_groups', 'groups_first_name', 'groups_last_name', 'groups_phone_number', 'groups_email_address', 'groups_password', 'groups_cancel', 'groups_save_member', 'groups_edit_member', 'groups_firstlast_name', 'groups_address', 'groups_postcode', 'groups_city', 'groups_new_group', 'groups_group_name', 'groups_save_group', 'groups_edit_group', 'groups_delete_group']		
+	}
+	webpaige.i18n(local);
   
 });
 
@@ -99,7 +106,7 @@ function loadGroups(uuid, name)
 	webpaige.con(
 		options = {
 			path: '/network',
-			loading: 'Loading groups..',
+			loading: 'De groepen worden opgeladen..',
 			label: 'groups'
 			,session: session.getSession()	
 		},
@@ -129,15 +136,16 @@ function addGroup()
 		options = {
 			type: 'post',
 			path: '/network/'+resources.uuid,
-			loading: 'Adding new group..',
+			loading: 'Nieuwe groep wordt toegevoegd..',
 			json: body,
-			message: 'Group added.',
-			label: 'groups'
+			message: 'Groep is toegevoegd.',
+			label: 'addGroup'
 			,session: session.getSession()	
 		},
 		function(data, label)
 	  {  
-    	loadGroups(data, name);
+    	console.log(data, label);
+    	loadGroups(data, label);
 		}
 	);
 }
@@ -150,9 +158,9 @@ function updateGroup(name, uuid)
 		options = {
 			type: 'put',
 			path: '/network/'+uuid,
-			loading: 'Updating group..',
+			loading: 'Groep wordt gewijzigd..',
 			json: body,
-			message: 'Group updated.',
+			message: 'Groep gewijzigd.',
 			label: 'groups'
 			,session: session.getSession()	
 		},
@@ -178,8 +186,8 @@ function deleteGroup(uuid)
 		options = {
 			type: 'delete',
 			path: '/network/'+uuid,
-			loading: 'Deleting group..',
-			message: 'Group deleted',
+			loading: 'Groep wordt verwijderd..',
+			message: 'Groep is verwijderd.',
 			label: 'groups'
 			,session: session.getSession()	
 		},
@@ -199,7 +207,7 @@ function searchMembers(value)
 			type: 'post',
 			path: '/network/searchPaigeUser',
 			json: body,
-			loading: 'Searching for members..',
+			loading: 'Zoeken naar contacten in uw netwerk..',
 			label: 'searched'
 			,session: session.getSession()	
 		},
@@ -217,7 +225,7 @@ function loadMembers(name, uuid)
 	webpaige.con(
 		options = {
 			path: '/network/'+uuid+'/members',
-			loading: 'Loading members..',
+			loading: 'Contacten worden opgeladen..',
 			label: 'members'
 			,session: session.getSession()	
 		},
@@ -241,8 +249,8 @@ function addMembers()
 				options = {
 					type: 'post',
 					path: '/network/'+uuid+'/members/'+this.value,
-					loading: 'Adding member(s)..',
-					label: 'Member(s) added'
+					loading: 'Nieuwe contact(en) toegevoegd..',
+					label: 'Contact(en) is toegevoegd.'
 					,session: session.getSession()	
 				},
 				function(data, label)
@@ -326,8 +334,8 @@ function saveNewMember()
 					type: 'put',
 					path: '/node/'+uuid+'/resource',
 					json: tags,
-					loading: 'Saving member information..',
-					message: 'Member information is updated.',
+					loading: 'Contact informatie wordt opgeslagen..',
+					message: 'Contact informatie is opgeslagen.',
 					label: 'member'
 					,session: session.getSession()	
 				},
@@ -355,8 +363,8 @@ function saveNewMember()
 					path: '/users.json',
 					type: 'post',
 					json: body,
-					loading: 'Registering user in Sense environment..',
-					message: 'User registered in Sense.',
+					loading: 'Gebruiker account wordt geregistreerd in Sense environment..',
+					message: 'Gebruiker account is registered in Sense.',
 					session: null,
 					credentials: false,
 					label: 'Sense account'
@@ -375,8 +383,8 @@ function saveNewMember()
 					options = {
 						type: 'post',
 						path: '/network/'+guuids[h]+'/members/'+uuid,
-						loading: 'Adding member to the group..',
-						label: 'Member added to the group'
+						loading: 'Contact wordt toegevoegd in groep..',
+						label: 'Contact is toegevoegd in groep.'
 						,session: session.getSession()	
 					},
 					function(data, label)
@@ -396,8 +404,8 @@ function editMemberModalInit(guuid, uuid)
 	webpaige.con(
 		options = {
 			path: '/node/'+uuid+'/resource',
-			loading: 'Getting resources of the member..',
-			message: 'Resources are obtained.',
+			loading: 'Contact informatie wordt opgehaald..',
+			message: 'Contact informatie is opgeladen.',
 			label: 'resource'
 			,session: session.getSession()	
 		},
@@ -475,8 +483,8 @@ function editMember()
 			type: 'put',
 			path: '/node/'+uuid+'/resource',
 			json: tags,
-			loading: 'Saving member information..',
-			message: 'Member information is updated.',
+			loading: 'Contact informatie wordt opgeslagen..',
+			message: 'Contact informatie is gewijzigd.',
 			label: 'member'
 			,session: session.getSession()	
 		},
@@ -486,7 +494,7 @@ function editMember()
 			webpaige.con(
 				options = {
 					path: '/network/'+guuid,
-					loading: 'Loading members..',
+					loading: 'Contacten worden opgeladen..',
 					label: 'members'
 					,session: session.getSession()	
 				},
@@ -521,8 +529,8 @@ function removeMember(name, uuid, memberUuid)
 		options = {
 			type: 'delete',
 			path: '/network/'+uuid+'/members/'+memberUuid,
-			loading: 'Removing member(s)..',
-			label: 'Member(s) removed.'
+			loading: 'Contact wordt verwijderd..',
+			label: 'Contact is verwijderd.'
 			,session: session.getSession()	
 		},
 		function(data, label)
@@ -560,7 +568,7 @@ function renderGroups(data, uuid, name)
 	$('#groupsList').remove();
 	
 	var groupsList = $('<ul id="groupsList" class="nav nav-list"></ul>');
-  $(groupsList).append('<li class="nav-header">Groups</li>');
+  $(groupsList).append('<li class="nav-header">Groepen</li>');
    
   for (var i in data)
   {
@@ -605,15 +613,15 @@ function renderMembers(json, name, uuid)
   
   //$(btnGroup).append('<a onClick="addNewMemberToGroup(\''+name+'\', \''+uuid+'\')" class="btn"><i class="icon-user"></i> Add new member</a>');
   
-  $(btnGroup).append('<a data-toggle="modal" href="#newGroup" class="btn"><i class="icon-plus"></i> New group</a>');
+  $(btnGroup).append('<a data-toggle="modal" href="#newGroup" class="btn"><i class="icon-plus"></i> Nieuwe groep</a>');
   
-  $(btnGroup).append('<a onClick="editGroupModalInit(\''+name+'\', \''+uuid+'\')" class="btn"><i class="icon-edit"></i> Edit group</a>');
+  $(btnGroup).append('<a onClick="editGroupModalInit(\''+name+'\', \''+uuid+'\')" class="btn"><i class="icon-edit"></i> Bewerk groep</a>');
   
-  $(btnGroup).append('<a onClick="deleteGroup(\''+uuid+'\')" class="btn"><i class="icon-remove"></i> Delete group</a>');
+  $(btnGroup).append('<a onClick="deleteGroup(\''+uuid+'\')" class="btn"><i class="icon-remove"></i> Verwijder groep</a>');
   
   $(live).append(btnGroup);
   
-  $(live).append('<div class="btn-group btn-hanging"><a data-toggle="modal" href="#newMember" onclick="addNewMember()" class="btn"><i class="icon-user"></i> New member</a></div>');
+  $(live).append('<div class="btn-group btn-hanging"><a data-toggle="modal" href="#newMember" onclick="addNewMember()" class="btn"><i class="icon-user"></i> Nieuwe contact</a></div>');
   
   var title = $('<h2><span class="entypo eMedium">,</span> '+name+'</h2><br>');  
   
@@ -625,13 +633,13 @@ function renderMembers(json, name, uuid)
 		var table = $('<table id="tb-'+uuid+'" class="table table-striped"></table>');
 		var thead = $('<thead><tr></tr></thead>');
 		thead.append('<th><input type="checkbox" onclick="toggleChecked(\''+uuid+'\', this.checked)" /></th>');
-		thead.append('<th>Name</th>');
+		thead.append('<th>Naam</th>');
 		
 		thead.append('<th>Role</th>');
 		//thead.append('<th>UUID</th>');
 		
-		thead.append('<th>Email</th>');
-		thead.append('<th>Phone</th>');
+		thead.append('<th>Emailadres</th>');
+		thead.append('<th>Telefoonnummer</th>');
 		thead.append('<th></th>');
 		table.append(thead);
 		var tbody = $('<tbody></tbody>');
@@ -672,13 +680,13 @@ function renderMembers(json, name, uuid)
 			tbodytr.append('<td><a class="btn btn-mini" onclick="removeMember(\''+name+'\', \''+uuid+'\', \''+data[n].uuid+'\');"><i class="icon-trash"></i></a></td>');
 			tbody.append(tbodytr);
     }
-    tbody.append('<tr><td colspan="6"><a class="btn" onclick="removeMembers(\''+name+'\', \''+uuid+'\');"><i class="icon-trash"></i> Remove selected</a></td></tr>');
+    tbody.append('<tr><td colspan="6"><a class="btn" onclick="removeMembers(\''+name+'\', \''+uuid+'\');"><i class="icon-trash"></i> Verwijder geselecteerde contacten</a></td></tr>');
     table.append(tbody);
     $(live).append(table);
   }			      
  	else
  	{
-		$(live).append('<p>There are no members.</p>');
+		$(live).append('<p>Er zijn geen contacten.</p>');
  	}
  	
  	$('#content').html(live);
@@ -694,7 +702,7 @@ function renderSearch(data)
 	var live = $('<div id="live"></div>');
 	live.addClass('search');
   
-  var title = $('<h2><span class="entypo eMedium">,</span> Search Results</h2><br>Search query: "<span id="searchQuery">{Search Query}</span>". Total found results: <span id="searchResultsTotal">{Search Results Total}</span><br>');
+  var title = $('<h2><span class="entypo eMedium">,</span> Zoek resultaten</h2><br>Trefwoorden: "<span id="searchQuery">{Search Query}</span>". Gevonden resultaten: <span id="searchResultsTotal">{Search Results Total}</span><br>');
   
   $(live).append(title);  
 	
@@ -703,7 +711,7 @@ function renderSearch(data)
 		var table = $('<table id="tb-searchResultsTable" class="table table-striped"></table>');
 		var thead = $('<thead><tr></tr></thead>');
 		thead.append('<th><input type="checkbox" onclick="toggleChecked(\'searchResultsTable\', this.checked)" /></th>');
-		thead.append('<th>Name</th>');
+		thead.append('<th>Naam</th>');
 		table.append(thead);
 		var tbody = $('<tbody></tbody>');
     for(var n in data)
@@ -713,13 +721,13 @@ function renderSearch(data)
 			tbodytr.append('<td>'+data[n].name+'</td>');
 			tbody.append(tbodytr);
     }
-    tbody.append('<tr><td><form class="form-inline"><div class="control-group"><div class="controls docs-input-sizes"><select id="groupsAddList"></select> <a onclick="addMembers();" class="btn"><i class="icon-plus"></i> Add to group</a></div></div></form></td></tr>');
+    tbody.append('<tr><td><form class="form-inline"><div class="control-group"><div class="controls docs-input-sizes"><select id="groupsAddList"></select> <a onclick="addMembers();" class="btn"><i class="icon-plus"></i> Toeveogen aan de groep</a></div></div></form></td></tr>');
     table.append(tbody);
     $(live).append(table);
 	}
 	else
 	{
-		$(live).append('<p>There are no results.</p>');
+		$(live).append('<p>Er zijn geen resultaten.</p>');
 	}
  	$('#content').html(live);
 	$('#searchQuery').html($('#q').val());

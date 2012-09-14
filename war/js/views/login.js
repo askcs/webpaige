@@ -1,5 +1,37 @@
 $(document).ready(function()
 {
+/*
+	jQuery.i18n.properties({
+    name:'Login', 
+    path:'local/', 
+    mode:'both',
+    language:'nl_NL', 
+    callback: function()
+    {
+    	jQuery.i18n.prop('login_title');
+    	$('title').html(login_title);
+    	
+    	jQuery.i18n.prop('login_h2');
+    	$('#login_h2').html(login_h2);
+    	
+    	jQuery.i18n.prop('login_enter_email');
+    	$('#login_enter_email').html(login_enter_email);
+    	
+    	jQuery.i18n.prop('login_password');
+    	$('#login_password').html(login_password);
+    	
+    	jQuery.i18n.prop('login_remember');
+    	$('#login_remember').html(login_remember);
+    	
+    	jQuery.i18n.prop('login_login');
+    	$('#login_login').html(login_login);
+    	
+    	jQuery.i18n.prop('login_forgot');
+    	$('#login_forgot').html(login_forgot);
+    }
+	});
+*/
+
  	pageInit('login', 'false');
  	var login = JSON.parse(webpaige.get('login'));
  	if (login != null)
@@ -17,6 +49,13 @@ $(document).ready(function()
   	loginHandler();
   });
 	window.addEventListener( 'keypress', KeyPressHandler );
+
+
+	var local = {
+		title: 'login_title',
+		statics: ['login_login', 'login_enter_email', 'login_password', 'login_remember', 'login_forgot']		
+	}
+	webpaige.i18n(local);
 });
 
 
@@ -38,14 +77,16 @@ function loginHandler()
   if (user == '' || user == userDef)
   {
     $("#alertDiv").show();
-    $("#alertMessage").html("<strong>Login failed!</strong><br>No username given.");
+	  jQuery.i18n.prop('login_error_username');
+    $("#alertMessage").html(login_error_username);
     $("#ajaxLoader").hide();
     return false;
   }
   if (pass == '' || pass == passDef)
   {
     $("#alertDiv").show();
-    $("#alertMessage").html("<strong>Login failed!</strong><br>No password given.");
+	  jQuery.i18n.prop('login_error_password');
+    $("#alertMessage").html(login_error_password);
     $("#ajaxLoader").hide();
     return false;
   }
@@ -84,7 +125,8 @@ function loginAsk (user, pass, r)
 	webpaige.con(
 		options = {
 			path: '/login?uuid=' + user + '&pass=' + MD5(pass),
-			loading: 'Logging in..'
+			//loading: 'Logging in..'
+			loading: 'Inloggen..'
 		},
 		function(data, label)
 	  {  	
@@ -106,7 +148,8 @@ function loginAsk (user, pass, r)
 			webpaige.con(
 				options = {
 					path: '/resources',
-					loading: 'Loading resources..',
+					//loading: 'Loading resources..',
+					loading: 'Persoonlijke gegevens aan het laden..',
 					label: 'resources',
 					session: session.getSession()	
 				},
@@ -155,7 +198,7 @@ function loginAsk (user, pass, r)
 							webpaige.con(
 								options = {
 									path: url,
-									loading: 'Loading groups..',
+									loading: 'Groep & contacten informatie aan het laden..',
 									label: 'groups'
 									,session: session.getSession()	
 								},
@@ -229,7 +272,8 @@ function loginAskWithOutMD5 (user, pass, r)
 	webpaige.con(
 		options = {
 			path: '/login?uuid=' + user + '&pass=' + pass,
-			loading: 'Logging in..'
+			label: 'login',
+			loading: 'Inloggen..'
 		},
 		function(data, label)
 	  {  	
@@ -251,7 +295,7 @@ function loginAskWithOutMD5 (user, pass, r)
 			webpaige.con(
 				options = {
 					path: '/resources',
-					loading: 'Loading resources..',
+					loading: 'Persoonlijke gegevens aan het laden..',
 					label: 'resources',
 					session: session.getSession()	
 				},
@@ -302,7 +346,7 @@ function loginAskWithOutMD5 (user, pass, r)
 							webpaige.con(
 								options = {
 									path: url,
-									loading: 'Loading groups..',
+									loading: 'Groep & contacten informatie aan het laden..',
 									label: 'groups'
 									,session: session.getSession()	
 								},

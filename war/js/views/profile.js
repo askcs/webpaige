@@ -7,7 +7,15 @@
 	{
 	 	pageInit('profile', 'true');
 	  renderProfile();
-	  addEventListeners();		
+	  addEventListeners();	
+
+
+		var local = {
+			title: 'profile_title',
+			statics: ['profile_edit_profile', 'profile_change_password', 'profile_update_profile', 'profile_profile_name', 'profile_email_address', 'profile_phone_number', 'profile_address', 'profile_postcode', 'profile_city', 'profile_cancel', 'profile_save_profile', 'profile_old_password', 'profile_new_password', 'profile_new_password_repeat', 'profile_close', 'profile_changed']		
+		}
+		webpaige.i18n(local);
+		
 	}
 
 	function addEventListeners()
@@ -27,29 +35,29 @@
 		webpaige.con(
 			options = {
 				path: '/resources',
-				loading: 'Loading resources..',
+				loading: 'Gebruiker informatie wordt opgeladen..',
 				label: 'resources',
 				session: session.getSession()	
 			},
 			function(data, label)
 		  {  	
-			 	var name = (data.name != undefined) ? data.name : 'No name is given yet.';
-			 	var email = (data.EmailAddress != undefined) ? data.EmailAddress : 'No email address is given yet.';
-			 	var phone = (data.PhoneAddress != undefined) ? data.PhoneAddress : 'No phone number is set.';
-			 	var address = (data.fullPostAddress != undefined) ? data.fullPostAddress : 'No address is set.';
+			 	var name = (data.name != undefined) ? data.name : 'Er is nog geen namen toegevoegd.';
+			 	var email = (data.EmailAddress != undefined) ? data.EmailAddress : 'Er is nog geen adres toegevoegd.';
+			 	var phone = (data.PhoneAddress != undefined) ? data.PhoneAddress : 'Er is nog geen telefoonnummer toegevoegd.';
+			 	var address = (data.fullPostAddress != undefined) ? data.fullPostAddress : 'Er is nog geen adres toegevoegd.';
 			 	$('#live').remove();
 				var live = $('<div id="live"></div>');
 				var para = $('<p></p>');
 				var dl = $('<dl></dl>');
-				dl.append('<dt>Email address:</dt>');
+				dl.append('<dt>Emailadres:</dt>');
 				dl.append('<dd>'+email+'</dd>');
-				dl.append('<dt>Telephone number:</dt>');
+				dl.append('<dt>Telefoonnummer:</dt>');
 				dl.append('<dd>'+phone+'</dd>');
-				dl.append('<dt>Street:</dt>');
+				dl.append('<dt>Straat:</dt>');
 				dl.append('<dd>'+data.PostAddress+'</dd>');
 				dl.append('<dt>Postcode:</dt>');
 				dl.append('<dd>'+data.PostZip+'</dd>');
-				dl.append('<dt>City:</dt>');
+				dl.append('<dt>Stad:</dt>');
 				dl.append('<dd>'+data.PostCity+'</dd>');
 				para.append(dl);
 				$(live).append(para);
@@ -63,7 +71,7 @@
 		webpaige.con(
 			options = {
 				path: '/resources',
-				loading: 'Loading resources..',
+				loading: 'Gebruiker informatie wordt opgeladen..',
 				label: 'resources',
 				session: session.getSession()	
 			},
@@ -89,14 +97,14 @@
 	  if (pass1 == '' || pass2 == '')
 	  {
 	    $("#changePassword #alertDiv").show();
-	    $("#changePassword #alertMessage").html("<strong>Password reset failed!</strong><br>Please fill the compulsory fields.");
+	    $("#changePassword #alertMessage").html("<strong>Wachtwoord wijzigen is mislukt!</strong><br>Graag vul de alle verplichte velden.");
 	    return false;
 	  }
 	  
 	  if (pass1 != pass2)
 	  {
 	    $("#changePassword #alertDiv").show();
-	    $("#changePassword #alertMessage").html("<strong>Password reset failed!</strong><br>Passwords do not match. Please try again.");
+	    $("#changePassword #alertMessage").html("<strong>Wachtwoord wijzigen is mislukt!</strong><br>Wachtwoorden komen niet overeen. Probeer het opnieuw.");
 	    return false;
 	  }
 	  else
@@ -107,7 +115,7 @@
 		webpaige.con(
 			options = {
 				path: '/resources',
-				loading: 'Loading resources..',
+				loading: 'Gebruiker informatie wordt opgeladen..',
 				label: 'resources',
 				session: session.getSession()	
 			},
@@ -120,8 +128,8 @@
 						options = {
 							type: 'post',
 							path: '/resources?tags=' + tags,
-							loading: 'Changing password..',
-							message: 'Successfully changed password',
+							loading: 'Wachtwoord wordt gewijzigd..',
+							message: 'Wachtwoord is gewijzigd.',
 							label: 'resources'
 							,session: session.getSession()	
 						},
@@ -139,8 +147,8 @@
 									path: '/change_password.json',
 									type: 'post',
 									json: body,
-									loading: 'Changing Sense password..',
-									message: 'Sense password changed..',
+									loading: 'Sense Wachtwoord wordt gewijzigd..',
+									message: 'Sense Wachtwoord is gewijzigd..',
 									session: sense.session,
 									credentials: false,
 									label: 'sensors'
@@ -148,7 +156,7 @@
 								function(data, label)
 							  {
 					    		$("#changePassword #successDiv").show();
-					    		$("#changePassword #successMessage").html("<strong>Password changed!</strong><br>Your new password is set up.");
+					    		$("#changePassword #successMessage").html("<strong>Wachtwoord is gewijzigd!</strong><br>Uw nieuwe wachtwoord is ingesteld.");
 					    		$('#changePassword #changePasswordButtons').hide();
 					    		$('#changePassword #passwordChangedButton').show();
 								}
@@ -159,7 +167,7 @@
 	  		else
 	  		{
 	    		$("#changePassword #alertDiv").show();
-	    		$("#changePassword #alertMessage").html("<strong>Password reset failed!</strong><br>You typed a wrong password.");
+	    		$("#changePassword #alertMessage").html("<strong>Wachtwoord wijzigen is mislukt!</strong><br>U hebt een verkeerd wachtwoord getypt.");
 	  		}
 			}
 		);
@@ -185,8 +193,8 @@
 			options = {
 				type: 'post',
 				path: '/resources?tags=' + tags,
-				loading: 'Changing resources..',
-				message: 'Successfully change a resource',
+				loading: 'Gebruiker informatie wordt gewijzigd..',
+				message: 'Gebruiker informatie is gewijzigd.',
 				label: 'resources'
 				,session: session.getSession()	
 			},

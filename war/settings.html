@@ -33,6 +33,7 @@
 	<script type="text/javascript" src="js/datetimepicker/jquery-ui-sliderAccess.js"></script>
   
   <script src="js/init.js" type="text/javascript"></script>
+  <script src="js/i18n/jquery.i18n.properties-min-1.0.9.js" type="text/javascript"></script>
   <script src="js/views/settings.js" type="text/javascript"></script>
   
   <style>
@@ -91,11 +92,11 @@
           <a id="tmlZoomOutBtn" class="btn" onClick="timelineZoomOut();"><i class="icon-zoom-out"></i></a>
           <a id="tmlMoveLeftBtn" class="btn" onClick="timelineMoveLeft();"><i class="icon-arrow-left"></i></a>
           <a id="tmlMoveRightBtn" class="btn" onClick="timelineMoveRight();"><i class="icon-arrow-right"></i></a> 
-          <a id="tmlTodayBtn" class="btn" onClick="timelineInit();">Today</a>  
+          <a id="tmlTodayBtn" class="btn" onClick="timelineInit();"><span class="settings_today"></span></a>  
         </div>
         
         <div class="btn-group btn-hanging">
-          <a class="btn" data-toggle="modal" href="#newWish"><i class="icon-plus-sign"></i> New wish</a>
+          <a class="btn" data-toggle="modal" href="#newWish"><i class="icon-plus-sign"></i> <span class="settings_new_wish"></span></a>
         </div>  
 				  
 				<!--
@@ -123,30 +124,30 @@
         <div class="modal hide" id="newWish">
           <div class="modal-header">
             <button class="close" data-dismiss="modal" type="button">×</button>
-            <h3>New wish</h3>
+            <h3><span class="settings_new_wish"></span></h3>
           </div>
           <form id="newWishForm" class="">
             <div class="modal-body">
               <div class="control-group">
-                <label class="control-label">Group</label>
+                <label class="control-label"><span class="settings_group"></span></label>
                 <div class="controls">
                   <select id="groupsList"></select>
                 </div>
               </div>
               <div class="control-group">
-                <label class="control-label">From</label>
+                <label class="control-label"><span class="settings_from"></span></label>
                 <div class="controls">
                   <input id="from" class="span4" type="text" style="display:inline;">
                 </div>
               </div>
               <div class="control-group">
-                <label class="control-label">Till</label>
+                <label class="control-label"><span class="settings_till"></span></label>
                 <div class="controls">
                   <input id="till" class="span4" type="text" style="display:inline;">
                 </div>
               </div>
               <div class="control-group" style="float:left; margin-right:30px;">
-                <label class="control-label">Wish</label>
+                <label class="control-label"><span class="settings_wish"></span></label>
                 <div class="controls">
                   <input id="wish" class="span4" type="text">
                 </div>
@@ -154,8 +155,8 @@
               <div class="clear"></div>
             </div>
             <div class="modal-footer">
-              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Cancel</a>
-              <a onclick="wishSubmit()" class="btn btn-success"><i class="icon-ok icon-white"></i> Save wish</a>
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> <span class="settings_cancel"></span></a>
+              <a onclick="wishSubmit()" class="btn btn-success"><i class="icon-ok icon-white"></i> <span class="settings_save_wish"></span></a>
             </div>
           </form>
         </div>
@@ -168,24 +169,24 @@
         <div class="modal hide" id="editWish">
           <div class="modal-header">
             <button class="close" data-dismiss="modal" type="button">×</button>
-            <h3>Edit wish (<span id="groupName"></span>)</h3>
+            <h3><span class="settings_edit_wish"></span> (<span id="groupName"></span>)</h3>
           </div>
           <form id="editWishForm" class="">
             <div class="modal-body">
               <div class="control-group">
-                <label class="control-label">From</label>
+                <label class="control-label"><span class="settings_from"></span></label>
                 <div class="controls">
                   <input id="efrom" class="span4" type="text" style="display:inline;">
                 </div>
               </div>
               <div class="control-group">
-                <label class="control-label">Till</label>
+                <label class="control-label"><span class="settings_till"></span></label>
                 <div class="controls">
                   <input id="etill" class="span4" type="text" style="display:inline;">
                 </div>
               </div>
               <div class="control-group" style="float:left; margin-right:30px;">
-                <label class="control-label">Wish</label>
+                <label class="control-label"><span class="settings_wish"></span></label>
                 <div class="controls">
                   <input id="ewish" class="span4" type="text">
                 </div>
@@ -193,13 +194,13 @@
               <div class="clear"></div>
             </div>
             <div class="modal-footer">
-              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Cancel</a>
-              <a onclick="editWishSubmit()" class="btn btn-success"><i class="icon-ok icon-white"></i> Save wish</a>
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> <span class="settings_cancel"></span></a>
+              <a onclick="editWishSubmit()" class="btn btn-success"><i class="icon-ok icon-white"></i> <span class="settings_save_wish"></span></a>
             </div>
           </form>
         </div>
         
-        <h2><span class="entypo eMedium">@</span> Settings</h2>
+        <h2><span class="entypo eMedium">@</span> <span class="settings_settings"></span></h2>
         <hr>
         
         <div id="wishesTimeline"></div>

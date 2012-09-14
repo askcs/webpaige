@@ -31,7 +31,7 @@
 	  });
 	  
 	  
-/*
+	  /*
 	  $('#sms').click(function () {
 			if(this.checked)
 			{
@@ -44,7 +44,7 @@
 				$('.counter').hide();
 			}
 		});
-*/
+		*/
 		
 		
 		
@@ -60,13 +60,13 @@
 		//default usage
 		//$("#msgcontent").charCount();
 		//custom usage
-/*
+		/*
 		$("#msgcontent").charCount({
 			allowed: 160,		
 			warning: 20,
 			counterText: 'Characters left: '	
 		});
-*/
+		*/
 
 		
 	  loadUsers(); 
@@ -74,7 +74,7 @@
 		loadMessages();
 		addEventListeners();
 		
-/*
+		/*
 		if(confirmUser('ulusoy.cengiz@gmail.com'))
 		{
 			console.log('returned true');
@@ -83,7 +83,14 @@
 		{
 			console.log('returned false');			
 		}
-*/
+		*/
+  
+
+		var local = {
+			title: 'messages_title',
+			statics: ['messages_compose', 'messages_compose_a_message', 'messages_message_type', 'messages_sms', 'messages_intern_message', 'messages_email', 'messages_receiver', 'messages_subject', 'messages_message', 'messages_cancel', 'messages_send_message', 'messages_reply_message', 'messages_date', 'messages_messages', 'messages_inbox', 'messages_outbox', 'messages_trash']		
+		}
+		webpaige.i18n(local);
 
 	}
 
@@ -118,7 +125,6 @@
 	  
 	  
 	  //console.log('message',content);
-	  
 	  //resetForms();
 	  
 	  /*  
@@ -126,12 +132,9 @@
 			receivers[n] = '"' + receivers[n] + '"';
 		*/ 
 		
-/*
+		/*
 		var receivers = [];
-		
 		console.log(rawReceivers);
-		
-		
 		for(var n in rawReceivers)
 		{
 			if (confirmGroup(rawReceivers[n]))
@@ -143,7 +146,7 @@
 				console.log(rawReceivers[n]);
 			}
 		}
-*/
+		*/
 		
 		var sms = $('input#sms[name="sms"]:checked').val();
 		var paigem = $('input#paigem[name="paigem"]:checked').val();
@@ -178,8 +181,8 @@
 				type: 'post',
 				path: '/question/sendDirectMessage',
 				json: query,
-				loading: 'Sending message(s)..',
-				message: 'Message sent!'
+				loading: 'Het bericht wordt verstuurd..',
+				message: 'Het bericht is verstuurd!'
 				,session: session.getSession()	
 			},
 			function(data)
@@ -213,7 +216,7 @@
 		    console.log('to whom: ', requester);
 		    
 		    
-/*
+		    /*
 				webpaige.con(
 					options = {
 						path: '/node/'+requester+'/resource',
@@ -234,7 +237,7 @@
 				
 					}
 				);
-*/
+				*/
 		    
 		    $('#replyMessage .receivers .chzn-select').append(
 			    $('<option></option>')
@@ -257,11 +260,11 @@
 		$('#displayMessageActions').remove();
 		var actions = $('<div id="displayMessageActions" class="modal-footer"></div>');
 		
-		actions.append('<a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Close</a>');
+		actions.append('<a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Sluiten</a>');
 		
-		actions.append('<a class="btn btn-danger" onclick="removeMessage(\''+uuid+'\');"><i class="icon-white icon-trash"></i> Delete Message</a>');
+		actions.append('<a class="btn btn-danger" onclick="removeMessage(\''+uuid+'\');"><i class="icon-white icon-trash"></i> Bericht verwijderen</a>');
 		
-		actions.append('<a class="btn btn-success" onclick="replyMessage(\''+uuid+'\');"><i class="icon-white icon-ok"></i> Reply Message</a>');
+		actions.append('<a class="btn btn-success" onclick="replyMessage(\''+uuid+'\');"><i class="icon-white icon-ok"></i> Bericht antwoorden</a>');
 		
 		$('#displayMessageModal').append(actions);
 		
@@ -285,7 +288,7 @@
 							type: 'post',
 							path: '/question/changeState',
 							json: query,
-							loading: 'Changing state..'
+							loading: 'Berichtstatus wordt verandert..'
 							,session: session.getSession()	
 						},
 						function(data)
@@ -297,18 +300,18 @@
 				
 				if (type == 'inbox')
 				{
-					$('#messageDirection').html('From');
+					$('#messageDirection').html('Van');
 					$('#messageReceiver').html(messages[n].requester.split('personalagent/')[1].split('/')[0]);
 				}
 				else
 				{
-					$('#messageDirection').html('To');
+					$('#messageDirection').html('Naar');
 					
 					var responders = '';
 					
 					if (messages[n].responder.length > 1)
 					{
-						responders = 'More than one user';
+						responders = 'Meerdere gebruikers';
 					}
 					else
 					{
@@ -347,7 +350,7 @@
 				type: 'post',
 				path: '/question/changeState',
 				json: query,
-				loading: 'Changing state..'
+				loading: 'Het bericht wordt naar prullenbak verplaatst..'
 				,session: session.getSession()	
 			},
 			function(data)
@@ -378,7 +381,7 @@
 				type: 'post',
 				path: '/question/changeState',
 				json: query,
-				loading: 'Moving messages to trash..'
+				loading: 'De berichten worden naar prullenbak verplaatst..'
 				,session: session.getSession()	
 			},
 			function(data)
@@ -399,7 +402,7 @@
 				type: 'post',
 				path: '/question/deleteQuestions',
 				json: query,
-				loading: 'Deleting message..'
+				loading: 'Het bericht wordt verwijdert..'
 				,session: session.getSession()	
 			},
 			function(data)
@@ -431,7 +434,7 @@
 				type: 'post',
 				path: '/question/deleteQuestions',
 				json: query,
-				loading: 'Emptying trash..'
+				loading: 'De prullenbak wordt leegmaakt..'
 				,session: session.getSession()	
 			},
 			function(data)
@@ -459,22 +462,22 @@
 			case 'inbox':
 				var url = '/question?0=dm';
 				var btn = $('#inbox');
-				var status = 'Loading inbox..';
+				var status = 'Inbox wordt opgeladen..';
 			break;
 			case 'outbox':
 				var url = '/question?0=sent';
 				var btn = $('#outbox');
-				var status = 'Loading outbox..';
+				var status = 'Outbox wordt opgeladen..';
 			break;
 			case 'trash':
 				var url = '/question';
 				var btn = $('#trash');
-				var status = 'Loading trash..';
+				var status = 'Prullenbak wordt opgeladen..';
 			break;
 			default:
 				var url = '/question?0=dm';
 				var btn = $('#inbox');
-				var status = 'Loading inbox..';
+				var status = 'Inbox wordt opgeladen..';
 				var type = 'inbox';
 		}
 		
@@ -599,20 +602,20 @@
 			
 			if (type == 'trash')
 			{
-				theadtr.append('<th>From</th>');
-				theadtr.append('<th>To</th>');
+				theadtr.append('<th>Van</th>');
+				theadtr.append('<th>Naar</th>');
 			}
 			else
 			{
-				var direction = (type == 'outbox') ?  'To' : 'From';
+				var direction = (type == 'outbox') ?  'Naar' : 'Van';
 				if (type == 'inbox')
 					theadtr.append('<th></th>');
 					
 				theadtr.append('<th>'+direction+'</th>');
 			}
 			
-			theadtr.append('<th>Subject</th>');
-			theadtr.append('<th>Date</th>');
+			theadtr.append('<th>Onderwerp</th>');
+			theadtr.append('<th>Datum</th>');
 			theadtr.append('<th></th>');
 			thead.append(theadtr);
 			table.append(thead);
@@ -625,7 +628,7 @@
 			
 				if (type == 'inbox')
 				{
-					var state = (data[n].state == 'NEW') ?  '<span class="label label-info">New</span>' : '';
+					var state = (data[n].state == 'NEW') ?  '<span class="label label-info">Nieuw</span>' : '';
 					tbodytr.append('<td>'+state+'</td>');
 				}
 				
@@ -640,7 +643,7 @@
 					
 					if (data[n].responder.length > 1)
 					{
-						responders = 'More than one user';
+						responders = '<i>Meerdere ontvangers</i>';
 						/*
 						for (var m in data[n].responder)
 						{
@@ -704,11 +707,11 @@
 	    
 	    if (type == 'trash')
 	    {
-	    	tbody.append('<tr><td colspan="6"><a class="btn btn-danger" onclick="emptyTrash();"><i class="icon-trash icon-white"></i> Delete permanently</a></td></tr>');
+	    	tbody.append('<tr><td colspan="6"><a class="btn btn-danger" onclick="emptyTrash();"><i class="icon-trash icon-white"></i> Verwijder definitief</a></td></tr>');
 	    }
 	    else
 	    {
-	    	tbody.append('<tr><td colspan="6"><a class="btn" onclick="removeMessages(\''+type+'\');"><i class="icon-trash"></i> Remove selected</a></td></tr>');
+	    	tbody.append('<tr><td colspan="6"><a class="btn" onclick="removeMessages(\''+type+'\');"><i class="icon-trash"></i> Verwijder geselecteerde berichten</a></td></tr>');
 	    }
 	    
 	    table.append(tbody);
@@ -716,7 +719,7 @@
 	  }			      
 	 	else
 	 	{
-			$(live).append('<p>There are no messages.</p>');
+			$(live).append('<p>Er zijn geen berichten.</p>');
 	 	}
 	 	
 	 	$('#content').html(live);
@@ -733,7 +736,7 @@
 				type: 'post',
 				path: '/network/searchPaigeUser',
 				json: query,
-				loading: 'Searching for users in network..'
+				loading: 'Zoeken naar gebruikers in uw netwerk..'
 				,session: session.getSession()	
 			},
 			function(data)
@@ -766,7 +769,7 @@
 		webpaige.con(
 			options = {
 				path: '/network',
-				loading: 'Loading group lists..'
+				loading: 'De groepenlijst wordt opgeladen..'
 				,session: session.getSession()	
 			},
 			function(data)

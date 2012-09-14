@@ -12,7 +12,9 @@ function pageInit(active, logged)
 	$('body').append('<div id="alert"></div>');
 	
 	var menuItems = new Array;		
-	var menuItems = ['dashboard', 'messages', 'groups'];
+	//var menuItems = ['dashboard', 'messages', 'groups'];
+	var menuItems = ['planboard', 'berichten', 'groepen'];
+	var menuLinks = ['dashboard', 'messages', 'groups']
 	 	
   //var user = JSON.parse(localStorage.getItem('user'));
   var resources = JSON.parse(webpaige.get('resources'));
@@ -28,13 +30,13 @@ function pageInit(active, logged)
 		navbar.append(usermenu);
 		
 		var userdrop = $('<ul class="dropdown-menu"></ul>');
-		userdrop.append('<li><a href="profile.html"><i class="icon-user"></i> Profile</a></li>');
+		userdrop.append('<li><a href="profile.html"><i class="icon-user"></i> Profiel</a></li>');
 		
 		if (webpaige.getRole() == 1)
-			userdrop.append('<li><a href="settings.html"><i class="icon-cog"></i> Settings</a></li>');
+			userdrop.append('<li><a href="settings.html"><i class="icon-cog"></i> Instellingen</a></li>');
 			
 		userdrop.append('<li class="divider"></li>');
-		userdrop.append('<li><a onclick="webpaige.logout()"><i class="icon-off"></i> Sign Out</a></li>');
+		userdrop.append('<li><a onclick="webpaige.logout()"><i class="icon-off"></i> Uitloggen</a></li>');
 		usermenu.append(userdrop);
 		
 		var navcollapse = $('<div class="nav-collapse"></div>');
@@ -74,7 +76,7 @@ function pageInit(active, logged)
 					/* 				
 					}
 					*/
-				nav.append(highlighter + '<a href="' + menuItems[i] + '.html">' + menu + '</a></li>');
+				nav.append(highlighter + '<a href="' + menuLinks[i] + '.html">' + menu + '</a></li>');
 				
 			}
 		}
@@ -93,7 +95,7 @@ function pageInit(active, logged)
 	}
 	$('#navbar').html(navbar);
   
-  $('title').html('WebPaige :: ' + active.charAt(0).toUpperCase() + active.slice(1));
+  //$('title').html('WebPaige :: ' + active.charAt(0).toUpperCase() + active.slice(1));
 }
 
 
@@ -111,8 +113,8 @@ webpaige = function()
   	type: 'get',
   	session: session,
   	credentials: true,
-  	loading: 'Loading..',
-  	message: 'Success!',
+  	loading: 'Laden..',
+  	message: 'Succes!',
   	label: 'not_labeled',
   	400: null,
   };  
@@ -205,7 +207,7 @@ webpaige.prototype.con = function(options, callback)
     	withCredentials: options.credentials
     },
     success: function(data)
-    {
+    {    
     	webpaige.loaded();
     	if (options.message != null)
     	{
@@ -217,7 +219,7 @@ webpaige.prototype.con = function(options, callback)
       	
     	callback(data, options.label);
     },
-    error: function(jqXHR, exception)
+    error: function(jqXHR, exception, options)
     {
       if (jqXHR.status === 0)
       {
@@ -225,6 +227,14 @@ webpaige.prototype.con = function(options, callback)
       }
       else if (jqXHR.status == 400)
       {
+      	var rerror = jqXHR.responseText.split('<title>')[1].split('</title>')[0];
+      	if (rerror === '400 bad credentials')
+      	{
+			    $("#alertDiv").show();
+			    $("#alertMessage").html("<strong>Login failed!</strong><br>Wrong username or password.");
+			    $("#ajaxLoader").hide();
+			    $('#status').hide();
+      	}
       	webpaige.alert('Bad request. [400]');
       }
       else if (jqXHR.status == 404)
@@ -294,7 +304,8 @@ webpaige.prototype.logout = function()
 	webpaige.con(
 		options = {
 			path: '/logout',
-			loading: 'Logging out..'
+			//loading: 'Logging out..'
+			loading: 'Uitloggen..'
 			,session: session.getSession()	
 		},
 		function(data)
@@ -309,12 +320,36 @@ webpaige.prototype.logout = function()
 }
 
 
-
 webpaige.prototype.getRole = function()
 {
 	return webpaige.config('userRole');		
 }
 
 
-
+webpaige.prototype.i18n = function(local)
+{
+	this.local = {
+		//language: 'en_EN',
+		language: 'nl_NL'
+	}
+	local = $.extend({}, this.local, local);
+	jQuery.i18n.properties(
+	{
+	  name: 'Local', 
+	  path: 'local/', 
+	  mode:'both',
+	  language: local.language, 
+	  callback: function()
+	  {
+	  	var statics = local.statics;
+	  	for(var i in statics)
+	  	{
+	  		jQuery.i18n.prop(statics[i]);
+	  		$('.'+statics[i]).html(eval(statics[i]));
+	  	}
+  		jQuery.i18n.prop(local.title);
+  		$('title').html(eval(local.title));
+	  }
+	});
+}
 

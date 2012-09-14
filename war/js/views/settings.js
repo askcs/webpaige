@@ -14,7 +14,13 @@ function windowInit()
   $('#efrom').datetimepicker();
   $('#etill').datetimepicker();
   
-  wishesTimelineInit();  
+  wishesTimelineInit(); 
+
+		var local = {
+			title: 'settings_title',
+			statics: ['settings_today', 'settings_new_wish', 'settings_group', 'settings_from', 'settings_till', 'settings_wish', 'settings_cancel', 'settings_save_wish', 'settings_edit_wish', 'settings_settings']		
+		}
+		webpaige.i18n(local); 
  	
 }
     
@@ -150,7 +156,7 @@ function addWish(from, till, wish, group)
 			type: 'put',
 			path: '/network/'+group+'/wish',
 			json: body,
-			loading: 'Adding new wish..'
+			loading: 'Nieuwe beschiekbaarheid wordt toegevoegd..'
 			,session: session.getSession()	
 		},
 		function(data)
@@ -198,7 +204,7 @@ function getWishes()
 	webpaige.con(
 		options = {
 			path: '/network',
-			loading: 'Loading groups..',
+			loading: 'Groepen worden opgeladen..',
 			label: 'groups'
 			,session: session.getSession()	
 		},
@@ -210,7 +216,7 @@ function getWishes()
 					options = {
 						path: '/network/'+data[i].uuid+'/wish?'+range,
 						//path: '/parent/availability?'+range,
-						loading: 'Getting '+data[i].name+' wishes..',
+						loading: data[i].name+' beschiekbaarheid wordt opgeladen..',
 						label: data[i].name
 						,session: session.getSession()	
 					},

@@ -20,6 +20,7 @@
   <script src="js/libs/date.js" type="text/javascript"></script>
   
   <script src="js/init.js" type="text/javascript"></script>
+  <script src="js/i18n/jquery.i18n.properties-min-1.0.9.js" type="text/javascript"></script>
   <script src="js/views/messages.js" type="text/javascript"></script>
   
   <link href="js/chosen/chosen.css" rel="stylesheet">
@@ -34,24 +35,24 @@
       <div class="span12 well">
       
         <div class="btn-group btn-hanging">
-          <a class="btn" onclick="composeMessage()"><i class="icon-plus-sign"></i> Compose</a>
+          <a class="btn" onclick="composeMessage()"><i class="icon-plus-sign"></i> <span class="messages_compose"></span></a>
         </div>
         
         <div class="modal hide" id="composeMessage">
           <div class="modal-header">
             <button class="close" data-dismiss="modal" type="button">×</button>
-            <h3>Compose a message</h3>
+            <h3><span class="messages_compose_a_message"></span></h3>
           </div>
             <div class="modal-body">
           		<form id="compose">
 	              <div class="control-group">
-	                <label class="control-label">Message type</label>
+	                <label class="control-label"><span class="messages_message_type"></span></label>
 	                <div class="controls docs-input-sizes">
 	                	<div id="smsCheck" style="display:inline;">
-                  		<input id="sms" type="checkbox" name="sms" value="true"> <span style="margin-right:10px;">SMS</span>
+                  		<input id="sms" type="checkbox" name="sms" value="true"> <span class="messages_sms" style="margin-right:10px;"></span>
 	                	</div>
-                  	<input id="paigem" name="paigem" type="checkbox" value="true"> <span style="margin-right:10px;">Intern Message</span>
-                  	<input id="email" name="email" type="checkbox" value="true"> Email
+                  	<input id="paigem" name="paigem" type="checkbox" value="true"> <span class="messages_intern_message" style="margin-right:10px;"></span>
+                  	<input id="email" name="email" type="checkbox" value="true"> <span class="messages_email"></span>
 	                </div>
 	              </div>
 	              <!--
@@ -63,19 +64,19 @@
 	              </div>
 	              -->
 	              <div id="" class="control-group receivers">
-	                <label class="control-label">Receiver</label>
+	                <label class="control-label"><span class="messages_receiver"></span></label>
 	                <div class="controls docs-input-sizes">
 	                  <select class="chzn-select" data-placeholder="Choose a contact.." multiple style="width:530%" tabindex="4"></select>
 	                </div>
 	              </div>
 	              <div id="subjectDiv" class="control-group">
-	                <label class="control-label">Subject</label>
+	                <label class="control-label"><span class="messages_subject"></span></label>
 	                <div class="controls docs-input-sizes">
 	                  <input id="title" class="span12" placeholder="" type="text">
 	                </div>
 	              </div>
 	              <div class="control-group">
-	                <label class="control-label">Message</label>
+	                <label class="control-label"><span class="messages_message"></span></label>
 	                <div class="controls docs-input-sizes">
 	                  <textarea id="msgcontent" class="span12" name="msgcontent" rows="6"></textarea>
 	                </div>
@@ -83,32 +84,32 @@
           		</form>
             </div>
             <div class="modal-footer">
-              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Cancel</a>
-              <a onclick="sendMessage();" class="btn btn-success"><i class="icon-ok icon-white"></i> Send message</a>
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> <span class="messages_cancel"></span></a>
+              <a onclick="sendMessage();" class="btn btn-success"><i class="icon-ok icon-white"></i> <span class="messages_send_message"></span></a>
             </div>
         </div>
         
         <div class="modal hide" id="replyMessage">
           <div class="modal-header">
             <button class="close" data-dismiss="modal" type="button">×</button>
-            <h3>Reply message</h3>
+            <h3><span class="messages_reply_message"></span></h3>
           </div>
             <div class="modal-body">
           		<form id="reply">
 	              <div class="control-group receivers">
-	                <label class="control-label">Receiver</label>
+	                <label class="control-label"><span class="messages_receiver"></span></label>
 	                <div class="controls docs-input-sizes">
 	                  <select class="chzn-select" data-placeholder="Choose a contact.." multiple style="width:530%" tabindex="4"></select>
 	                </div>
 	              </div>
 	              <div class="control-group">
-	                <label class="control-label">Subject</label>
+	                <label class="control-label"><span class="messages_subject"></span></label>
 	                <div class="controls docs-input-sizes">
 	                  <input id="title" class="span12" placeholder="" type="text">
 	                </div>
 	              </div>
 	              <div class="control-group">
-	                <label class="control-label">Message</label>
+	                <label class="control-label"><span class="messages_message"></span></label>
 	                <div class="controls docs-input-sizes">
 	                  <textarea id="" class="span12" id="" name="" rows="6"></textarea>
 	                </div>
@@ -116,8 +117,8 @@
           		</form>
             </div>
             <div class="modal-footer">
-              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Cancel</a>
-              <a id="messageSender" class="btn btn-success" href="#"><i class="icon-ok icon-white"></i> Send message</a>
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> <span class="messages_cancel"></span></a>
+              <a id="messageSender" class="btn btn-success" href="#"><i class="icon-ok icon-white"></i> <span class="messages_send_message"></span></a>
             </div>
         </div>
         
@@ -134,19 +135,19 @@
                 </div>
               </div>
               <div class="control-group">
-                <label class="control-label"><h4>Date</h4></label>
+                <label class="control-label"><h4><span class="messages_date"></span></h4></label>
                 <div class="controls docs-input-sizes">
                   <span id="messageDate"></span>
                 </div>
               </div>
               <div class="control-group">
-                <label class="control-label"><h4>Subject</h4></label>
+                <label class="control-label"><h4><span class="messages_subject"></span></h4></label>
                 <div class="controls docs-input-sizes">
                   <span class="messageSubject"></span>
                 </div>
               </div>
               <div class="control-group">
-                <label class="control-label"><h4>Message</h4></label>
+                <label class="control-label"><h4><span class="messages_message"></span></h4></label>
                 <div class="controls docs-input-sizes">
                   <span id="messageContent"></span>
                 </div>
@@ -155,15 +156,16 @@
             <div id="displayMessageActions" class="modal-footer"></div>
         </div>
         
-        <h2><span class="entypo eMedium">w</span> Messages</h2>
-        <hr>
+        <h2><span class="entypo eMedium">w</span> <span class="messages_messages"></span></h2>
+        <!-- <hr> -->
+        <br />
         
         <div class="tabbable">
         
           <ul class="nav nav-tabs">
-            <li id="inbox"><a>Inbox</a></li>
-            <li id="outbox"><a>Outbox</a></li>
-            <li id="trash"><a>Trash</a></li>
+            <li id="inbox"><a><span class="messages_inbox"></span></a></li>
+            <li id="outbox"><a><span class="messages_outbox"></span></a></li>
+            <li id="trash"><a><span class="messages_trash"></span></a></li>
           </ul>
           
           <div class="tab-content">
