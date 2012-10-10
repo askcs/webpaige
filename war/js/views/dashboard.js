@@ -358,50 +358,71 @@ function addSlot(from, till, reoc, value)
 // check delete slot
 function deleteSlot(from, till, reoc, value)
 {
-	var resources = JSON.parse(webpaige.get('resources'));
-  var path = 	'/askatars/' 
-  						+ resources.uuid + '/slots?start=' 
-  						+ from + '&end=' 
-  						+ till + '&text=' 
-  						+ timeline_helper_html2state2(value) 
-  						+ '&recursive=' 
-  						+ (reoc == 'Re-occuring');
-	webpaige.con(
-		options = {
-			type: 'delete',
-			path: path,
-			loading: 'De beschiekbaarheid wordt verwijderd..'
-			,session: session.getSession()	
-		},
-		function(data)
-	  {  
-			getSlots();
-		}
-	); 
+	var now = parseInt((new Date()).getTime() / 1000);
+	
+	//console.log('from : ', from, '    now : ', now);
+	
+	if (from > now)
+	{
+		var resources = JSON.parse(webpaige.get('resources'));
+	  var path = 	'/askatars/' 
+	  						+ resources.uuid + '/slots?start=' 
+	  						+ from + '&end=' 
+	  						+ till + '&text=' 
+	  						+ timeline_helper_html2state2(value) 
+	  						+ '&recursive=' 
+	  						+ (reoc == 'Re-occuring');
+		webpaige.con(
+			options = {
+				type: 'delete',
+				path: path,
+				loading: 'De beschiekbaarheid wordt verwijderd..'
+				,session: session.getSession()	
+			},
+			function(data)
+		  {  
+				getSlots();
+			}
+		);  
+	}
+	else
+	{
+		timeline.cancelChange();
+		alert('Het is niet toegestaan ​​om gebeurtenissen uit het verleden te veranderen.');
+	}
 }
 
 function deleteSlotModal(from, till, reoc, value)
 {
-	var resources = JSON.parse(webpaige.get('resources'));
-  var path = 	'/askatars/' 
-  						+ resources.uuid + '/slots?start=' 
-  						+ from + '&end=' 
-  						+ till + '&text=' 
-  						+ value 
-  						+ '&recursive=' 
-  						+ (reoc == 'Re-occuring');
-	webpaige.con(
-		options = {
-			type: 'delete',
-			path: path,
-			loading: 'De beschiekbaarheid wordt verwijderd..'
-			,session: session.getSession()	
-		},
-		function(data)
-	  {  
-			getSlots();
-		}
-	); 
+	var now = parseInt((new Date()).getTime() / 1000);
+	if (from > now)
+	{
+		var resources = JSON.parse(webpaige.get('resources'));
+	  var path = 	'/askatars/' 
+	  						+ resources.uuid + '/slots?start=' 
+	  						+ from + '&end=' 
+	  						+ till + '&text=' 
+	  						+ value 
+	  						+ '&recursive=' 
+	  						+ (reoc == 'Re-occuring');
+		webpaige.con(
+			options = {
+				type: 'delete',
+				path: path,
+				loading: 'De beschiekbaarheid wordt verwijderd..'
+				,session: session.getSession()	
+			},
+			function(data)
+		  {  
+				getSlots();
+			}
+		); 
+	}
+	else
+	{
+		timeline.cancelChange();
+		alert('Het is niet toegestaan ​​om gebeurtenissen uit het verleden te veranderen.');
+	}
 }
 
 function updateSlotModal()
@@ -576,6 +597,21 @@ function getSlots()
 		  };
 			
 			timeline.draw(timeline_data, options); 
+			
+			
+			
+			timeline.addItem({
+				'start':new Date(0),
+				'end':new Date(0),
+				'content':'available',
+				'group': 'Periodiek'
+			});
+			timeline.addItem({
+				'start':new Date(0),
+				'end':new Date(0),
+				'content':'available',
+				'group': 'Plan'
+			});
 		  
 		  var trange = webpaige.config('trange');
 		  timeline.setVisibleChartRange(trange.start, trange.end);

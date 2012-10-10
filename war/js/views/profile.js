@@ -44,7 +44,10 @@
 			 	var name = (data.name != undefined) ? data.name : 'Er is nog geen namen toegevoegd.';
 			 	var email = (data.EmailAddress != undefined) ? data.EmailAddress : 'Er is nog geen adres toegevoegd.';
 			 	var phone = (data.PhoneAddress != undefined) ? data.PhoneAddress : 'Er is nog geen telefoonnummer toegevoegd.';
-			 	var address = (data.fullPostAddress != undefined) ? data.fullPostAddress : 'Er is nog geen adres toegevoegd.';
+			 	//var address = (data.fullPostAddress != undefined) ? data.fullPostAddress : 'Er is nog geen adres toegevoegd.';
+			 	var address = (data.PostAddress != undefined) ? data.PostAddress : 'Er is nog geen adres toegevoegd.';
+			 	var postcode = (data.PostZip != undefined) ? data.PostZip : 'Er is nog geen postcode toegevoegd.';
+			 	var city = (data.PostCity != undefined) ? data.PostCity : 'Er is nog geen stad toegevoegd.';
 			 	$('#live').remove();
 				var live = $('<div id="live"></div>');
 				var para = $('<p></p>');
@@ -54,11 +57,11 @@
 				dl.append('<dt>Telefoonnummer:</dt>');
 				dl.append('<dd>'+phone+'</dd>');
 				dl.append('<dt>Straat:</dt>');
-				dl.append('<dd>'+data.PostAddress+'</dd>');
+				dl.append('<dd>'+address+'</dd>');
 				dl.append('<dt>Postcode:</dt>');
-				dl.append('<dd>'+data.PostZip+'</dd>');
+				dl.append('<dd>'+postcode+'</dd>');
 				dl.append('<dt>Stad:</dt>');
-				dl.append('<dd>'+data.PostCity+'</dd>');
+				dl.append('<dd>'+city+'</dd>');
 				para.append(dl);
 				$(live).append(para);
 				$('#content').html(live);

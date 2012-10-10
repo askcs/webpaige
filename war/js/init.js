@@ -60,7 +60,7 @@ function pageInit(active, logged)
 		
 		for(var i in menuItems)
 		{
-			if (menuItems[i] != 'groups' || webpaige.config('userRole') < 2)
+			if (menuLinks[i] != 'groups' || webpaige.config('userRole') < 2)
 			{
 				if (active == menuItems[i])
 					highlighter = '<li class="active">'; else highlighter = '<li>';
@@ -214,8 +214,13 @@ webpaige.prototype.con = function(options, callback)
     		webpaige.message(options.message);
     	}
     	
-      if(data && typeof data == 'string' && data != 'ok')
-      	data = JSON.parse(data);
+    	if (options.label != 'addGroup')
+    	{
+      	if(data && typeof data == 'string' && data != 'ok')
+      	{
+      		data = JSON.parse(data);
+      	}
+    	}
       	
     	callback(data, options.label);
     },
@@ -231,7 +236,7 @@ webpaige.prototype.con = function(options, callback)
       	if (rerror === '400 bad credentials')
       	{
 			    $("#alertDiv").show();
-			    $("#alertMessage").html("<strong>Login failed!</strong><br>Wrong username or password.");
+			    $("#alertMessage").html("<strong>Inloggen is mislukt!</strong><br>Onjuiste gebruikersnaam of wachtwoord.");
 			    $("#ajaxLoader").hide();
 			    $('#status').hide();
       	}

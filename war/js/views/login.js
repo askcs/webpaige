@@ -213,7 +213,7 @@ function loginAsk (user, pass, r)
 								  	}	 	    
 								  }
 						      // finally redirect
-						      //debugger;
+						       //debugger;
 									document.location = "dashboard.html";
 								}
 							);
@@ -360,6 +360,8 @@ function loginAskWithOutMD5 (user, pass, r)
 								  		webpaige.config('firstGroupName', data[i].name);
 								  	}	 	    
 								  }
+								  
+								  //debugger;								  
 						      // finally redirect
 									document.location = "dashboard.html";
 								}

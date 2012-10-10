@@ -18,26 +18,26 @@ $(document).ready(function()
 
   	var uuid = $('#email').val();
     
-    var xhr = $.ajax
+    var xhr = $.ajax(
     {
       url: host + '/passwordReset?uuid='+uuid.toLowerCase()+'&path='+window.location.protocol + '//' + window.location.host + '/change_password.html',
       statusCode: {
         400: function() {
           $("#alertDiv").show();
           $("#successDiv").hide();
-          $("#alertMessage").html("<strong>Reset password failed!</strong><br>Failed to send e-mail, please try again.");
+          $("#alertMessage").html("<strong>Wachtwoord resetten is mislukt!</strong><br>Wachwoord resetten email is niet verzonden. Probeer nogmaals.");
           $("#ajaxLoader").hide();
         },
         409: function() {
           $("#alertDiv").show();
           $("#successDiv").hide();
-          $("#alertMessage").html("<strong>Reset password failed!</strong><br>No user with this e-mail address was registered.");
+          $("#alertMessage").html("<strong>Wachtwoord resetten is mislukt!</strong><br>Er is geen gebruiker met deze emailadres gevonden.");
           $("#ajaxLoader").hide();
         },
 				200: function(data) {
           $("#alertDiv").hide();
           $("#successDiv").show();
-          $("#successMessage").html("<strong>Reset password succeeded!</strong><br>An e-mail with a password reset link was sent to " + uuid);
+          $("#successMessage").html("<strong>Wachtwoord resetten is succes!</strong><br>Er is een email met een wachtwoord reset link gestuurd naar " + uuid);
           $("#ajaxLoader").hide();
           $("#inputFieldEmail").hide();
           $("#sendPasswordLinkBtn").hide();
@@ -48,7 +48,7 @@ $(document).ready(function()
       },
       error: function(xhr, status) {
         $("#alertDiv").show();
-        $("#alertMessage").html("<strong>Reset password failed!</strong><br>An unknown error occurred, please try again.");
+        $("#alertMessage").html("<strong>Wachtwoord resetten is mislukt!</strong><br>Er is een onbekende fout opgetreden. Probeer nogmaals.");
         $("#ajaxLoader").hide();
       },
       complete: function(xhr, status) {

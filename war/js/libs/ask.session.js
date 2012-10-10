@@ -1,4 +1,4 @@
-//var host='http://10.200.200.102:9000';
+//var host='http://10.200.200.196:9000/ns_knrm';
 var host='http://3rc2.ask-services.appspot.com/ns_knrm';
 //var host = 'http://localhost:9000';
 

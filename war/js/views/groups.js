@@ -91,7 +91,7 @@ $(document).ready(function()
 
 	var local = {
 		title: 'groups_title',
-		statics: ['groups_search_members', 'groups_search', 'groups_new_member', 'groups_role', 'groups_groups', 'groups_first_name', 'groups_last_name', 'groups_phone_number', 'groups_email_address', 'groups_password', 'groups_cancel', 'groups_save_member', 'groups_edit_member', 'groups_firstlast_name', 'groups_address', 'groups_postcode', 'groups_city', 'groups_new_group', 'groups_group_name', 'groups_save_group', 'groups_edit_group', 'groups_delete_group']		
+		statics: ['groups_search_members', 'groups_search', 'groups_new_member', 'groups_role', 'groups_groups', 'groups_username', 'groups_first_name', 'groups_last_name', 'groups_phone_number', 'groups_email_address', 'groups_password', 'groups_cancel', 'groups_save_member', 'groups_edit_member', 'groups_firstlast_name', 'groups_address', 'groups_postcode', 'groups_city', 'groups_new_group', 'groups_group_name', 'groups_save_group', 'groups_edit_group', 'groups_delete_group']		
 	}
 	webpaige.i18n(local);
   
@@ -128,7 +128,10 @@ function loadGroups(uuid, name)
 function addGroup()
 {
   $('#newGroup').modal('hide');
-  var name = $('#newGroupName').val();
+  var name = $('#newGroupName').val(); 
+  
+  webpaige.config('addedGroup', name);
+   
   $('#newGroupForm')[0].reset();
   var resources = JSON.parse(localStorage.getItem('resources')); 	
   var body = '{"name": "' + name + '"}';	
@@ -142,10 +145,9 @@ function addGroup()
 			label: 'addGroup'
 			,session: session.getSession()	
 		},
-		function(data, label)
-	  {  
-    	console.log(data, label);
-    	loadGroups(data, label);
+		function(data)
+	  {
+    	loadGroups(data, webpaige.config('addedGroup'));
 		}
 	);
 }
@@ -224,7 +226,7 @@ function loadMembers(name, uuid)
 {
 	webpaige.con(
 		options = {
-			path: '/network/'+uuid+'/members',
+			path: '/network/'+uuid+'/members?fields=[role]',
 			loading: 'Contacten worden opgeladen..',
 			label: 'members'
 			,session: session.getSession()	
@@ -306,12 +308,14 @@ function saveNewMember()
 	var pass = $('#newMember #pass').val();
 	var guuids = $('#groupsListNew select').val();
 	
+	/*
 	console.log('role', role);
 	console.log('name', name);
 	console.log('tel', tel);
 	console.log('uuid', uuid);
 	console.log('pass', pass);
 	console.log('guuids', guuids);
+	*/
 	
 	// register user in ask
 
@@ -346,6 +350,7 @@ function saveNewMember()
 			);
 						
 			// register user in sense environment
+			/*
 			var body = {};
 			var user = {};
 			user.email = uuid;
@@ -374,6 +379,7 @@ function saveNewMember()
 			  	console.log('Sense registration is successful..');  
 				}
 			);
+			*/
 			
 			// register user to given groups
 	  	for (var h in guuids)
@@ -401,6 +407,15 @@ function saveNewMember()
 
 function editMemberModalInit(guuid, uuid)
 {
+
+	//console.log(guuid, uuid);
+	//debugger;
+	
+	//renderGroupsListUser(window.groups);
+	
+	$('#groupsListEdit .chzn-select').html('');
+	
+	
 	webpaige.con(
 		options = {
 			path: '/node/'+uuid+'/resource',
@@ -416,7 +431,7 @@ function editMemberModalInit(guuid, uuid)
 	  
 	  	var roles = [
 	  		{
-		  		name: 'Volunteer',
+		  		name: 'Opstapper',
 		  		value: 3
 	  		},
 	  		{
@@ -437,6 +452,7 @@ function editMemberModalInit(guuid, uuid)
 		  	}
 	  	}
   		$('#editMember').modal('show');
+  		$('#editMember #username').val(data.uuid);	
   		$('#editMember #name').val(data.name);	
   		$('#editMember #tel').val(data.PhoneAddress);	
   		$('#editMember #email').val(data.EmailAddress);	
@@ -446,15 +462,123 @@ function editMemberModalInit(guuid, uuid)
   		$('#editMember #country').val(data.PostCountry);	
   		$('#editMember #uuid').val(data.uuid);	
   		$('#editMember #guuid').val(guuid);	
+  		
+			webpaige.con(
+				options = {
+					path: '/parent?uuid='+data.uuid,
+					loading: 'Parent groep informatie wordt opgeladen..',
+					label: 'parent group: '
+					,session: session.getSession()	
+				},
+				function(data, label)
+			  {
+			  	renderGroupsListUser(window.groups);
+			  	
+			  	for (var i in data)
+			  	{
+				  	$('#groupsListEdit .chzn-select option[value="'+data[i].uuid+'"]').attr('selected', true);
+			  	}
+			  	
+					$("#groupsListEdit .chzn-select").trigger("liszt:updated");
+			
+				}
+			); 
+			
+			
 		}
 	);	
 }
 
 
 
-function editMember()
+function editMember(uuid)
 {
 	$('#editMember').modal('hide');
+  
+	var uuid = $('#editMember #uuid').val();
+			  	
+	webpaige.con(
+		options = {
+			path: '/parent?uuid='+uuid,
+			loading: 'Parent groep informatie wordt opgeladen..',
+			label: 'parent group: '
+			,session: session.getSession()	
+		},
+		function(data, label)
+	  {
+	  
+	  	var ugroups = [];
+	  	for (var i in data)
+	  	{
+		  	ugroups.push(data[i].uuid);
+	  	}
+	  	webpaige.config('ugroups', ugroups);
+	  	
+		  /*
+	  	for (var e in data)
+	  	{
+	  		console.log('del: ', data[e].uuid);
+				webpaige.con(
+					options = {
+						type: 'delete',
+						path: '/network/'+data[e].uuid+'/members/'+uuid,
+						loading: 'Gebruiker groepen aangepast..',
+						label: 'Contact is verwijderd.'
+						,session: session.getSession()	
+					},
+					function(data, label)
+				  { 
+					}
+				);
+	  	}	
+	  	*/			
+		}
+	);
+	
+	
+	var groups = $('#groupsListEdit select').val();
+	var ugroups = webpaige.config('ugroups');
+	
+	for (var i in groups)
+	{
+		if(jQuery.inArray(groups[i], ugroups) == -1)
+		{
+			webpaige.con(
+				options = {
+					type: 'post',
+					path: '/network/'+groups[i]+'/members/'+uuid,
+					loading: 'Contact wordt toegevoegd in groep..',
+					label: 'Contact is toegevoegd in groep.'
+					,session: session.getSession()	
+				},
+				function(data, label)
+			  {  
+				}
+			);
+		}
+	}
+	
+/*
+	for (var h in groups)
+	{
+		console.log('added :', groups[h]);
+		
+		webpaige.con(
+			options = {
+				type: 'post',
+				path: '/network/'+groups[h]+'/members/'+uuid,
+				loading: 'Contact wordt toegevoegd in groep..',
+				label: 'Contact is toegevoegd in groep.'
+				,session: session.getSession()	
+			},
+			function(data, label)
+		  {  
+			}
+		);
+	}	
+*/
+	
+	
 	
 	var role = $('#editMember #roles').val();
 	var name = $('#editMember #name').val();	
@@ -463,7 +587,6 @@ function editMember()
 	var address = $('#editMember #address').val();
 	var postcode = $('#editMember #postcode').val();
 	var city = $('#editMember #city').val();
-	var uuid = $('#editMember #uuid').val();
 	var guuid = $('#editMember #guuid').val();
   	
   var tags = '{' +
@@ -477,6 +600,7 @@ function editMember()
   	'}';
   	
   //console.log('role :', role);
+					
 		
 	webpaige.con(
 		options = {
@@ -500,12 +624,38 @@ function editMember()
 				},
 				function(data, label)
 			  {
-			  	data = JSON.parse(data);			  	
+			  	// depreciated because parsing happens in the main function
+			  	//data = JSON.parse(data);	
+	
+/*
+					var groups = $('#groupsListEdit select').val();
+					for (var h in groups)
+					{
+						console.log('added :', groups[h]);
+						
+						webpaige.con(
+							options = {
+								type: 'post',
+								path: '/network/'+groups[h]+'/members/'+uuid,
+								loading: 'Contact wordt toegevoegd in groep..',
+								label: 'Contact is toegevoegd in groep.'
+								,session: session.getSession()	
+							},
+							function(data, label)
+						  {  
+							}
+						);
+					}	
+*/	
+	  	
 	  			loadGroups(guuid, data.name); 
 			  }
 			);
 		}
-	);	
+	);
+	
+	
+	
 }
 
 
@@ -638,7 +788,7 @@ function renderMembers(json, name, uuid)
 		thead.append('<th>Role</th>');
 		//thead.append('<th>UUID</th>');
 		
-		thead.append('<th>Emailadres</th>');
+		//thead.append('<th>Emailadres</th>');
 		thead.append('<th>Telefoonnummer</th>');
 		thead.append('<th></th>');
 		table.append(thead);
@@ -647,11 +797,14 @@ function renderMembers(json, name, uuid)
     {
     	var tbodytr = $('<tr></tr>');
 			tbodytr.append('<td><input type="checkbox" class="checkbox" value="'+data[n].uuid+'" /></td>');
+			
+			//console.log(uuid, data[n].uuid);
+			
 			tbodytr.append('<td><a onclick="editMemberModalInit(\''+uuid+'\', \''+data[n].uuid+'\');">'+data[n].name+'</a></td>');
 			
 	  	var roles = [
 	  		{
-		  		name: 'Volunteer',
+		  		name: 'Opstapper',
 		  		value: 3
 	  		},
 	  		{
@@ -675,9 +828,9 @@ function renderMembers(json, name, uuid)
 			
 			//tbodytr.append('<td>'+data[n].uuid+'</td>');
 			
-			tbodytr.append('<td>'+data[n].resources.EmailAddress+'</td>');
+			//tbodytr.append('<td>'+data[n].resources.EmailAddress+'</td>');
 			tbodytr.append('<td>'+data[n].resources.PhoneAddress+'</td>');
-			tbodytr.append('<td><a class="btn btn-mini" onclick="removeMember(\''+name+'\', \''+uuid+'\', \''+data[n].uuid+'\');"><i class="icon-trash"></i></a></td>');
+			tbodytr.append('<td><a class="btn btn-mini" onclick="removeMember(\''+name+'\', \''+uuid+'\', \''+data[n].uuid+'\');"><i class="icon-trash"></i> Verwijder</a></td>');
 			tbody.append(tbodytr);
     }
     tbody.append('<tr><td colspan="6"><a class="btn" onclick="removeMembers(\''+name+'\', \''+uuid+'\');"><i class="icon-trash"></i> Verwijder geselecteerde contacten</a></td></tr>');
@@ -718,10 +871,10 @@ function renderSearch(data)
     {
     	var tbodytr = $('<tr></tr>');
 			tbodytr.append('<td><input type="checkbox" class="checkbox" value="'+data[n].id+'" /></td>');
-			tbodytr.append('<td>'+data[n].name+'</td>');
+			tbodytr.append('<td width="96%">'+data[n].name+'</td>');
 			tbody.append(tbodytr);
     }
-    tbody.append('<tr><td><form class="form-inline"><div class="control-group"><div class="controls docs-input-sizes"><select id="groupsAddList"></select> <a onclick="addMembers();" class="btn"><i class="icon-plus"></i> Toeveogen aan de groep</a></div></div></form></td></tr>');
+<<<<tbody.append('<tr><td><form class="form-inline"><div class="control-group"><div class="controls docs-input-sizes"><select id="groupsAddList"></select> <a onclick="addMembers();" class="btn"><i class="icon-plus"></i> Toevoegen aan de groep</a></div></div></form></td></tr>');
     table.append(tbody);
     $(live).append(table);
 	}
@@ -753,6 +906,17 @@ function renderGroupsList(groups)
   	$('#groupsListNew .chzn-select').append("<option value=" + groups[n].uuid + ">" + groups[n].name + "</option>");
   }
 	$("#groupsListNew .chzn-select").trigger("liszt:updated");
+}
+
+
+
+
+function renderGroupsListUser(groups)
+{
+  for(var n in groups)
+  {	
+  	$('#groupsListEdit .chzn-select').append("<option value=" + groups[n].uuid + ">" + groups[n].name + "</option>");
+  }
 }
 
 

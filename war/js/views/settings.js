@@ -199,7 +199,7 @@ function getWishes()
 	timeline_data.addColumn('datetime', 'start');
 	timeline_data.addColumn('datetime', 'end');
 	timeline_data.addColumn('string', 'content');
-	timeline_data.addColumn('string', 'groups');
+	timeline_data.addColumn('string', 'group');
 						 						
 	webpaige.con(
 		options = {
