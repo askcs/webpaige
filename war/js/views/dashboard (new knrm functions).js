@@ -113,17 +113,6 @@ $(document).ready(function()
 		statics: ['dashboard_today', 'dashboard_new_availability', 'dashboard_status', 'dashboard_available', 'dashboard_available_noord', 'dashboard_available_zuid', 'dashboard_unavailable', 'dashboard_from', 'dashboard_till', 'dashboard_weekly', 'dashboard_cancel', 'dashboard_save_planning', 'dashboard_edit_availability', 'dashboard_delete_planning', 'dashboard_save_planning', 'dashboard_planboard']		
 	}
 	webpaige.i18n(local);
-	
-	
-	
-  
-  $("#divisions").change(function()
-  {
-		var division = $(this).find(":selected").val();
-		timeline2.draw(webpaige.config(division));
-	});
-	
-	
   
 });
 
@@ -399,7 +388,6 @@ function timelineOnAdd()
 
 function timelineOnEdit()
 {
-/*
   var sel = timeline.getSelection();
   var row = sel[0].row;
   var curItem = timeline.getItem(row);
@@ -410,22 +398,8 @@ function timelineOnEdit()
 	var user = {
 		uuid: resources.uuid
 	};
-*/
-	
-  var sel = timeline.getSelection();
-  var row = sel[0].row;
-  var curItem = timeline.getItem(row);
-  var content = timeline_data.getValue(row, 2);
   
-  var user = $.trim(timeline.getItem(row).group.split('>')[3].split('<')[0]);
-  user = user.split(':');
-  
-  var real = {
-	  uuid : user[0],
-	  reoc : user[1]
-  };
-  
-  editSlotModal(curItem.start, curItem.end, trimSpan(curItem.group), html2state(content), real);
+  editSlotModal(curItem.start, curItem.end, trimSpan(curItem.group), html2state(content), user);
 }
 
 function timelineOnDelete()
@@ -433,16 +407,7 @@ function timelineOnDelete()
   var sel = timeline.getSelection();
   var row = sel[0].row;
   var oldItem = timeline.getItem(row);
-  
-  var user = $.trim(timeline.getItem(row).group.split('>')[3].split('<')[0]);
-  user = user.split(':');
-  
-  var real = {
-	  uuid : user[0],
-	  reoc : user[1]
-  };
-  
-  deleteSlot(oldItem.start / 1000, oldItem.end / 1000, oldItem.group, oldItem.content, real);
+  deleteSlot(oldItem.start / 1000, oldItem.end / 1000, oldItem.group, oldItem.content, 'own');
   timeline.cancelDelete();
 }
 
@@ -458,18 +423,7 @@ function timelineOnChange()
   var sel = timeline.getSelection();
   var row = sel[0].row;
   var newItem = timeline.getItem(row);
-  
-  var user = $.trim(timeline.getItem(row).group.split('>')[3].split('<')[0]);
-  user = user.split(':');
-  
-  var real = {
-	  uuid : user[0],
-	  reoc : user[1]
-  };
-  
-  console.log(timeline_selected, newItem, real);
-  
-  updateSlot(timeline_selected, newItem, real);
+  updateSlot(timeline_selected, newItem, 'own');
 }
 
 
@@ -483,11 +437,7 @@ function timelineOnAdd2()
 	
   var sel = timeline3.getSelection();
   var row = sel[0].row;
-  
-  var user = $.trim(timeline3.getItem(row).group.split('>')[1].split('<')[0]);
-  user = user.split(':');
-  
-	$('#userWho').val(user[0]);  
+	$('#userWho').val($.trim(timeline3.getItem(row).group.split('>')[1].split('<')[0]));  
   
 	$('#newEvent').modal('show');
 }
@@ -499,15 +449,12 @@ function timelineOnEdit2()
   var curItem = timeline3.getItem(row);
   var content = timeline_data3.getValue(row, 2);
   
-  var user = $.trim(timeline3.getItem(row).group.split('>')[1].split('<')[0]);
-  user = user.split(':');
+  var user = {
+	  uuid : $.trim(timeline3.getItem(row).group.split('>')[1].split('<')[0]),
+	  reoc : $.trim(timeline3.getItem(row).group.split('(')[1].split(')')[0])
+  };  
   
-  var real = {
-	  uuid : user[0],
-	  reoc : user[1]
-  };
-  
-  editSlotModal(curItem.start, curItem.end, trimSpan(curItem.group), html2state(content), real);
+  editSlotModal(curItem.start, curItem.end, trimSpan(curItem.group), html2state(content), user);
 }
 
 function timelineOnDelete2()
@@ -516,15 +463,12 @@ function timelineOnDelete2()
   var row = sel[0].row;
   var oldItem = timeline3.getItem(row);
   
-  var user = $.trim(timeline3.getItem(row).group.split('>')[1].split('<')[0]);
-  user = user.split(':');
+  var user = {
+	  uuid : $.trim(timeline3.getItem(row).group.split('>')[1].split('<')[0]),
+	  reoc : $.trim(timeline3.getItem(row).group.split('(')[1].split(')')[0])
+  };  
   
-  var real = {
-	  uuid : user[0],
-	  reoc : user[1]
-  };
-  
-  deleteSlot(oldItem.start / 1000, oldItem.end / 1000, oldItem.group, oldItem.content, real);
+  deleteSlot(oldItem.start / 1000, oldItem.end / 1000, oldItem.group, oldItem.content, user);
   timeline.cancelDelete();
 }
 
@@ -541,15 +485,14 @@ function timelineOnChange2()
   var row = sel[0].row;
   var newItem = timeline3.getItem(row);
   
-  var user = $.trim(timeline3.getItem(row).group.split('>')[1].split('<')[0]);
-  user = user.split(':');
+  var user = {
+	  uuid : $.trim(timeline3.getItem(row).group.split('>')[1].split('<')[0]),
+	  reoc : $.trim(timeline3.getItem(row).group.split('(')[1].split(')')[0])
+  };  
   
-  var real = {
-	  uuid : user[0],
-	  reoc : user[1]
-  };
+  console.log('changing: ', timeline_selected, newItem, user);
   
-  updateSlot(timeline_selected, newItem, real);
+  updateSlot(timeline_selected, newItem, user);
 }
 
 
@@ -635,7 +578,7 @@ function addSlot(from, till, reoc, value, user)
 function deleteSlot(from, till, reoc, value, user)
 {
 
-	//console.log(from, till, reoc, value, user);
+	console.log(from, till, reoc, value, user);
 	
 	var now = parseInt((new Date()).getTime() / 1000);
 	
@@ -649,14 +592,14 @@ function deleteSlot(from, till, reoc, value, user)
 	if (from > now)
 	{
 		// resources ?
-		//var resources = JSON.parse(webpaige.get('resources'));
+		var resources = JSON.parse(webpaige.get('resources'));
 	  var path = 	'/askatars/' 
-	  						+ user.uuid + '/slots?start=' 
+	  						+ resources.uuid + '/slots?start=' 
 	  						+ from + '&end=' 
 	  						+ till + '&text=' 
 	  						+ timeline_helper_html2state2(value) 
 	  						+ '&recursive=' 
-	  						+ user.reoc;
+	  						+ (reoc == 'Periodiek' || reoc == '<span style="display:none;">b</span>Periodiek');
 		webpaige.con(
 			options = {
 				type: 'delete',
@@ -683,11 +626,6 @@ function deleteSlot(from, till, reoc, value, user)
 
 function deleteSlotModal(from, till, reoc, value)
 {
-	var user = {
-		uuid : $('#userWhoEdit').val(),
-		reoc : $('#userReocEdit').val()
-	}; 
-	
 	var now = parseInt((new Date()).getTime() / 1000);
 		
 		 var label = {
@@ -699,12 +637,12 @@ function deleteSlotModal(from, till, reoc, value)
 	{
 		var resources = JSON.parse(webpaige.get('resources'));
 	  var path = 	'/askatars/' 
-	  						+ user.uuid + '/slots?start=' 
+	  						+ resources.uuid + '/slots?start=' 
 	  						+ from + '&end=' 
 	  						+ till + '&text=' 
 	  						+ value 
 	  						+ '&recursive=' 
-	  						+ user.reoc;
+	  						+ (reoc == 'Periodiek' || reoc == '<span style="display:none;">b</span>Periodiek');
 		webpaige.con(
 			options = {
 				type: 'delete',
@@ -799,11 +737,24 @@ function updateSlot(oldSlot, newSlot, user)
 	  var newState = newSlot.content.split('>')[1].split('<')[0];
 	  
   	// resources ?
-  	//var resources = JSON.parse(webpaige.get('resources'));
+  	var resources = JSON.parse(webpaige.get('resources'));
+	  	
+	  /*
+	  var user = '';
+	  if (oldSlot.uuid == null)
+	  {
+	  	user = resources.uuid;
+	  }
+	  else
+	  {
+		  user = oldSlot.uuid;
+	  }
+	  */
+		
+		//var user = (user != 'own') ? user.uuid : resources.uuid;
 		
 		//console.log('passed user: ', user);
 		
-/*
 		var real = {};
 		
 		if (user != 'own')
@@ -814,7 +765,7 @@ function updateSlot(oldSlot, newSlot, user)
 			
 			//console.log(user.reoc);
 			
-			if (user.reoc == 'Wekelijkse terugkerend')
+			if (user.reoc == 'periodiek')
 			{
 				var recursive = true;
 				
@@ -830,7 +781,7 @@ function updateSlot(oldSlot, newSlot, user)
 		{
 			real.uuid = resources.uuid;
 		
-			if (oldSlot.group == 'Wekelijkse terugkerend' || newSlot.group == 'Wekelijkse terugkerend')
+			if (oldSlot.group == 'Periodiek' || newSlot.group == 'Periodiek')
 			{
 				var recursive = true;
 			}
@@ -839,29 +790,17 @@ function updateSlot(oldSlot, newSlot, user)
 				var recursive = false;
 			}
 		}
-*/
-		
-/*
-			if (newSlot.group == 'Wekelijkse terugkerend')
-			{
-				var nrecursive = true;
-			}
-			else
-			{
-				var nrecursive = false;
-			}
-*/
 		
 	  var query =	'start=' + Math.round(newSlot.start / 1000) + 
 	  						'&end=' + Math.round(newSlot.end / 1000) + 
 	  						'&text=' + newState + 
-	  						'&recursive=' + user.reoc;
-	  						//'&recursive=' + (newSlot.group == 'Wekelijkse terugkerend' || user.reoc == 'Wekelijkse terugkerend');
+	  						'&recursive=' + recursive;
+	  						//'&recursive=' + (newSlot.group == 'Periodiek' || user.reoc == 'periodiek');
 	  var body = 	'{"color":null' + 
 	  						',"count":0' + 
 	  						',"end":' + Math.round(oldSlot.end / 1000) + 
-	  						//',"recursive":' + (oldSlot.group == 'Wekelijkse terugkerend' || user.reoc == 'Wekelijkse terugkerend') + 
-	  						',"recursive":' + user.reoc + 
+	  						//',"recursive":' + (oldSlot.group == 'Periodiek' || user.reoc == 'periodiek') + 
+	  						',"recursive":' + recursive + 
 	  						',"start":' + Math.round(oldSlot.start/1000) + 
 	  						',"text":"' + oldState + '"' +
 	  						',"wish":0}';
@@ -873,7 +812,7 @@ function updateSlot(oldSlot, newSlot, user)
 		webpaige.con(
 			options = {
 				type: 'put',
-				path: '/askatars/'+ user.uuid +'/slots?'+query,
+				path: '/askatars/'+ real.uuid +'/slots?'+query,
 				json: body,
 				label: label,
 				loading: 'De beschikbaarheid wordt gewijzigd..'
@@ -900,10 +839,7 @@ function updateSlot(oldSlot, newSlot, user)
 function editSlotModal(efrom, etill, ereoc, evalue, user)
 {
 	  						
-	//console.log('user: ', user.uuid, user.reoc);
-	
-	$('#userWhoEdit').val(user.uuid); 
-	$('#userReocEdit').val(user.reoc); 
+	//console.log('uuid: ', uuid);
 	  
 	  
   var eoldSlotValue;
@@ -956,26 +892,21 @@ function editSlotModal(efrom, etill, ereoc, evalue, user)
   etill = etill.toString("dd-MMM-yyyy HH:mm");
   $('#eplanningTill').val(etill);
   
-/*
-  if (user.reoc == true)
+  if (ereoc == 'Periodiek' || user.reoc == 'periodiek')
   {
     $('input#eplanningReoccuring')[0].checked = true;
-    //eoldRecursive = true;
+    eoldRecursive = true;
   }
-  else if (user.reoc == false)
+  else if (ereoc == 'Plan' || user.reoc == 'plan')
   {
     $('input#eplanningReoccuring')[0].checked = false;
-    //eoldRecursive = false;
+    eoldRecursive = false;
   }
-*/
-  
-  $('input#eplanningReoccuring')[0].checked = eval(user.reoc);
   
 	window.oldslot = {
 		from: eoldSlotFrom,
 		till: eoldSlotTill,
-		//reoc: eoldRecursive,
-		reoc: user.reoc,
+		reoc: eoldRecursive,
 		type: eoldSlotValue,
 		uuid: user.uuid
 	};
@@ -1008,15 +939,12 @@ function getSlots()
 			timeline_data.addColumn('string', 'group');
 			for (var i in slots)
 			{
-			
-				var resources = JSON.parse(webpaige.get('resources'));
-			
 			  var content = colorState(slots[i].text);
 			  timeline_data.addRow([
 			  	new Date(slots[i].start * 1000), 
 			  	new Date(slots[i].end * 1000), 
 			  	content, 
-			  	slots[i].recursive ? '<span style="display:none;">b</span>Wekelijkse terugkerend<span style="display:none;">'+resources.uuid+':true</span>' : '<span style="display:none;">a</span>Planning<span style="display:none;">'+resources.uuid+':false</span>'
+			  	slots[i].recursive ? '<span style="display:none;">b</span>Periodiek' : '<span style="display:none;">a</span>Plan'
 			  ]);
 			}      
 			
@@ -1048,13 +976,13 @@ function getSlots()
 				'start':new Date(0),
 				'end':new Date(0),
 				'content':'available',
-				'group': '<span style="display:none;">b</span>Wekelijkse terugkerend<span style="display:none;">'+resources.uuid+':true</span>'
+				'group': '<span style="display:none;">b</span>Periodiek'
 			});
 			timeline.addItem({
 				'start':new Date(0),
 				'end':new Date(0),
 				'content':'available',
-				'group': '<span style="display:none;">a</span>Planning<span style="display:none;">'+resources.uuid+':false</span>'
+				'group': '<span style="display:none;">a</span>Plan'
 			});
 		  
 		  //var trange = webpaige.config('trange');
@@ -1129,161 +1057,6 @@ function getGroupSlots(guuid, gname)
 	      };
 	      ndata.push(item);
 			} 
-			webpaige.config('both', ndata);
-			
-			
-			
-			
-			
-			
-			webpaige.con(
-				options = {
-					path: '/calc_planning/'+guuid+'?'+window.range+'&stateGroup=knrm.StateGroup.BeschikbaarNoord',
-					loading: 'Groepsbeschikbaarheid voor Noord wordt geladen..',
-					label: gname + ' Station Noord'
-					,session: session.getSession()	
-				},
-				function(data, label)
-			  {
-			  	var ndata = [];
-					var maxh = 0;
-					for (var i in data)
-					{
-						if(data[i].wish>maxh)
-							maxh=data[i].wish;
-					}
-					for (var i in data)
-					{
-			      var maxNum = maxh;
-			      var num = data[i].wish;
-			      var xwish = num;
-				    var height = Math.round(num / maxNum * 80 + 20); // a percentage, with a lower bound on 20%
-			      var minHeight = height;
-			      var style = 'height:' + height + 'px;';
-			              'title="Minimum aantal benodigden: ' + num + ' personen"><span>' + num + '</span></div>';
-			      var requirement = '<div class="requirement" style="' + style + '" ' +
-			              'title="Minimum aantal benodigden: ' + num + ' personen"></div>';
-						num = data[i].wish + data[i].diff;
-						var xcurrent = num;
-						
-						// a percentage, with a lower bound on 20%
-				    height = Math.round(num / maxNum * 80 + 20);
-				    
-			      if (xcurrent < xwish)
-			      {
-			      	var color = '#a93232';
-			      }
-			      else if (xcurrent == xwish)
-			      {
-				      var color = '#e0c100';
-			      }
-			      else if (xcurrent > xwish)
-			      {
-				      var color = '#4f824f';
-			      }
-			      
-			      if (xcurrent > xwish) {
-			      	height = minHeight;
-			      }
-			      
-			      style = 'height:' + height + 'px;' + 'background-color: ' + color + ';';
-			      var actual = '<div class="bar" style="' + style + '" ' +
-			              ' title="Huidig aantal beschikbaar: ' + num + ' personen"><span class="badge badge-inverse">' + num + '</span></div>';
-			      var item = {
-			          'group': label,
-			          'start': Math.round(data[i].start * 1000),
-			          'end': Math.round(data[i].end * 1000),
-			          'content': requirement + actual
-			      };
-			      ndata.push(item);
-					}
-			    
-			    webpaige.config('north', ndata);  
-		      //window.northndata = ndata;
-		      //console.log('north: ', window.northndata); 
-		  
-				}
-			); 
-			
-			
-			
-			
-			
-			
-			webpaige.con(
-				options = {
-					path: '/calc_planning/'+guuid+'?'+window.range+'&stateGroup=knrm.StateGroup.BeschikbaarZuid',
-					loading: 'Groepsbeschikbaarheid voor Noord wordt geladen..',
-					label: gname + ' Station Zuid'
-					,session: session.getSession()	
-				},
-				function(data, label)
-			  {
-			  	var ndata = [];
-					var maxh = 0;
-					for (var i in data)
-					{
-						if(data[i].wish>maxh)
-							maxh=data[i].wish;
-					}
-					for (var i in data)
-					{
-			      var maxNum = maxh;
-			      var num = data[i].wish;
-			      var xwish = num;
-				    var height = Math.round(num / maxNum * 80 + 20); // a percentage, with a lower bound on 20%
-			      var minHeight = height;
-			      var style = 'height:' + height + 'px;';
-			              'title="Minimum aantal benodigden: ' + num + ' personen"><span>' + num + '</span></div>';
-			      var requirement = '<div class="requirement" style="' + style + '" ' +
-			              'title="Minimum aantal benodigden: ' + num + ' personen"></div>';
-						num = data[i].wish + data[i].diff;
-						var xcurrent = num;
-						
-						// a percentage, with a lower bound on 20%
-				    height = Math.round(num / maxNum * 80 + 20);
-				    
-			      if (xcurrent < xwish)
-			      {
-			      	var color = '#a93232';
-			      }
-			      else if (xcurrent == xwish)
-			      {
-				      var color = '#e0c100';
-			      }
-			      else if (xcurrent > xwish)
-			      {
-				      var color = '#4f824f';
-			      }
-			      
-			      if (xcurrent > xwish) {
-			      	height = minHeight;
-			      }
-			      
-			      style = 'height:' + height + 'px;' + 'background-color: ' + color + ';';
-			      var actual = '<div class="bar" style="' + style + '" ' +
-			              ' title="Huidig aantal beschikbaar: ' + num + ' personen"><span class="badge badge-inverse">' + num + '</span></div>';
-			      var item = {
-			          'group': label,
-			          'start': Math.round(data[i].start * 1000),
-			          'end': Math.round(data[i].end * 1000),
-			          'content': requirement + actual
-			      };
-			      ndata.push(item);
-					}
-			    
-			    webpaige.config('south', ndata);  
-		      //window.northndata = ndata;
-		      //console.log('north: ', window.northndata); 
-		  
-				}
-			); 
-			
-			
-			
-			
-			
-			
 			
 			
 		  var trange = webpaige.config('trange');
@@ -1304,8 +1077,8 @@ function getGroupSlots(guuid, gname)
         'max': new Date(trange.end),   
 	        //'min': new Date(2012, 0, 1),                 // lower limit of visible range
 	        //'max': new Date(2012, 11, 31),               // upper limit of visible range
-	        //'min': trange.start,                 // lower limit of visible range
-	        //'max': trange.end,               // upper limit of visible range
+        //'min': trange.start,                 // lower limit of visible range
+        //'max': trange.end,               // upper limit of visible range
 	        'intervalMin': 1000 * 60 * 60 * 24,          // one day in milliseconds
 	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2   // about three months in milliseconds
 		  };
@@ -1313,10 +1086,6 @@ function getGroupSlots(guuid, gname)
 		  google.visualization.events.addListener(timeline2, 'rangechange', onRangeChanged2);
 			
 		  timeline2.draw(ndata, options);
-		  
-		  //console.log('north second: ', webpaige.config('north'));
-		  //timeline2.draw(webpaige.config('north'), options);
-		  
 		  //var trange = webpaige.config('trange');
 		  timeline2.setVisibleChartRange(trange.start, trange.end);
 		  
@@ -1409,21 +1178,19 @@ function renderMemberSlots(member, name)
 		},
 		function(data, label)
 	  {
-	  
 	  	var slots = data; 
 				timeline3.addItem({
 					'start':new Date(0),
 					'end':new Date(0),
 					'content':'available',
-					'group': '<span style="display:none;">'+label.uuid+':true</span>' + label.name + ' <div style="display:none;">b</div>(Wekelijkse terugkerend)'
+					'group': '<span style="display:none;">' + label.uuid + '</span>' + label.name + ' <div style="display:none;">b</div>(Periodiek)'
 				});
 				timeline3.addItem({
 					'start':new Date(0),
 					'end':new Date(0),
 					'content':'available',
-					'group': '<span style="display:none;">'+label.uuid+':false</span>' + label.name + ' <div style="display:none;">a</div>(Planning)'
+					'group': '<span style="display:none;">' + label.uuid + '</span>' + label.name + ' <div style="display:none;">a</div>(Plan)'
 				});
-				
 			for (var i in slots)
 			{
 			  var content = colorState(slots[i].text);
@@ -1431,7 +1198,7 @@ function renderMemberSlots(member, name)
 					'start':new Date(slots[i].start * 1000),
 					'end':new Date(slots[i].end * 1000),
 					'content':content,
-					'group':slots[i].recursive ? '<span style="display:none;">'+label.uuid+':true</span>' + label.name + ' <div style="display:none;">b</div>(Wekelijkse terugkerend)' : '<span style="display:none;">'+label.uuid+':false</span>' + label.name + ' <div style="display:none;">a</div>(Planning)'
+					'group':slots[i].recursive ? '<span style="display:none;">' + label.uuid + '</span>' + label.name + ' <div style="display:none;">b</div>(Periodiek)' : '<span style="display:none;">' + label.uuid + '</span>' + label.name + ' <div style="display:none;">a</div>(Plan)'
 				});
 			}  
 		}
@@ -1676,24 +1443,10 @@ function loadGroupsList()
 
 function goToday()
 {
-  var trange = webpaige.config('treset');
-  
-  window.range =	'start=' + trange.bstart + 
-  								'&end=' + trange.bend;
-  
-  webpaige.config('trange', trange);
-  
-	var label = {
-	 gname : webpaige.config('gname'),
-	 guuid : webpaige.config('guuid')
-	};
-	getSlots();
-	getGroupSlots(label.guuid, label.gname);
-	getMemberSlots(label.guuid);
-  								
-  //timeline.setVisibleChartRange(trange.start, trange.end);
-  //timeline2.setVisibleChartRange(trange.start, trange.end);
-  //timeline3.setVisibleChartRange(trange.start, trange.end);
+  var trange = webpaige.config('trange');
+  timeline.setVisibleChartRange(trange.start, trange.end);
+  timeline2.setVisibleChartRange(trange.start, trange.end);
+  timeline3.setVisibleChartRange(trange.start, trange.end);
 }
 
 
@@ -1719,58 +1472,18 @@ function timelineZoomOut()
 
 function timelineMoveLeft()
 {
-	var otrange = webpaige.config('trange');
-	
-	var trange = {};
-	
-  trange.bend = otrange.bstart;
-  trange.bstart = (trange.bend - 86400 * 7 * 2);	
-  
-  trange.end = otrange.start;
-  trange.start = new Date(otrange.start).addWeeks(-2);
-  
-  window.range =	'start=' + trange.bstart + 
-  								'&end=' + trange.bend;
-  
-  webpaige.config('trange', trange);
-  
-	var label = {
-	 gname : webpaige.config('gname'),
-	 guuid : webpaige.config('guuid')
-	};
-	getSlots();
-	getGroupSlots(label.guuid, label.gname);
-	getMemberSlots(label.guuid);
+  links.Timeline.preventDefault(event);
+  links.Timeline.stopPropagation(event);
+  timeline.move(-0.2);
+  timeline.trigger("rangechange");
+  timeline.trigger("rangechanged");
 }
 
 function timelineMoveRight()
-{			
-	var otrange = webpaige.config('trange');
-	
-	var trange = {};
-	
-  trange.bstart = otrange.bend;
-  trange.bend = (trange.bstart + 86400 * 7 * 2);	
-  
-  trange.start = otrange.end;
-  trange.end = new Date(otrange.end).addWeeks(2);
-  
-  window.range =	'start=' + trange.bstart + 
-  								'&end=' + trange.bend;
-  
-  webpaige.config('trange', trange);
-  
-	var label = {
-	 gname : webpaige.config('gname'),
-	 guuid : webpaige.config('guuid')
-	};
-	getSlots();
-	getGroupSlots(label.guuid, label.gname);
-	getMemberSlots(label.guuid);
+{
+  links.Timeline.preventDefault(event);
+  links.Timeline.stopPropagation(event);
+  timeline.move(0.2);
+  timeline.trigger("rangechange");
+  timeline.trigger("rangechanged");
 }
-
-
-
-
-
-

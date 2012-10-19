@@ -431,11 +431,11 @@ function editMemberModalInit(guuid, uuid)
 	  
 	  	var roles = [
 	  		{
-		  		name: 'Opstapper',
+		  		name: 'Volunteer',
 		  		value: 3
 	  		},
 	  		{
-		  		name: 'Schipper',
+		  		name: 'Teamleider',
 		  		value: 2
 	  		},
 	  		{
@@ -512,9 +512,10 @@ function editMember(uuid)
 	  	{
 		  	ugroups.push(data[i].uuid);
 	  	}
+	  	
 	  	webpaige.config('ugroups', ugroups);
 	  	
-		  /*
+	  	var counter = data.length;
 	  	for (var e in data)
 	  	{
 	  		console.log('del: ', data[e].uuid);
@@ -528,57 +529,40 @@ function editMember(uuid)
 					},
 					function(data, label)
 				  { 
+				  
+				  	counter = counter -1;
+				  	if(counter == 0)
+				  	{
+							var groups = $('#groupsListEdit select').val();
+							var ugroups = webpaige.config('ugroups');
+							
+							for (var i in groups)
+							{
+								if(jQuery.inArray(groups[i], ugroups) == -1)
+								{
+									webpaige.con(
+										options = {
+											type: 'post',
+											path: '/network/'+groups[i]+'/members/'+uuid,
+											loading: 'Contact wordt toegevoegd in groep..',
+											label: 'Contact is toegevoegd in groep.'
+											,session: session.getSession()	
+										},
+										function(data, label)
+									  {  
+									  
+										}
+									);
+								}
+							}
+				  	}
+				  	
 					}
 				);
 	  	}	
-	  	*/			
+	  			
 		}
 	);
-	
-	
-	var groups = $('#groupsListEdit select').val();
-	var ugroups = webpaige.config('ugroups');
-	
-	for (var i in groups)
-	{
-		if(jQuery.inArray(groups[i], ugroups) == -1)
-		{
-			webpaige.con(
-				options = {
-					type: 'post',
-					path: '/network/'+groups[i]+'/members/'+uuid,
-					loading: 'Contact wordt toegevoegd in groep..',
-					label: 'Contact is toegevoegd in groep.'
-					,session: session.getSession()	
-				},
-				function(data, label)
-			  {  
-				}
-			);
-		}
-	}
-	
-/*
-	for (var h in groups)
-	{
-		console.log('added :', groups[h]);
-		
-		webpaige.con(
-			options = {
-				type: 'post',
-				path: '/network/'+groups[h]+'/members/'+uuid,
-				loading: 'Contact wordt toegevoegd in groep..',
-				label: 'Contact is toegevoegd in groep.'
-				,session: session.getSession()	
-			},
-			function(data, label)
-		  {  
-			}
-		);
-	}	
-*/
-	
-	
 	
 	var role = $('#editMember #roles').val();
 	var name = $('#editMember #name').val();	
@@ -590,7 +574,6 @@ function editMember(uuid)
 	var guuid = $('#editMember #guuid').val();
   	
   var tags = '{' +
-  	'"role":"' + role + '", ' +
   	'"name":"' + name + '", ' +
   	'"PhoneAddress":"' + tel + '", ' +
   	'"EmailAddress":"' + email + '", ' +
@@ -613,44 +596,36 @@ function editMember(uuid)
 			,session: session.getSession()	
 		},
 		function(data, label)
-	  { 
-			// get group name for displaying later
+	  {
+		
 			webpaige.con(
 				options = {
-					path: '/network/'+guuid,
-					loading: 'Contacten worden opgeladen..',
-					label: 'members'
+					type: 'put',
+					path: '/node/'+uuid+'/role',
+					json: role,
+					loading: 'Contact role wordt opgeslagen..',
+					message: 'Contact role is gewijzigd.',
+					label: 'member'
 					,session: session.getSession()	
 				},
 				function(data, label)
-			  {
-			  	// depreciated because parsing happens in the main function
-			  	//data = JSON.parse(data);	
-	
-/*
-					var groups = $('#groupsListEdit select').val();
-					for (var h in groups)
-					{
-						console.log('added :', groups[h]);
-						
-						webpaige.con(
-							options = {
-								type: 'post',
-								path: '/network/'+groups[h]+'/members/'+uuid,
-								loading: 'Contact wordt toegevoegd in groep..',
-								label: 'Contact is toegevoegd in groep.'
-								,session: session.getSession()	
-							},
-							function(data, label)
-						  {  
-							}
-						);
-					}	
-*/	
-	  	
-	  			loadGroups(guuid, data.name); 
-			  }
+			  { 
+					// get group name for displaying later
+					webpaige.con(
+						options = {
+							path: '/network/'+guuid,
+							loading: 'Contacten worden opgeladen..',
+							label: 'members'
+							,session: session.getSession()	
+						},
+						function(data, label)
+					  {	
+			  			loadGroups(guuid, data.name); 
+					  }
+					);
+				}
 			);
+			
 		}
 	);
 	
@@ -804,11 +779,11 @@ function renderMembers(json, name, uuid)
 			
 	  	var roles = [
 	  		{
-		  		name: 'Opstapper',
+		  		name: 'Volunteer',
 		  		value: 3
 	  		},
 	  		{
-		  		name: 'Schipper',
+		  		name: 'Teamleider',
 		  		value: 2
 	  		},
 	  		{
@@ -874,7 +849,7 @@ function renderSearch(data)
 			tbodytr.append('<td width="96%">'+data[n].name+'</td>');
 			tbody.append(tbodytr);
     }
-<<<<tbody.append('<tr><td><form class="form-inline"><div class="control-group"><div class="controls docs-input-sizes"><select id="groupsAddList"></select> <a onclick="addMembers();" class="btn"><i class="icon-plus"></i> Toevoegen aan de groep</a></div></div></form></td></tr>');
+    tbody.append('<tr><td><form class="form-inline"><div class="control-group"><div class="controls docs-input-sizes"><select id="groupsAddList"></select> <a onclick="addMembers();" class="btn"><i class="icon-plus"></i> Toevoegen aan de groep</a></div></div></form></td></tr>');
     table.append(tbody);
     $(live).append(table);
 	}

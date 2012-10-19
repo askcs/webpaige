@@ -90,7 +90,7 @@ function loginHandler()
     $("#ajaxLoader").hide();
     return false;
   }
-  loginAsk (user, pass, r);
+  loginAsk (user.toLowerCase(), pass, r);
 }
 
 	
@@ -104,9 +104,11 @@ function loginAs(type)
 			user = 'beheer';
 			pass = '319fcaa585c17eff5dcc2a57e8fc853f';
 		break;
-		case 'schipper':
-			user = '4170durinck';
-			pass = 'f5212ff3f9bac5439368462f2e791558';
+		case 'teamleider':
+			//user = '4170durinck';
+			//pass = 'f5212ff3f9bac5439368462f2e791558';
+			user = '4058fok';
+			pass = '288116504f5e303e4be4ff1765b81f5d';
 		break;
 		case 'volunteer':
 			user = '4780aldewereld';
@@ -162,15 +164,17 @@ function loginAsk (user, pass, r)
 					var trange = {};	
 					
 				  now = parseInt((new Date()).getTime() / 1000);
+				  
 				  trange.bstart = (now - 86400 * 7 * 1);
 				  trange.bend = (now + 86400 * 7 * 1);					
 					
 				  trange.start = new Date();
-				  trange.start = Date.today().addWeeks(-1);
+				  trange.start = Date.today().add({ days: -5 });
 				  trange.end = new Date();
-				  trange.end = Date.today().addWeeks(1);
+				  trange.end = Date.today().add({ days: 5 });
 				  
-				  webpaige.config('trange', trange);		
+				  webpaige.config('trange', trange);	
+				  webpaige.config('treset', trange);		
 				  
 				  	
 					// logging in Sense
@@ -303,20 +307,22 @@ function loginAskWithOutMD5 (user, pass, r)
 			  {  	
 					webpaige.set(label, JSON.stringify(data));
 					
-					webpaige.config('userRole', data.role);					
+					webpaige.config('userRole', data.role);			
 					
 					var trange = {};	
 					
 				  now = parseInt((new Date()).getTime() / 1000);
+				  
 				  trange.bstart = (now - 86400 * 7 * 1);
 				  trange.bend = (now + 86400 * 7 * 1);					
 					
 				  trange.start = new Date();
-				  trange.start = Date.today().addWeeks(-1);
+				  trange.start = Date.today().add({ days: -5 });
 				  trange.end = new Date();
-				  trange.end = Date.today().addWeeks(1);
+				  trange.end = Date.today().add({ days: 5 });
 				  
-				  webpaige.config('trange', trange);		
+				  webpaige.config('trange', trange);	
+				  webpaige.config('treset', trange);		
 				  
 				  	
 					// logging in Sense
