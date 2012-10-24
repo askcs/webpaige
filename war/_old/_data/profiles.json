@@ -1,0 +1,38 @@
+[
+  {
+    "knrm": {
+      "homepage": "dashboard.html",
+      "modules": [
+        "messages",
+        "groups"
+      ],
+      "data": [
+        {
+          "label": "messages",
+          "url": "network/"
+        },
+        {
+          "label": "groups",
+          "url": "groups/"
+        }
+      ]
+    },
+    "default": {
+      "homepage": "dashboard.html",
+      "modules": [
+        "messages",
+        "groups"
+      ],
+      "data": [
+        {
+          "label": "messages",
+          "url": "network/"
+        },
+        {
+          "label": "groups",
+          "url": "groups/"
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>KNRM Web Administration :: Dashboard</title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  
+  <link href="img/favicon.ico" rel="shortcut icon">
+  
+  <link href="css/bootstrap/bootstrap.css" rel="stylesheet">
+  <link href="css/bootstrap/bootstrap-responsive.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  
+  <style type="text/css">  
+	  #groupTimeline {
+	  	z-index:10;
+	  }
+	  #memberTimeline {
+	  	z-index: 20;
+	  	/* margin-top: -50px; */
+	  }
+	  #groupTimelineHolder div.timeline-event {
+	      border: none;
+	      background: none;
+	      border-radius: 0;
+	  }
+	  #groupTimelineHolder div.timeline-event-selected {
+	      border: none;
+	      background: none;
+	  }
+	  #groupTimelineHolder div.timeline-event-content {
+	      margin: 0;
+	      border:none;
+	  }
+	  #groupTimelineHolder div.timeline-event-range {
+	      border: none;
+	      border-radius: 0;
+	      height: 100px;
+	      width: 100%;
+	      position: relative;
+	      overflow: visible;
+	  }
+	  #groupTimelineHolder div.bar {
+	      position: absolute;
+	      bottom: 0;
+	      left: 0;
+	      width: 100%;
+	      text-align: center;
+	      color: white;
+	      /* height and color is set for each individual bar */
+	      border: none;
+	  }
+	  #groupTimelineHolder div.requirement {
+	      position: absolute;
+	      bottom: 0;
+	      left: 0;
+	      width: 100%;
+	      border-top: 2px solid gray;
+	      background: #e5e5e5;
+	      opacity: 0.5;
+	      text-align: center;
+	  }
+	  #groupTimelineHolder div.bar span {
+	      font-size: 9px;
+	  }
+  </style>
+  
+  <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+  <script src="js/jquery/jquery-1.7.2.min.js" type="text/javascript"></script>
+  <script src="js/bootstrap/bootstrap.js" type="text/javascript"></script>
+  
+  <script src="js/libs/ask.session.js" type="text/javascript"></script>
+  
+  <script type="text/javascript" src="js/libs/json2.js"></script>
+  <script type="text/javascript" src="js/libs/date.js"></script>
+
+  <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+  <script>google.load("visualization", "1");</script>
+  <script type="text/javascript" src="js/timeline/timeline.js"></script>
+  <link href="js/timeline/timeline.css" rel="stylesheet" type="text/css">
+		
+	<link rel="stylesheet" media="all" type="text/css" href="js/datetimepicker/ui-lightness/jquery-ui-1.8.16.custom.css" />
+	<link rel="stylesheet" media="all" type="text/css" href="js/datetimepicker/jquery-ui-timepicker-addon.css" />
+	<script type="text/javascript" src="js/datetimepicker/jquery-ui-1.8.16.custom.min.js"></script>
+	<script type="text/javascript" src="js/datetimepicker/jquery-ui-timepicker-addon.js"></script>
+	<script type="text/javascript" src="js/datetimepicker/jquery-ui-sliderAccess.js"></script>
+  
+  <script src="js/init.js" type="text/javascript"></script>
+	<script type="text/javascript" src="js/views/dashboard.js"></script>
+    
+    
+</head>
+<body>
+	<div id="navbar"></div>
+  <div class="container-fluid">       
+  
+		<div class="hero-unit" style="display:none;">
+		 <h1>Welcome, <span class="d_username">{Username}</span> !</h1>
+		 <div id="messages">
+		 	<div class="message">
+		 		<p>In order to help you better, I would like to connect with your social media. Do you want to fill in your social media preferences?</p>
+		 		<p><a class="btn btn-large">Remind me later</a> <a class="btn btn-large btn-success">Yes</a></p>
+		 	</div>
+		 	<div class="message">
+		 		<p>Second?</p>
+		 	</div>
+		 	<div class="message">
+		 		<p>Third?</p>
+		 	</div>
+		 </div>
+		</div>
+  
+    <div class="row-fluid">
+    
+      <div class="span12 well">
+      
+        <div class="btn-group btn-hanging">
+          <a id="tmlZoomInBtn" class="btn" onClick="timelineZoomIn();"><i class="icon-zoom-in"></i></a>
+          <a id="tmlZoomOutBtn" class="btn" onClick="timelineZoomOut();"><i class="icon-zoom-out"></i></a>
+          <a id="tmlMoveLeftBtn" class="btn" onClick="timelineMoveLeft();"><i class="icon-arrow-left"></i></a>
+          <a id="tmlMoveRightBtn" class="btn" onClick="timelineMoveRight();"><i class="icon-arrow-right"></i></a> 
+          <a id="tmlTodayBtn" class="btn" onClick="timelineInit();">Today</a>  
+        </div>
+        
+        <div class="btn-group btn-hanging">
+          <a class="btn" data-toggle="modal" href="#newEvent"><i class="icon-plus-sign"></i> New availability</a>
+          <!-- <a class="btn" href="appointments.html"><i class="icon-calendar"></i> My appointments</a> -->
+        </div>      
+        
+        <div class="modal hide" id="newEvent">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">×</button>
+            <h3>New availability</h3>
+          </div>
+          <form id="newEventForm" class="">
+            <div class="modal-body">
+              <div class="control-group">
+                <label class="control-label">Status</label>
+                <div class="controls">
+                  <input id="planningType" type="radio" name="planningType" value="available"> <span style="margin-right:20px;">available</span>
+                  <input id="planningType" type="radio" name="planningType" value="unavailable"> unavailable
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label">From</label>
+                <div class="controls">
+                  <input id="planningFrom" class="span4" type="text" style="display:inline;">
+                </div>
+              </div>
+              <div id="plTill" class="control-group">
+                <label class="control-label">Till</label>
+                <div class="controls">
+                  <input id="planningTill" class="span4" type="text" style="display:inline;">
+                </div>
+              </div>
+              <div class="control-group" style="float:left; margin-right:30px;">
+                <label class="control-label">Weekly occurring?</label>
+                <div class="controls">
+                  <input id="planningReoccuring" type="checkbox" value="true">
+                </div>
+              </div>
+              <div class="control-group" style="float:left;">
+                <label class="control-label">All day?</label>
+                <div class="controls">
+                  <input id="planningAllDay" type="checkbox" value="true">
+                </div>
+              </div>
+              <div class="clear"></div>
+            </div>
+            <div class="modal-footer">
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Cancel</a>
+              <a onclick="planSubmit()" class="btn btn-success"><i class="icon-ok icon-white"></i> Save planning</a>
+            </div>
+          </form>
+        </div>
+        
+        <div class="modal hide" id="editEvent">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">×</button>
+            <h3>Edit availability</h3>
+          </div>
+          <form id="editEventForm" class="">
+            <div class="modal-body">
+              <div class="control-group">
+                <label class="control-label">Status</label>
+                <div class="controls">
+                  <input id="eplanningType" type="radio" name="eplanningType" value="available"> <span style="margin-right:20px;">available</span>
+                  <input id="eplanningType" type="radio" name="eplanningType" value="unavailable"> unavailable
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label">From</label>
+                <div class="controls">
+                  <input id="eplanningFrom" class="span4" type="text" style="display:inline;">
+                </div>
+              </div>
+              <div id="plTill" class="control-group">
+                <label class="control-label">Till</label>
+                <div class="controls">
+                  <input id="eplanningTill" class="span4" type="text" style="display:inline;">
+                </div>
+              </div>
+              <div class="control-group" style="float:left; margin-right:30px;">
+                <label class="control-label">Weekly occurring?</label>
+                <div class="controls">
+                  <input id="eplanningReoccuring" type="checkbox" value="true">
+                </div>
+              </div>
+              <div class="control-group" style="float:left;">
+                <label class="control-label">All day?</label>
+                <div class="controls">
+                  <input id="eplanningAllDay" type="checkbox" value="true">
+                </div>
+              </div>
+              <div class="clear"></div>
+            </div>
+            <div class="modal-footer">
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Cancel</a>
+              <a onclick="deletePlanSubmit()" class="btn btn-warning"><i class="icon-remove icon-white"></i> Delete planning</a>
+              <a onclick="editPlanSubmit()" class="btn btn-success"><i class="icon-ok icon-white"></i> Save planning</a>
+            </div>
+          </form>
+        </div>
+        
+        <h2><span class="entypo eMedium">P</span> Planboard</h2>
+        <hr>
+        
+        <div id="mytimeline"></div>
+        
+      </div><!--/span-->
+      
+    </div>  
+    <div class="row-fluid">
+    
+      <div class="span12 well">
+      
+	      <!--
+        <div class="btn-group btn-hanging">
+          <a id="tmlZoomInBtn" class="btn" onClick="timelineZoomIn();"><i class="icon-zoom-in"></i></a>
+          <a id="tmlZoomOutBtn" class="btn" onClick="timelineZoomOut();"><i class="icon-zoom-out"></i></a>
+          <a id="tmlMoveLeftBtn" class="btn" onClick="timelineMoveLeft();"><i class="icon-arrow-left"></i></a>
+          <a id="tmlMoveRightBtn" class="btn" onClick="timelineMoveRight();"><i class="icon-arrow-right"></i></a> 
+          <a id="tmlTodayBtn" class="btn" onClick="timelineInit();">Today</a>  
+        </div>
+        -->
+        <!--
+        <div class="btn-group btn-hanging">
+          <a class="btn" data-toggle="modal" href="#newEvent"><i class="icon-plus-sign"></i> New availability</a>
+        </div>
+				-->     
+				<!--
+        <div class="btn-group btn-hanging">
+          <a onclick="loadGroupAvs();" id="groupAvBtn" class="btn">Group availability</a>
+          <a onclick="loadMemberAvs();" id="memberAvBtn" class="btn">Member availabilities</a>
+          <a onclick="loadCurrentAvs();" id="currentAvBtn" class="btn">Current statuses</a>
+        </div>
+        -->
+        <form class="form-inline btn-hanging" style="margin-bottom:0px;">
+        	<div class="control-group">
+        		<div class="controls docs-input-sizes">
+        			<select id="groupsList"></select>
+        		</div>
+        	</div>
+        </form>
+         
+        <h2><span class="entypo eMedium">P</span> Group Planboard</h2>
+        <hr>
+        
+        <div id="groupTimelineHolder">
+        	<div id="groupTimeline"></div>
+        </div>
+        <div id="memberTimeline"></div>
+        
+      </div><!--/span-->
+      
+    </div>
+  </div><!--/container-->
+</body>
+</html>

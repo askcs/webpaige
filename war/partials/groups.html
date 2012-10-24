@@ -1,0 +1,246 @@
+
+    
+      <div class="span3">
+      
+        <div class="well sidebar-nav">
+          <form id="searchMemberForm">
+          	<ul class="nav nav-list">
+          		<li class="nav-header"><span class="groups_search_members"></span></li>
+          		<li>
+			          <div class="control-group" style="margin-top:10px;">
+			            <div class="controls docs-input-sizes">
+			              <input id="q" class="span12" placeholder="Voornaam, achternaam.." type="text">
+			            </div>
+			          </div>
+          		</li>
+          	</ul>
+          	<a id="searchMemberBtn" class="btn" style="margin-top:5px; margin-left:15px;"><i class="icon-search"></i> <span class="groups_search"></span></a>
+          </form>
+        </div>
+        <!--/.well -->
+        
+        <!--
+        <div class="well sidebar-nav">
+        	<div class="btn-group" style="margin-top:5px; margin-left:15px; margin-bottom:5px;">
+          	<a data-toggle="modal" href="#newGroup" class="btn"><i class="icon-list-alt"></i> New group</a>
+          	<a data-toggle="modal" href="#newMember" onclick="addNewMember()" class="btn"><i class="icon-user"></i> New member</a>
+          </div>
+        </div>
+        -->
+        <!--/.well -->
+        
+        <div class="well sidebar-nav">
+        	<div id="groupsNav"></div>
+        </div>
+        <!--/.well -->
+        
+        <div class="modal hide" id="newMember">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">×</button>
+            <h3><span class="groups_new_member"></span></h3>
+          </div>
+          <form id="newMemberForm" class="">
+            <div class="modal-body">
+            
+              <div id="rolesList" class="control-group">
+                <label class="control-label"><span class="groups_role"></span></label>
+                <div class="controls docs-input-sizes">
+                  <select id="roles" name="role">
+	                  <option value="3">Volunteer</option>
+	                  <option value="2">Teamleider</option>
+	                  <option value="1">Planner</option>
+                  </select>
+                </div>
+              </div> 
+            
+              <div id="groupsListNew" class="control-group">
+                <label class="control-label"><span class="groups_groups"></span></label>
+                <div class="controls docs-input-sizes">
+                  <select class="chzn-select" data-placeholder="Selecteer een groep.." multiple style="width:530%" tabindex="4"></select>
+                </div>
+              </div>            
+              
+		          
+		          <div class="control-group" style="float:left; margin-right: 20px;">
+		            <label class="control-label"><span class="groups_first_name"></span></label>
+		            <div class="controls docs-input-sizes">
+		              <input id="fname" placeholder="First name" type="text">
+		            </div>
+		          </div>
+		          <div class="control-group">
+		            <label class="control-label"><span class="groups_last_name"></span></label>
+		            <div class="controls docs-input-sizes">
+		              <input id="lname" placeholder="Last name" type="text">
+		            </div>
+		          </div>
+		          <div class="control-group" style="clear: both;">
+		            <label class="control-label"><span class="groups_phone_number"></span></label>
+		            <div class="controls docs-input-sizes">
+		              <input id="tel" class="span12" placeholder="+31" type="text">
+		            </div>
+		          </div>
+		          <div class="control-group">
+		            <label class="control-label"><span class="groups_email_address"></span></label>
+		            <div class="controls docs-input-sizes">
+		              <input id="email" class="span12" placeholder="Email address" type="text">
+		            </div>
+		          </div>
+		          <div class="control-group">
+		            <label class="control-label"><span class="groups_password"></span></label>
+		            <div class="controls docs-input-sizes">
+		              <input id="pass" class="span12" placeholder="Password" type="password">
+		            </div>
+		          </div>
+              <div class="clear"></div>
+            </div>
+            <div class="modal-footer">
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> <span class="groups_cancel"></span></a>
+              <input type="hidden" id="guuid" value="" />
+              <a id="saveNewMember" class="btn btn-success" href="#"><i class="icon-ok icon-white"></i> <span class="groups_save_member"></span></a>
+            </div>
+          </form>
+        </div>
+        
+        <div class="modal hide" id="editMember">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">×</button>
+            <h3><span class="groups_edit_member"></span></h3>
+          </div>
+          <form id="editMemberForm" class="">
+            <div class="modal-body">
+            
+              <div id="rolesList" class="control-group">
+                <label class="control-label"><span class="groups_role"></span></label>
+                <div class="controls docs-input-sizes">
+                  <select id="roles" name="role">
+	                  <option value="3">Volunteer</option>
+	                  <option value="2">Teamleider</option>
+	                  <option value="1">Planner</option>
+                  </select>
+                </div>
+              </div>  
+            
+              <div id="groupsListEdit" class="control-group">
+                <label class="control-label"><span class="groups_groups"></span></label>
+                <div class="controls docs-input-sizes">
+                  <select class="chzn-select" data-placeholder="Selecteer een groep.." multiple style="width:530%" tabindex="4"></select>
+                </div>
+              </div> 
+              
+		          <div class="control-group">
+		            <label class="control-label"><span class="groups_username"></span></label>
+		            <div class="controls docs-input-sizes">
+		              <input id="username" class="span12" placeholder="Gebruikersnaam" type="text" disabled="disabled">
+		            </div>
+		          </div>
+              
+		          <div class="control-group">
+		            <label class="control-label"><span class="groups_firstlast_name"></span></label>
+		            <div class="controls docs-input-sizes">
+		              <input id="name" class="span12" placeholder="Voornaam en achternaam" type="text">
+		            </div>
+		          </div>
+		          <div class="control-group">
+		            <label class="control-label"><span class="groups_phone_number"></span></label>
+		            <div class="controls docs-input-sizes">
+		              <input id="tel" class="span12" placeholder="+31" type="text">
+		            </div>
+		          </div>
+		          <div class="control-group">
+		            <label class="control-label"><span class="groups_email_address"></span></label>
+		            <div class="controls docs-input-sizes">
+		              <input id="email" class="span12" placeholder="Emailadres" type="text">
+		            </div>
+		          </div>
+              <div class="control-group">
+                <label class="control-label"><span class="groups_address"></span></label>
+                <div class="controls docs-input-sizes">
+                  <input id="address" class="span12" placeholder="" type="text">
+                </div>
+              </div>
+              <div class="control-group" style="float:left; margin-right: 20px;">
+                <label class="control-label"><span class="groups_postcode"></span></label>
+                <div class="controls docs-input-sizes">
+                  <input id="postcode" placeholder="" type="text">
+                </div>
+              </div>
+              <div class="control-group" style="float:left; margin-right: 20px;">
+                <label class="control-label"><span class="groups_city"></span></label>
+                <div class="controls docs-input-sizes">
+                  <input id="city" placeholder="" type="text">
+                </div>
+              </div>
+              
+              <!--
+              <div class="control-group" style="float:left;">
+                <label class="control-label">Country</label>
+                <div class="controls docs-input-sizes">
+                  <input id="country" class="span3" placeholder="" type="text">
+                </div>
+              </div>
+              -->
+              
+              <div class="clear"></div>
+            </div>
+            <div class="modal-footer">
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> <span class="groups_cancel"></span></a>
+              <input type="hidden" id="uuid" value="" />
+              <input type="hidden" id="guuid" value="" />
+              <a id="editMemberBtn" class="btn btn-success" href="#"><i class="icon-ok icon-white"></i> <span class="groups_save_member"></span></a>
+            </div>
+          </form>
+        </div>
+                
+        <div class="modal hide" id="newGroup">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">×</button>
+            <h3><span class="groups_new_group"></span></h3>
+          </div>
+          <form id="newGroupForm" class="">
+            <div class="modal-body">
+              <div class="control-group">
+                <label class="control-label"><span class="groups_group_name"></span></label>
+                <div class="controls">
+                  <input id="newGroupName" class="span12" type="text" style="display:inline;">
+                </div>
+              </div>
+              <div class="clear"></div>
+            </div>
+            <div class="modal-footer">
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> <span class="groups_cancel"></span></a>
+              <a id="groupSubmit" class="btn btn-success"><i class="icon-ok icon-white"></i> <span class="groups_save_group"></span></a>
+            </div>
+          </form>
+        </div>
+        
+        <div class="modal hide" id="editGroup">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">×</button>
+            <h3><span class="groups_edit_group"></span></h3>
+          </div>
+          <form id="editGroupForm" class="">
+            <div class="modal-body">
+              <div class="control-group">
+                <label class="control-label"><span class="groups_group_name"></span></label>
+                <div class="controls">
+                  <input id="editGroupName" class="span12" type="text" style="display:inline;">
+                </div>
+              </div>
+              <input id="editGroupUUID" class="span12" type="hidden" value="">
+              <div class="clear"></div>
+            </div>
+            <div class="modal-footer">
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> <span class="groups_cancel"></span></a>
+              <a id="deleteGroupBtn" class="btn btn-warning" href="#"><i class="icon-remove icon-white"></i> <span class="groups_delete_group"></span></a>
+              <a id="editGroupSubmitter" class="btn btn-success" href="#"><i class="icon-ok icon-white"></i> <span class="groups_save_group"></span></a>
+            </div>
+          </form>
+        </div>
+        
+      </div><!--/span-->
+      
+      <div class="span9 well">
+	      
+        <div id="content"></div>
+        
+      </div><!--/span-->

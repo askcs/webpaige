@@ -1,52 +1,58 @@
-<!DOCTYPE html>
-
-<html lang="en">
+<!doctype html>
+<html lang="en" ng-app="myApp">
 <head>
   <meta charset="utf-8">
-
-  <title></title>
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  
+  <title>KNRM :: Angular</title>
   <link href="img/favicon.ico" rel="shortcut icon">
   
-  <link href="css/bootstrap/bootstrap.css" rel="stylesheet">
-  <link href="css/bootstrap/bootstrap-responsive.css" rel="stylesheet">
+  <link href="lib/bootstrap/bootstrap.css" rel="stylesheet">
+  <link href="lib/bootstrap/bootstrap-responsive.css" rel="stylesheet">
   
   <link href="css/styles.css" rel="stylesheet">
   
   <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
-  <script src="js/jquery/jquery-1.7.2.min.js" type="text/javascript"></script>
+  <script src="lib/jquery/jquery-1.7.2.min.js" type="text/javascript"></script>
   
-  <script src="js/bootstrap/bootstrap.js" type="text/javascript"></script>
+  <script src="lib/bootstrap/bootstrap.js" type="text/javascript"></script>
   
-  <script src="js/libs/md5.js" type="text/javascript"></script>
+  <script src="lib/ask/ask.session.js" type="text/javascript"></script>
   
-  <script src="js/libs/date.js" type="text/javascript"></script>
+  <script src="lib/ask/md5.js" type="text/javascript"></script>
   
-  <script src="js/libs/json2.js" type="text/javascript"></script>
+  <script src="lib/date.js" type="text/javascript"></script>
   
-  <script src="js/i18n/jquery.i18n.properties-min-1.0.9.js" type="text/javascript"></script>
+  <script src="lib/json2.js" type="text/javascript"></script>
   
-  <link href="js/chosen/chosen.css" rel="stylesheet">
-  <script src="js/chosen/chosen.jquery.js" type="text/javascript"></script>
+  <link href="lib/chosen/chosen.css" rel="stylesheet">
+  <script src="lib/chosen/chosen.jquery.js" type="text/javascript"></script>
   
   <script src="http://www.google.com/jsapi" type="text/javascript"></script>
   <script>google.load("visualization", "1");</script>
-  <script src="js/timeline/timeline.js" type="text/javascript"></script>
-  <link href="js/timeline/timeline.css" rel="stylesheet" type="text/css">
+  <script src="lib/timeline/timeline.js" type="text/javascript"></script>
+  <link href="lib/timeline/timeline.css" rel="stylesheet" type="text/css">
   
-  <link href="js/datetimepicker/ui-lightness/jquery-ui-1.8.16.custom.css" media="all" rel="stylesheet" type="text/css">
-  <link href="js/datetimepicker/jquery-ui-timepicker-addon.css" media="all" rel="stylesheet" type="text/css">
-  <script src="js/datetimepicker/jquery-ui-1.8.16.custom.min.js" type="text/javascript"></script>
-  <script src="js/datetimepicker/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
-  <script src="js/datetimepicker/jquery-ui-sliderAccess.js" type="text/javascript"></script>
+  <link href="lib/datetimepicker/ui-lightness/jquery-ui-1.8.16.custom.css" media="all" rel="stylesheet" type="text/css">
+  <link href="lib/datetimepicker/jquery-ui-timepicker-addon.css" media="all" rel="stylesheet" type="text/css">
+  <script src="lib/datetimepicker/jquery-ui-1.8.16.custom.min.js" type="text/javascript"></script>
+  <script src="lib/datetimepicker/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
+  <script src="lib/datetimepicker/jquery-ui-sliderAccess.js" type="text/javascript"></script>
   
-  <script src="js/views/login.js" type="text/javascript"></script>
-  <script src="js/views/dashboard.js" type="text/javascript"></script>
-  <script src="js/views/messages.js" type="text/javascript"></script>
-  <script src="js/views/groups.js" type="text/javascript"></script>
-  <script src="js/views/profile.js" type="text/javascript"></script>
-  <script src="js/views/settings.js" type="text/javascript"></script>
+  <script src="lib/init.js" type="text/javascript"></script>
+  <script src="lib/i18n/jquery.i18n.properties-min-1.0.9.js" type="text/javascript"></script>
+  
+  <script src="lib/webpaige.js" type="text/javascript"></script>
+  
+  <script src="lib/views/login.js" type="text/javascript"></script>
+  <script src="lib/views/dashboard.js" type="text/javascript"></script>
+  <script src="lib/views/messages.js" type="text/javascript"></script>
+  <script src="lib/views/groups.js" type="text/javascript"></script>
+  <script src="lib/views/profile.js" type="text/javascript"></script>
+  <script src="lib/views/settings.js" type="text/javascript"></script>
+  
+  <link rel="stylesheet" href="css/app.css"/>
   
   <style type="text/css">
     /* dashboard */
@@ -147,565 +153,61 @@
     /* settings */
     
   </style>
+  
 </head>
 
 <body>
-  <div id="navbar"></div>
+
+  <ul class="topmenu">
+    <li><a href="#/login">login</a></li>
+    <li><a href="#/dashboard">dashboard</a></li>
+    <li><a href="#/messages">messages</a></li>
+    <li><a href="#/groups">groups</a></li>
+    <li><a href="#/profile">profile</a></li>
+    <li><a href="#/settings">settings</a></li>
+    <li><a href="#/forgot_pass">forgot password</a></li>
+    <li><a href="#/change_pass">change password</a></li>
+  </ul>
+
+  <div class="navbar navbar-inner container-fluid">
+	  <a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse"></a> <a class="brand" href="#dashboard">KNRM</a>
+	  <div class="btn-group pull-right">
+		  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-user"></i>{User.name}<span class="caret"></span></a>
+		  <ul class="dropdown-menu">
+			  <li><a href="#profile"><i class="icon-user"></i> Profiel</a></li>
+			  <li><a href="#settings"><i class="icon-cog"></i> Instellingen</a></li>
+			  <li class="divider"></li>
+			  <li><a onclick="webpaige.logout()"><i class="icon-off"></i> Uitloggen</a></li>
+		  </ul>
+	  </div>
+	  <div class="nav-collapse">
+		  <ul class="nav">
+			  <li><a href="#dashboard">Planboard</a><li>
+			  <li><a href="#messages">Berichten</a><li>
+			  <li><a href="#groups">Groepen</a><li>
+		  </ul>
+	  </div>
+  </div>
 
   <div class="container-fluid">
-    <div class="row-fluid">
-    
-    
-      <div id="content">
-        <div id="live">
-        
-        
-        
-        
-          <!-- LOGIN -->
-          <div class="span3">
-            <form class="well">
-              <div class="alert alert-error" id="alertDiv">
-                <button class="close" id="alertClose" type="button">?</button><span id="alertMessage">{Alert Message}</span>
-              </div>
-              <h2><span class="entypo eMedium">+</span></h2>
-              <hr>
-              <div class="control-group controls docs-input-sizes">
-                <input class="span12" id="username" type="text">
-              </div>
-              <div class="control-group controls docs-input-sizes">
-                <input class="span12" id="password" placeholder="Password" type="password">
-              </div><label class="checkbox"><input id="remember" type="checkbox"></label><br>
-              <a class="btn" href="#" id="loginBtn"></a> <img alt="Loading" id="ajaxLoader" src="img/ajax-loader.gif" style="margin-left:5px; height:20px;">
-              <br>
-              <br>
-              <a class="" href="forgot_password.html"></a>
-            </form>
-          </div>
-          <!--/span-->
+    <div class="row-fluid content">
 
-          <div class="span3">
-            <form class="well">
-              <h2><span class="entypo eMedium">-</span> Accounts</h2>
-              <hr>
-              <p>Login as;</p>
-              <ul>
-                <li><a onclick="loginAs('planner')">Planner</a></li>
-                <li><a onclick="loginAs('schipper')">Schipper</a></li>
-                <li><a onclick="loginAs('volunteer')">Volunteer</a></li>
-              </ul>
-              <p><em>This part will be removed later!</em></p>
-            </form>
-          </div>
-          <!-- END OF LOGIN -->
-          
-          
-          
-          
-          <!-- DASHBOARD -->
-          <div class="span12 well">
-          
-            <form class="form-inline btn-hanging" style="margin-bottom:0px;">
-              <div class="control-group controls docs-input-sizes">
-                <select id="groupsList"></select>
-              </div>
-            </form>
-            
-            <div class="btn-group btn-hanging">
-              <a class="btn" id="tmlZoomInBtn" onclick="timelineZoomIn();"></a>
-              <a class="btn" id="tmlZoomOutBtn" onclick="timelineZoomOut();"></a>
-              <a class="btn" id="tmlMoveLeftBtn" onclick="timelineMoveLeft();"></a>
-              <a class="btn" id="tmlMoveRightBtn" onclick="timelineMoveRight();"></a>
-              <a class="btn" id="tmlTodayBtn" onclick="goToday();"></a>
-            </div>
-            
-            <div class="btn-group btn-hanging">
-              <a class="btn" data-toggle="modal" href="#newEvent"></a>
-            </div>
-            
-            <div class="modal hide" id="newEvent">
-              <div class="modal-header">
-                <button class="close" data-dismiss="modal" type="button">?</button>
-              </div>
-              <form class="" id="newEventForm" name="newEventForm">
-                <div class="modal-body">
-                  <div class="control-group controls">
-                    <input id="planningType" name="planningType" type="radio" value="available"> <input id="planningType" name="planningType" type="radio" value="unavailable">
-                  </div>
-                  <div class="control-group controls">
-                    <input class="span4" id="planningFrom" style="display:inline;" type="text">
-                  </div>
-                  <div class="control-group controls" id="plTill">
-                    <input class="span4" id="planningTill" style="display:inline;" type="text">
-                  </div>
-                  <div class="control-group controls" style="float:left; margin-right:30px;">
-                    <input id="planningReoccuring" type="checkbox" value="true">
-                  </div>
-                  <div class="clear"></div>
-                </div>
-                <div class="modal-footer">
-                  <a class="btn" data-dismiss="modal" href="#"></a> <a class="btn btn-success" onclick="planSubmit()"></a>
-                </div>
-              </form>
-            </div>
-            
-            <div class="modal hide" id="editEvent">
-              <div class="modal-header">
-                <button class="close" data-dismiss="modal" type="button">?</button>
-              </div>
-              <form class="" id="editEventForm" name="editEventForm">
-                <div class="modal-body">
-                  <div class="control-group controls">
-                    <input id="eplanningType" name="eplanningType" type="radio" value="available"> <input id="eplanningType" name="eplanningType" type="radio" value="unavailable">
-                  </div>
-                  <div class="control-group controls">
-                    <input class="span4" id="eplanningFrom" style="display:inline;" type="text">
-                  </div>
-                  <div class="control-group controls" id="plTill">
-                    <input class="span4" id="eplanningTill" style="display:inline;" type="text">
-                  </div>
-                  <div class="control-group controls" style="float:left; margin-right:30px;">
-                    <input id="eplanningReoccuring" type="checkbox" value="true">
-                  </div>
-                  <div class="clear"></div>
-                </div>
-                <div class="modal-footer">
-                  <a class="btn" data-dismiss="modal" href="#"></a> <a class="btn btn-warning" onclick="deletePlanSubmit()"></a> <a class="btn btn-success"
-                  onclick="editPlanSubmit()"></a>
-                </div>
-              </form>
-            </div>
-            
-            <h2><span class="entypo eMedium">P</span></h2>
-            
-            <div id="groupTimelineHolder">
-              <div id="groupTimeline"></div>
-            </div>
-            
-            <div id="mytimeline"></div>
-            
-            <div id="memberTimeline"></div>
-            
-          </div>
-          <!--/span-->
-          <!-- END OF DASHBOARD -->
-          
-          
-          
-          
-          
-          <!-- MESSAGES -->
-          <div class="span12 well">
-          
-            <div class="btn-group btn-hanging">
-              <a class="btn" onclick="composeMessage()"></a>
-            </div>
-            
-            <div class="modal hide" id="composeMessage">
-              <div class="modal-header">
-                <button class="close" data-dismiss="modal" type="button">?</button>
-              </div>
-              <div class="modal-body">
-                <form id="compose" name="compose">
-                  <div class="control-group controls docs-input-sizes">
-                    <div id="smsCheck" style="display:inline;">
-                      <input id="sms" name="sms" type="checkbox" value="true">
-                    </div>
-                    <input id="paigem" name="paigem" type="checkbox" value="true">
-                    <input id="email" name="email" type="checkbox" value="true">
-                  </div>
-                  <div class="control-group receivers controls docs-input-sizes" id=""></div>
-                  <div class="control-group controls docs-input-sizes" id="subjectDiv">
-                    <input class="span12" id="title" placeholder="" type="text">
-                  </div>
-                  <div class="control-group controls docs-input-sizes">
-                    <textarea class="span12" id="msgcontent" name="msgcontent" rows="6"></textarea>
-                  </div>
-                </form>
-              </div>
-              <div class="modal-footer">
-                <a class="btn" data-dismiss="modal" href="#"></a> <a class="btn btn-success" onclick="sendMessage();"></a>
-              </div>
-            </div>
-            
-            <div class="modal hide" id="replyMessage">
-              <div class="modal-header">
-                <button class="close" data-dismiss="modal" type="button">?</button>
-              </div>
-              <div class="modal-body">
-                <form id="reply" name="reply">
-                  <div class="control-group receivers controls docs-input-sizes"></div>
-                  <div class="control-group controls docs-input-sizes">
-                    <input class="span12" id="title" placeholder="" type="text">
-                  </div>
-                  <div class="control-group controls docs-input-sizes">
-                    <textarea class="span12" id="" name="" rows="6"></textarea>
-                  </div>
-                </form>
-              </div>
-              <div class="modal-footer">
-                <a class="btn" data-dismiss="modal" href="#"></a> <a class="btn btn-success" href="#" id="messageSender"></a>
-              </div>
-            </div>
-            
-            <div class="modal hide" id="displayMessageModal">
-              <div class="modal-header">
-                <button class="close" data-dismiss="modal" type="button">?</button>
-              </div>
-              <div class="modal-body">
-                <div class="control-group">
-                  <h4 id="messageDirection"></h4>
-                  <div class="controls docs-input-sizes">
-                    <span id="messageReceiver"></span>
-                  </div>
-                </div>
-                <div class="control-group controls docs-input-sizes">
-                  <span id="messageDate"></span>
-                </div>
-                <div class="control-group controls docs-input-sizes"></div>
-                <div class="control-group controls docs-input-sizes">
-                  <span id="messageContent"></span>
-                </div>
-              </div>
-              <div class="modal-footer" id="displayMessageActions"></div>
-            </div>
-            
-            <h2><span class="entypo eMedium">w</span></h2>
-            <br>
-            
-            <div class="tabbable">
-              <ul class="nav nav-tabs">
-                <li id="inbox"></li>
-                <li id="outbox"></li>
-                <li id="trash"></li>
-              </ul>
-              <div class="tab-content tab-pane active" id="content">
-                <div id="live"></div>
-              </div>
-            </div>
-            <!-- /tabbable -->
-            
-          </div>
-          <!--/span-->
-          <!-- MESSAGES -->
-          
-          
-          
-          
-          
-          <!-- GROUPS -->
-          <div class="span3">
-          
-            <div class="well sidebar-nav">
-              <form id="searchMemberForm" name="searchMemberForm">
-                <ul class="nav nav-list">
-                  <li>
-                    <div class="control-group controls docs-input-sizes" style="margin-top:10px;">
-                      <input class="span12" id="q" placeholder="Voornaam, achternaam.." type="text">
-                    </div>
-                  </li>
-                </ul><a class="btn" id="searchMemberBtn" style="margin-top:5px; margin-left:15px;"></a>
-              </form>
-            </div>
-            <!--/.well -->
-            
-            <div class="well sidebar-nav" id="groupsNav"></div>
-            <!--/.well -->
-            
-            <div class="modal hide" id="newMember">
-              <div class="modal-header">
-                <button class="close" data-dismiss="modal" type="button">?</button>
-              </div>
-              <form class="" id="newMemberForm" name="newMemberForm">
-                <div class="modal-body">
-                  <div class="control-group controls docs-input-sizes" id="rolesList">
-                    <select id="roles" name="role">
-                      <option value="3">Volunteer</option>
-                      <option value="2">Schipper</option>
-                      <option value="1">Planner</option>
-                    </select>
-                  </div>
-                  <div class="control-group controls docs-input-sizes" id="groupsListNew"></div>
-                  <div class="control-group controls docs-input-sizes" style="float:left; margin-right: 20px;">
-                    <input id="fname" placeholder="First name" type="text">
-                  </div>
-                  <div class="control-group controls docs-input-sizes">
-                    <input id="lname" placeholder="Last name" type="text">
-                  </div>
-                  <div class="control-group controls docs-input-sizes" style="clear: both;">
-                    <input class="span12" id="tel" placeholder="+31" type="text">
-                  </div>
-                  <div class="control-group controls docs-input-sizes">
-                    <input class="span12" id="email" placeholder="Email address" type="text">
-                  </div>
-                  <div class="control-group controls docs-input-sizes">
-                    <input class="span12" id="pass" placeholder="Password" type="password">
-                  </div>
-                  <div class="clear"></div>
-                </div>
-                <div class="modal-footer">
-                  <a class="btn" data-dismiss="modal" href="#"></a> <input id="guuid" type="hidden" value=""> <a class="btn btn-success" href="#" id=
-                  "saveNewMember"></a>
-                </div>
-              </form>
-            </div>
-            
-            <div class="modal hide" id="editMember">
-              <div class="modal-header">
-                <button class="close" data-dismiss="modal" type="button">?</button>
-              </div>
-              <form class="" id="editMemberForm" name="editMemberForm">
-                <div class="modal-body">
-                  <div class="control-group controls docs-input-sizes" id="rolesList">
-                    <select id="roles" name="role">
-                      <option value="3">Volunteer</option>
-                      <option value="2">Schipper</option>
-                      <option value="1">Planner</option>
-                    </select>
-                  </div>
-                  <div class="control-group controls docs-input-sizes">
-                    <input class="span12" id="name" placeholder="First and last name" type="text">
-                  </div>
-                  <div class="control-group controls docs-input-sizes">
-                    <input class="span12" id="tel" placeholder="+31" type="text">
-                  </div>
-                  <div class="control-group controls docs-input-sizes">
-                    <input class="span12" id="email" placeholder="Email address" type="text">
-                  </div>
-                  <div class="control-group controls docs-input-sizes">
-                    <input class="span12" id="address" placeholder="" type="text">
-                  </div>
-                  <div class="control-group controls docs-input-sizes" style="float:left; margin-right: 20px;">
-                    <input id="postcode" placeholder="" type="text">
-                  </div>
-                  <div class="control-group controls docs-input-sizes" style="float:left; margin-right: 20px;">
-                    <input id="city" placeholder="" type="text">
-                  </div>
-                  <div class="clear"></div>
-                </div>
-                <div class="modal-footer">
-                  <a class="btn" data-dismiss="modal" href="#"></a> <input id="uuid" type="hidden" value=""> <input id="guuid" type="hidden" value="">
-                  <a class="btn btn-success" href="#" id="editMemberBtn"></a>
-                </div>
-              </form>
-            </div>
-            
-            <div class="modal hide" id="newGroup">
-              <div class="modal-header">
-                <button class="close" data-dismiss="modal" type="button">?</button>
-              </div>
-              <form class="" id="newGroupForm" name="newGroupForm">
-                <div class="modal-body">
-                  <div class="control-group controls">
-                    <input class="span12" id="newGroupName" style="display:inline;" type="text">
-                  </div>
-                  <div class="clear"></div>
-                </div>
-                <div class="modal-footer">
-                  <a class="btn" data-dismiss="modal" href="#"></a> <a class="btn btn-success" id="groupSubmit"></a>
-                </div>
-              </form>
-            </div>
-            
-            <div class="modal hide" id="editGroup">
-              <div class="modal-header">
-                <button class="close" data-dismiss="modal" type="button">?</button>
-              </div>
-              <form class="" id="editGroupForm" name="editGroupForm">
-                <div class="modal-body">
-                  <div class="control-group controls">
-                    <input class="span12" id="editGroupName" style="display:inline;" type="text">
-                  </div>
-                  <input class="span12" id="editGroupUUID" type="hidden" value="">
-                  <div class="clear"></div>
-                </div>
-                <div class="modal-footer">
-                  <a class="btn" data-dismiss="modal" href="#"></a> <a class="btn btn-warning" href="#" id="deleteGroupBtn"></a> <a class="btn btn-success"
-                  href="#" id="editGroupSubmitter"></a>
-                </div>
-              </form>
-            </div>
-            
-          </div>
-          <!--/span-->
-
-          <div class="span9 well" id="content"></div>
-          <!--/span-->
-          
-          <!-- GROUPS -->
-          
-          
-          
-          
-          <!-- PROFILE -->
-          <div class="span12 well">
-          
-            <div class="btn-group btn-hanging">
-              <a class="btn" id="updateProfileTrigger"></a> <a class="btn" onclick="$('#changePassword').modal('show');"></a>
-            </div>
-            
-            <div class="modal hide" id="updateProfile">
-              <div class="modal-header">
-                <button class="close" data-dismiss="modal" type="button">?</button>
-              </div>
-              <form class="" id="profile" name="profile">
-                <div class="modal-body">
-                  <div class="control-group controls docs-input-sizes">
-                    <input class="span12" id="name" placeholder="" type="text">
-                  </div>
-                  <div class="control-group controls docs-input-sizes">
-                    <input class="span12" disabled id="email" placeholder="" type="text">
-                  </div>
-                  <div class="control-group controls docs-input-sizes">
-                    <input class="span12" id="phone" placeholder="" type="text">
-                  </div>
-                  <div class="control-group controls docs-input-sizes">
-                    <input class="span12" id="address" placeholder="" type="text">
-                  </div>
-                  <div class="control-group controls docs-input-sizes">
-                    <input class="span12" id="postcode" placeholder="" type="text">
-                  </div>
-                  <div class="control-group controls docs-input-sizes">
-                    <input class="span12" id="city" placeholder="" type="text">
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <a class="btn" data-dismiss="modal" href="#"></a> <a class="btn btn-success" onclick="changeResources();"></a>
-                </div>
-              </form>
-            </div>
-            
-            <div class="modal hide" id="changePassword">
-              <div class="modal-header">
-                <button class="close" data-dismiss="modal" type="button">?</button>
-              </div>
-              <form class="" id="profile" name="profile">
-                <div class="modal-body">
-                  <div class="alert alert-error" id="alertDiv">
-                    <button class="close" id="alertClose" type="button">?</button><span id="alertMessage">{Alert Message}</span>
-                  </div>
-                  <div class="alert alert-success" id="successDiv">
-                    <button class="close" id="successClose" type="button">?</button><span id="successMessage">{Success Message}</span>
-                  </div>
-                  <div class="control-group controls docs-input-sizes">
-                    <input class="span12" id="pass" placeholder="" type="password">
-                  </div>
-                  <div class="control-group controls docs-input-sizes">
-                    <input class="span12" id="pass1" placeholder="" type="password">
-                  </div>
-                  <div class="control-group controls docs-input-sizes">
-                    <input class="span12" id="pass2" placeholder="" type="password">
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <div id="changePasswordButtons">
-                    <a class="btn" data-dismiss="modal" href="#"></a> <a class="btn btn-success" href="#" onclick="changePassword();"></a>
-                  </div>
-                  <div id="passwordChangedButton">
-                    <a class="btn" data-dismiss="modal" href="#"></a>
-                  </div>
-                </div>
-              </form>
-            </div>
-            
-            <h2><span class="entypo eMedium">+</span><span class="d_username">{Username}</span></h2>
-            <hr>
-            
-            <div class="alert alert-warning" id="profileChanged"></div>
-
-            <div id="content">
-              <div id="live"></div>
-            </div>
-            
-          </div>
-          <!--/span-->
-          <!-- PROFILE -->
-          
-          
-          
-          
-          <!-- SETTINGS -->
-          <div class="span12 well">
-          
-            <div class="btn-group btn-hanging">
-              <a class="btn" id="tmlZoomInBtn" onclick="timelineZoomIn();"></a>
-              <a class="btn" id="tmlZoomOutBtn" onclick="timelineZoomOut();"></a>
-              <a class="btn" id="tmlMoveLeftBtn" onclick="timelineMoveLeft();"></a>
-              <a class="btn" id="tmlMoveRightBtn" onclick="timelineMoveRight();"></a>
-              <a class="btn" id="tmlTodayBtn" onclick="timelineInit();"></a>
-            </div>
-            
-            <div class="btn-group btn-hanging">
-              <a class="btn" data-toggle="modal" href="#newWish"></a>
-            </div>
-            
-            <div class="modal hide" id="newWish">
-              <div class="modal-header">
-                <button class="close" data-dismiss="modal" type="button">?</button>
-              </div>
-              <form class="" id="newWishForm" name="newWishForm">
-                <div class="modal-body">
-                  <div class="control-group controls">
-                    <select id="groupsList"></select>
-                  </div>
-                  <div class="control-group controls">
-                    <input class="span4" id="from" style="display:inline;" type="text">
-                  </div>
-                  <div class="control-group controls">
-                    <input class="span4" id="till" style="display:inline;" type="text">
-                  </div>
-                  <div class="control-group controls" style="float:left; margin-right:30px;">
-                    <input class="span4" id="wish" type="text">
-                  </div>
-                  <div class="clear"></div>
-                </div>
-                <div class="modal-footer">
-                  <a class="btn" data-dismiss="modal" href="#"></a> <a class="btn btn-success" onclick="wishSubmit()"></a>
-                </div>
-              </form>
-            </div>
-            
-            <div class="modal hide" id="editWish">
-              <div class="modal-header">
-                <button class="close" data-dismiss="modal" type="button">?</button>
-                <h3>(<span id="groupName"></span>)</h3>
-              </div>
-              <form class="" id="editWishForm" name="editWishForm">
-                <div class="modal-body">
-                  <div class="control-group controls">
-                    <input class="span4" id="efrom" style="display:inline;" type="text">
-                  </div>
-                  <div class="control-group controls">
-                    <input class="span4" id="etill" style="display:inline;" type="text">
-                  </div>
-                  <div class="control-group controls" style="float:left; margin-right:30px;">
-                    <input class="span4" id="ewish" type="text">
-                  </div>
-                  <div class="clear"></div>
-                </div>
-                <div class="modal-footer">
-                  <a class="btn" data-dismiss="modal" href="#"></a> <a class="btn btn-success" onclick="editWishSubmit()"></a>
-                </div>
-              </form>
-            </div>
-            
-            <h2><span class="entypo eMedium">@</span></h2>
-            <hr>
-            
-            <div id="wishesTimeline"></div>
-          </div>
-          <!--/span-->
-          <!-- SETTINGS -->
-          
-          
-          
-          
-          
-        </div><!--/live-->
-      </div><!--/container-->
-      
+	  	<div ng-view></div>
       
     </div><!--/row-->
   </div><!--/container-->
+
+  <!-- <div>Test Angular seed app: v<span app-version></span></div> -->
+
+  <!-- In production use:
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"></script>
+  -->
+  <script src="lib/angular/angular.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/services.js"></script>
+  <script src="js/controllers.js"></script>
+  <script src="js/filters.js"></script>
+  <script src="js/directives.js"></script>
+  
 </body>
 </html>

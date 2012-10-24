@@ -1,0 +1,181 @@
+
+    
+      <div class="span12 well">
+      
+        <form class="form-inline btn-hanging" style="margin-bottom:0px;">
+        	<div class="control-group">
+        		<div class="controls docs-input-sizes">
+        			<select id="divisions">
+	        			<option value="both">Beide stations</option>
+	        			<option value="north">Station Noord</option>
+	        			<option value="south">Station Zuid</option>
+        			</select>
+        		</div>
+        	</div>
+        </form>
+      
+        <form class="form-inline btn-hanging" style="margin-bottom:0px;">
+        	<div class="control-group">
+        		<div class="controls docs-input-sizes">
+        			<select id="groupsList"></select>
+        		</div>
+        	</div>
+        </form>
+      
+        <div class="btn-group btn-hanging">
+          <a id="tmlZoomInBtn" class="btn" onClick="timelineZoomIn();"><i class="icon-zoom-in"></i></a>
+          <a id="tmlZoomOutBtn" class="btn" onClick="timelineZoomOut();"><i class="icon-zoom-out"></i></a>
+          <a id="tmlMoveLeftBtn" class="btn" onClick="timelineMoveLeft();"><i class="icon-arrow-left"></i></a>
+          <a id="tmlMoveRightBtn" class="btn" onClick="timelineMoveRight();"><i class="icon-arrow-right"></i></a> 
+          <a id="tmlTodayBtn" class="btn" onClick="goToday();"><span class="dashboard_today"></span></a>  
+        </div>
+        
+        <div class="btn-group btn-hanging">
+          <!-- <a class="btn" data-toggle="modal" href="#newEvent"><i class="icon-plus-sign"></i> <span class="dashboard_new_availability"></span></a> -->
+          <a id="newEventBtn" class="btn" href="#"><i class="icon-plus-sign"></i> <span class="dashboard_new_availability"></span></a>
+        </div>      
+        
+        <div class="modal hide" id="newEvent">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">×</button>
+            <h3><span class="dashboard_new_availability"></span></h3>
+          </div>
+          <form id="newEventForm" class="">
+          
+          	<input type="hidden" id="userWho" name="userWho" value="" />
+          	
+            <div class="modal-body">
+              <div class="control-group">
+                <label class="control-label"><span class="dashboard_status"></span></label>
+                <div class="controls">
+                  <input id="planningType" type="radio" name="planningType" value="available"> Beschikbaar
+                  <input id="planningType" type="radio" name="planningType" value="availableN" style="margin-left:10px;"> Beschikbaar Noord
+                  <input id="planningType" type="radio" name="planningType" value="availableZ" style="margin-left:10px;"> Beschikbaar Zuid
+                  <input id="planningType" type="radio" name="planningType" value="unavailable" style="margin-left:10px;"> Niet Beschikbaar
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label"><span class="dashboard_from"></span></label>
+                <div class="controls">
+                  <input id="planningFrom" class="span4" type="text" style="display:inline;">
+                </div>
+              </div>
+              <div id="plTill" class="control-group">
+                <label class="control-label"><span class="dashboard_till"></span></label>
+                <div class="controls">
+                  <input id="planningTill" class="span4" type="text" style="display:inline;">
+                </div>
+              </div>
+              <div class="control-group" style="float:left; margin-right:30px;">
+                <label class="control-label"><span class="dashboard_weekly"></span></label>
+                <div class="controls">
+                  <input id="planningReoccuring" type="checkbox" value="true">
+                </div>
+              </div>
+              <!--
+              <div class="control-group" style="float:left;">
+                <label class="control-label">All day?</label>
+                <div class="controls">
+                  <input id="planningAllDay" type="checkbox" value="true">
+                </div>
+              </div>
+              -->
+              <div class="clear"></div>
+            </div>
+            <div class="modal-footer">
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> <span class="dashboard_cancel"></span></a>
+              <a onclick="planSubmit()" class="btn btn-success"><i class="icon-ok icon-white"></i> <span class="dashboard_save_planning"></span></a>
+            </div>
+          </form>
+        </div>
+        
+        <div class="modal hide" id="editEvent">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">×</button>
+            <h3><span class="dashboard_edit_availability"></span></h3>
+          </div>
+          <form id="editEventForm" class="">
+          
+          	<input type="hidden" id="userWhoEdit" name="userWhoEdit" value="" />
+          	<input type="hidden" id="userReocEdit" name="userReocEdit" value="" />
+          	
+            <div class="modal-body">
+              <div class="control-group">
+                <label class="control-label"><span class="dashboard_status"></span></label>
+                <div class="controls">
+                  
+                  <input id="eplanningType" type="radio" name="eplanningType" value="available"> Beschikbaar
+                  <input id="eplanningType" type="radio" name="eplanningType" value="availableN" style="margin-left:10px;"> Beschikbaar Noord
+                  <input id="eplanningType" type="radio" name="eplanningType" value="availableZ" style="margin-left:10px;"> Beschikbaar Zuid
+                  <input id="eplanningType" type="radio" name="eplanningType" value="unavailable" style="margin-left:10px;"> Niet Beschikbaar
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label"><span class="dashboard_from"></span></label>
+                <div class="controls">
+                  <input id="eplanningFrom" class="span4" type="text" style="display:inline;">
+                </div>
+              </div>
+              <div id="plTill" class="control-group">
+                <label class="control-label"><span class="dashboard_till"></span></label>
+                <div class="controls">
+                  <input id="eplanningTill" class="span4" type="text" style="display:inline;">
+                </div>
+              </div>
+              <div class="control-group" style="float:left; margin-right:30px;">
+                <label class="control-label"><span class="dashboard_weekly"></span></label>
+                <div class="controls">
+                  <input id="eplanningReoccuring" type="checkbox" value="true">
+                </div>
+              </div>
+              <!--
+              <div class="control-group" style="float:left;">
+                <label class="control-label">All day?</label>
+                <div class="controls">
+                  <input id="eplanningAllDay" type="checkbox" value="true">
+                </div>
+              </div>
+              -->
+              <div class="clear"></div>
+            </div>
+            <div class="modal-footer">
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> <span class="dashboard_cancel"></span></a>
+              <a onclick="deletePlanSubmit()" class="btn btn-warning"><i class="icon-remove icon-white"></i> <span class="dashboard_delete_planning"></span></a>
+              <a onclick="editPlanSubmit()" class="btn btn-success"><i class="icon-ok icon-white"></i> <span class="dashboard_save_planning"></span></a>
+            </div>
+          </form>
+        </div>
+        
+        <h2><span class="entypo eMedium">P</span> <span class="dashboard_planboard"></span></h2>
+        <!-- <hr> -->
+        
+        <div id="legends">
+        	<ul>
+        		<li>
+        			<div class="square" style="background-color: #4f824f;"></div> Beschikbaar Beide
+        		</li>
+        		<li>
+        			<div class="square" style="background-color: black;"></div> Beschikbaar Noord
+        		</li>
+        		<li>
+        			<div class="square" style="background-color: #e08a0c;"></div> Beschikbaar Zuid
+        		</li>
+        		<li>
+        			<div class="square" style="background-color: #a93232;"></div> Niet Beschikbaar
+        		</li>
+        	</ul>
+        </div>
+        
+        <div id="mytimeline"></div>
+        
+        <div id="groupTimelineHolder">
+        	<div id="groupTimeline"></div>
+        </div>
+         
+        <!--
+        <h2><span class="entypo eMedium">P</span> Group Planboard</h2>
+        <hr>
+        -->
+        <div id="memberTimeline"></div>
+        
+      </div><!--/span-->

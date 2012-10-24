@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  
+  <link href="css/bootstrap/bootstrap.css" rel="stylesheet">
+  <link href="css/bootstrap/bootstrap-responsive.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+  <script src="js/jquery/jquery-1.7.2.min.js" type="text/javascript"></script>
+  <script src="js/bootstrap/bootstrap.js" type="text/javascript"></script>
+  <script src="js/libs/ask.session.js" type="text/javascript"></script>
+  
+  <script src="js/libs/json2.js" type="text/javascript"></script>
+  <script src="js/libs/date.js" type="text/javascript"></script>
+  
+  <script src="js/init.js" type="text/javascript"></script>
+  <script src="js/views/groups.js" type="text/javascript"></script>
+</head>
+<body>
+	<div id="navbar"></div>
+  <div class="container-fluid">
+    <div class="row-fluid">
+    
+      <div class="span3">
+      
+        <div class="well sidebar-nav">
+          <form id="searchMemberForm">
+          	<ul class="nav nav-list">
+          		<li class="nav-header">Search members</li>
+          		<li>
+			          <div class="control-group" style="margin-top:10px;">
+			            <div class="controls docs-input-sizes">
+			              <input id="q" class="span12" placeholder="First name, last name.." type="text">
+			            </div>
+			          </div>
+          		</li>
+          	</ul>
+          	<a id="searchMemberBtn" class="btn" style="margin-top:5px; margin-left:15px;"><i class="icon-search"></i> Search</a>
+          </form>
+        </div>
+        <!--/.well -->
+        
+        <div class="well sidebar-nav">
+        	<div id="groupsNav"></div>
+          <a data-toggle="modal" href="#newGroup" class="btn" style="margin-top:5px; margin-left:15px; margin-bottom:15px;"><i class="icon-plus"></i> Add new group</a>
+        </div>
+        <!--/.well -->
+        
+        <div class="modal hide" id="newGroup">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">×</button>
+            <h3>New group</h3>
+          </div>
+          <form id="newGroupForm" class="">
+            <div class="modal-body">
+              <div class="control-group">
+                <label class="control-label">Group name</label>
+                <div class="controls">
+                  <input id="newGroupName" class="span12" type="text" style="display:inline;">
+                </div>
+              </div>
+              <div class="clear"></div>
+            </div>
+            <div class="modal-footer">
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Cancel</a>
+              <a id="groupSubmitter" class="btn btn-success" href="#"><i class="icon-ok icon-white"></i> Save group</a>
+            </div>
+          </form>
+        </div>
+        
+        <div class="modal hide" id="editGroup">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">×</button>
+            <h3>Edit group</h3>
+          </div>
+          <form id="editGroupForm" class="">
+            <div class="modal-body">
+              <div class="control-group">
+                <label class="control-label">Group name</label>
+                <div class="controls">
+                  <input id="editGroupName" class="span12" type="text" style="display:inline;">
+                </div>
+              </div>
+              <input id="editGroupUUID" class="span12" type="hidden" value="">
+              <div class="clear"></div>
+            </div>
+            <div class="modal-footer">
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Cancel</a>
+              <a id="deleteGroupBtn" class="btn btn-warning" href="#"><i class="icon-remove icon-white"></i> Delete group</a>
+              <a id="editGroupSubmitter" class="btn btn-success" href="#"><i class="icon-ok icon-white"></i> Save group</a>
+            </div>
+          </form>
+        </div>
+        
+      </div><!--/span-->
+      
+      <div class="span9 well">
+      
+	      <div id="alertDiv" class="alert alert-info">
+	        <p>
+	        	<h3>Search results</h3>
+	        	Search query: "<span id="searchQuery">{Search Query}</span>". Total found results: <span id="searchResultsTotal">{Search Results Total}</span>
+	        </p>
+	      </div>
+	      
+        <div id="members" class="tabbable">
+          <ul class="nav nav-tabs"></ul>
+          <div class="tab-content"></div>
+        </div><!-- /tabbable -->
+        
+        <div id="searchResults" class="tabbable">
+          <div class="tab-content"></div>
+          <br>
+          <form class="form-inline">
+          	<div class="control-group">
+          		<div class="controls docs-input-sizes">
+          			<select id="groupsAddList"></select> <a onclick="addMembers();" class="btn"><i class="icon-plus"></i> Add to group</a>
+          		</div>
+          	</div>
+          </form>
+        </div><!-- /tabbable -->
+        
+      </div><!--/span-->
+      
+    </div><!--/row-->
+  </div><!--/container-->
+</body>
+</html>

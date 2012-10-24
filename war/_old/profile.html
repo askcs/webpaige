@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>KNRM Web Administration :: Profile</title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  
+  <link href="img/favicon.ico" rel="shortcut icon">
+  
+  <link href="css/bootstrap/bootstrap.css" rel="stylesheet">
+  <link href="css/bootstrap/bootstrap-responsive.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+  <script src="js/jquery/jquery-1.7.2.min.js" type="text/javascript"></script>
+  <script src="js/bootstrap/bootstrap.js" type="text/javascript"></script>
+  <script src="js/libs/ask.session.js" type="text/javascript"></script>
+  
+  <script src="js/libs/md5.js" type="text/javascript"></script>
+  
+  <script src="js/init.js" type="text/javascript"></script>
+  <script src="js/i18n/jquery.i18n.properties-min-1.0.9.js" type="text/javascript"></script>
+  <script src="js/views/profile.js" type="text/javascript"></script>
+</head>
+<body>
+	<div id="navbar"></div>
+  <div class="container-fluid">
+    <div class="row-fluid">
+    
+      <div class="span12 well">
+      
+        <div class="btn-group btn-hanging">
+          <a id="updateProfileTrigger" class="btn"><i class="icon-cog"></i> <span class="profile_edit_profile"></span></a>
+          <a class="btn" onclick="$('#changePassword').modal('show');"><i class="icon-lock"></i> <span class="profile_change_password"></span></a>
+        </div>
+        
+        <div class="modal hide" id="updateProfile">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">×</button>
+            <h3><span class="profile_update_profile"></span></h3>
+          </div>
+          <form id="profile" class="">
+            <div class="modal-body">
+              <div class="control-group">
+                <label class="control-label"><span class="profile_profile_name"></span></label>
+                <div class="controls docs-input-sizes">
+                  <input id="name" class="span12" placeholder="" type="text">
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label"><span class="profile_email_address"></span></label>
+                <div class="controls docs-input-sizes">
+                  <input id="email" class="span12" placeholder="" type="text">
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label"><span class="profile_phone_number"></span></label>
+                <div class="controls docs-input-sizes">
+                  <input id="phone" class="span12" placeholder="" type="text">
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label"><span class="profile_address"></span></label>
+                <div class="controls docs-input-sizes">
+                  <input id="address" class="span12" placeholder="" type="text">
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label"><span class="profile_postcode"></span></label>
+                <div class="controls docs-input-sizes">
+                  <input id="postcode" class="span12" placeholder="" type="text">
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label"><span class="profile_city"></span></label>
+                <div class="controls docs-input-sizes">
+                  <input id="city" class="span12" placeholder="" type="text">
+                </div>
+              </div>
+              	<!--
+              <div class="control-group">
+                <label class="control-label">Country</label>
+                <div class="controls docs-input-sizes">
+                  <input id="country" class="span12" placeholder="" type="text">
+                </div>
+              </div>
+              -->
+            </div>
+            <div class="modal-footer">
+              <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> <span class="profile_cancel"></span></a>
+              <a onclick="changeResources();" class="btn btn-success"><i class="icon-ok icon-white"></i> <span class="profile_save_profile"></span></a>
+            </div>
+          </form>
+        </div>
+        
+        <div class="modal hide" id="changePassword">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">×</button>
+            <h3><span class="profile_change_password"></span></h3>
+          </div>
+          <form id="profile" class="">
+            <div class="modal-body">
+		          <div id="alertDiv" class="alert alert-error">
+		            <button id="alertClose" class="close" type="button">×</button><span id="alertMessage">{Alert Message}</span>
+		          </div>
+		          <div id="successDiv" class="alert alert-success">
+		            <button id="successClose" class="close" type="button">×</button><span id="successMessage">{Success Message}</span>
+		          </div>
+              <div class="control-group">
+                <label class="control-label"><span class="profile_old_password"></span></label>
+                <div class="controls docs-input-sizes">
+                  <input id="pass" class="span12" placeholder="" type="password">
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label"><span class="profile_new_password"></span></label>
+                <div class="controls docs-input-sizes">
+                  <input id="pass1" class="span12" placeholder="" type="password">
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label"><span class="profile_new_password_repeat"></span></label>
+                <div class="controls docs-input-sizes">
+                  <input id="pass2" class="span12" placeholder="" type="password">
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+            	<div id="changePasswordButtons">
+              	<a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> <span class="profile_cancel"></span></a>
+              	<a onclick="changePassword();" class="btn btn-success" href="#"><i class="icon-ok icon-white"></i> <span class="profile_change_password"></span></a>
+            	</div>
+            	<div id="passwordChangedButton">
+              	<a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> <span class="profile_close"></span></a>
+            	</div>
+            </div>
+          </form>
+        </div>
+        
+        <h2><span class="entypo eMedium">+</span><span class="d_username">{Username}</span></h2>
+        
+        <div id="profileChanged" class="alert alert-warning">
+          <span class="profile_changed"></span>
+        </div>
+          
+        <div id="content">
+        	<div id="live"></div>
+        </div>
+        
+      </div><!--/span-->
+      
+    </div><!--/row-->
+  </div><!--/container-->
+</body>
+</html>
