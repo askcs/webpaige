@@ -1,0 +1,22 @@
+<section ng-controller="forgotPassCtrl">
+  <div class="span3">
+    <form class="well">
+      <div id="alertDiv" class="alert alert-error">
+        <button id="alertClose" class="close" type="button">×</button><span id="alertMessage">{Alert Message}</span>
+      </div>
+      <h3><span class="entypo eMedium">+</span> Wachtwoord vergeten?</h3>
+      <hr>
+      <div id="successDiv" class="alert alert-success">
+        <button id="successClose" class="close" type="button">×</button><span id="successMessage">{Success Message}</span>
+      </div>
+      <div id="inputFieldEmail" class="control-group">
+        <label class="control-label">Graag uw emailadres invullen</label>
+        <div class="controls docs-input-sizes">
+          <input id="email" class="span12" placeholder="Uw emailadres" type="text">
+        </div>
+      </div>
+      <a class="btn" href="#" id="sendPasswordLinkBtn">Wachtwoord resetten</a>
+      <img id="ajaxLoader" alt="Loading" src="img/ajax-loader.gif" style="margin-left:5px; height:20px;">
+    </form>
+  </div>
+</section>

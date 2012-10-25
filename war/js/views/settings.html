@@ -1,0 +1,96 @@
+<section ng-controller="settingsCtrl">
+    
+	<div class="span12 well">
+	
+	  <div class="btn-group btn-hanging">
+	    <a id="tmlZoomInBtn" class="btn" onClick="timelineZoomIn();"><i class="icon-zoom-in"></i></a>
+	    <a id="tmlZoomOutBtn" class="btn" onClick="timelineZoomOut();"><i class="icon-zoom-out"></i></a>
+	    <a id="tmlMoveLeftBtn" class="btn" onClick="timelineMoveLeft();"><i class="icon-arrow-left"></i></a>
+	    <a id="tmlMoveRightBtn" class="btn" onClick="timelineMoveRight();"><i class="icon-arrow-right"></i></a> 
+	    <a id="tmlTodayBtn" class="btn" onClick="timelineInit();">Vandaag</a>  
+	  </div>
+	  
+	  <div class="btn-group btn-hanging">
+	    <a class="btn" data-toggle="modal" href="#newWish"><i class="icon-plus-sign"></i> Nieuwe gewenste aantal</a>
+	  </div>  
+	  
+	  <div class="modal hide" id="newWish">
+	    <div class="modal-header">
+	      <button class="close" data-dismiss="modal" type="button">×</button>
+	      <h3>Nieuwe gewenste aantal</h3>
+	    </div>
+	    <form id="newWishForm" class="">
+	      <div class="modal-body">
+	        <div class="control-group">
+	          <label class="control-label">Groep</label>
+	          <div class="controls">
+	            <select id="groupsList"></select>
+	          </div>
+	        </div>
+	        <div class="control-group">
+	          <label class="control-label">Van</label>
+	          <div class="controls">
+	            <input id="from" class="span4" type="text" style="display:inline;">
+	          </div>
+	        </div>
+	        <div class="control-group">
+	          <label class="control-label">Till</label>
+	          <div class="controls">
+	            <input id="till" class="span4" type="text" style="display:inline;">
+	          </div>
+	        </div>
+	        <div class="control-group" style="float:left; margin-right:30px;">
+	          <label class="control-label">Gewenste aantal</label>
+	          <div class="controls">
+	            <input id="wish" class="span4" type="text">
+	          </div>
+	        </div>
+	        <div class="clear"></div>
+	      </div>
+	      <div class="modal-footer">
+	        <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Annuleren</a>
+	        <a onclick="wishSubmit()" class="btn btn-success"><i class="icon-ok icon-white"></i> Opslaan gewenste aantal</a>
+	      </div>
+	    </form>
+	  </div>
+	  
+	  <div class="modal hide" id="editWish">
+	    <div class="modal-header">
+	      <button class="close" data-dismiss="modal" type="button">×</button>
+	      <h3>Wijzig gewenste aantal (<span id="groupName"></span>)</h3>
+	    </div>
+	    <form id="editWishForm" class="">
+	      <div class="modal-body">
+	        <div class="control-group">
+	          <label class="control-label">Van</label>
+	          <div class="controls">
+	            <input id="efrom" class="span4" type="text" style="display:inline;">
+	          </div>
+	        </div>
+	        <div class="control-group">
+	          <label class="control-label">Tot</label>
+	          <div class="controls">
+	            <input id="etill" class="span4" type="text" style="display:inline;">
+	          </div>
+	        </div>
+	        <div class="control-group" style="float:left; margin-right:30px;">
+	          <label class="control-label">Gewenste aantal</label>
+	          <div class="controls">
+	            <input id="ewish" class="span4" type="text">
+	          </div>
+	        </div>
+	        <div class="clear"></div>
+	      </div>
+	      <div class="modal-footer">
+	        <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Annuleren</a>
+	        <a onclick="editWishSubmit()" class="btn btn-success"><i class="icon-ok icon-white"></i> Opslaan gewenste aantal</a>
+	      </div>
+	    </form>
+	  </div>
+	  
+	  <h2><span class="entypo eMedium">@</span> Instellingen</h2>
+	  
+	  <div id="wishesTimeline"></div>
+	  
+	</div>
+</section>

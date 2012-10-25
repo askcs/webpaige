@@ -1,6 +1,10 @@
 'use strict';
-
 /* Controllers */
+
+function appCtrl()
+{
+}
+appCtrl.$inject = [];
 
 
 function loginCtrl()

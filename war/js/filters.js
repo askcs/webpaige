@@ -2,7 +2,7 @@
 
 /* Filters */
 
-angular.module('myApp.filters', []).
+angular.module('webPaige.filters', []).
   filter('interpolate', ['version', function(version)
   {
     return function(text)

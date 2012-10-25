@@ -322,3 +322,49 @@ table thead {
   background-repeat: repeat-x;
 	color: white;
 }
+
+
+
+
+
+
+
+/* app css stylesheet */
+
+.topmenu {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	z-index: 100;
+  list-style: none;
+  margin-bottom: 5px;
+  background-color: #353333;
+  width: 100%;
+  margin-left: 0px;
+  margin-bottom: 0px;
+}
+
+/*
+.topmenu:before {
+  content: "[";
+}
+
+.topmenu:after {
+  content: "]";
+}
+*/
+
+.topmenu > li {
+  display: inline;
+  padding: 5px;
+}
+
+.topmenu > li:before {
+  content: "|";
+  padding-right: 0.3em;
+}
+
+.topmenu > li:nth-child(1):before {
+  content: "";
+  padding: 0;
+}
