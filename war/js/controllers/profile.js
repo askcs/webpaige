@@ -1,8 +1,7 @@
 'use strict';
-/* Controllers */
+/* Profile controller */
 
-
-function profile()
+function profile($scope)
 {
 }
-profile.$inject = [];
+profile.$inject = ['$scope'];

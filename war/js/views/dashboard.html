@@ -17,7 +17,9 @@
 	  <form class="form-inline btn-hanging" style="margin-bottom:0px;">
 	  	<div class="control-group">
 	  		<div class="controls docs-input-sizes">
-	  			<select id="groupsList"></select>
+	  			<select id="groupsList">
+		  			<option ng-repeat="network in networks" value="{{network.uuid}}">{{network.name}}</option>
+	  			</select>
 	  		</div>
 	  	</div>
 	  </form>
@@ -35,15 +37,18 @@
 	  </div>      
 	  
 		<div class="modal hide" id="newEvent">
+		
 	    <div class="modal-header">
 	      <button class="close" data-dismiss="modal" type="button">×</button>
 	      <h3>Nieuw beschikbaarheid</h3>
 	    </div>
+	    
 	    <form id="newEventForm" class="">
 	    
 	    	<input type="hidden" id="userWho" name="userWho" value="" />
 	    	
 	      <div class="modal-body">
+	      
 	        <div class="control-group">
 	          <label class="control-label">Status</label>
 	          <div class="controls">
@@ -53,80 +58,96 @@
 	            <input id="planningType" type="radio" name="planningType" value="unavailable" style="margin-left:10px;"> Niet Beschikbaar
 	          </div>
 	        </div>
+	        
 	        <div class="control-group">
 	          <label class="control-label">Van</label>
 	          <div class="controls">
 	            <input id="planningFrom" class="span4" type="text" style="display:inline;">
 	          </div>
 	        </div>
+	        
 	        <div id="plTill" class="control-group">
 	          <label class="control-label">Tot</label>
 	          <div class="controls">
 	            <input id="planningTill" class="span4" type="text" style="display:inline;">
 	          </div>
 	        </div>
+	        
 	        <div class="control-group" style="float:left; margin-right:30px;">
 	          <label class="control-label">Wekelijkse terugkerend?</label>
 	          <div class="controls">
 	            <input id="planningReoccuring" type="checkbox" value="true">
 	          </div>
 	        </div>
+	        
 	        <div class="clear"></div>
 	      </div>
+	      
 	      <div class="modal-footer">
 	        <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Annuleer</a>
 	        <a onclick="planSubmit()" class="btn btn-success"><i class="icon-ok icon-white"></i> Opslaan planning</a>
 	      </div>
+	      
 	    </form>
+	    
 	  </div>
 	  
 		<div class="modal hide" id="editEvent">
+		
 	    <div class="modal-header">
 	      <button class="close" data-dismiss="modal" type="button">×</button>
 	      <h3>Bewerk beschikbaarheid</h3>
 	    </div>
+	    
 	    <form id="editEventForm" class="">
 	    
 	    	<input type="hidden" id="userWhoEdit" name="userWhoEdit" value="" />
 	    	<input type="hidden" id="userReocEdit" name="userReocEdit" value="" />
 	    	
 	      <div class="modal-body">
+	      
 	        <div class="control-group">
 	          <label class="control-label">Status</label>
 	          <div class="controls">
-	            
 	            <input id="eplanningType" type="radio" name="eplanningType" value="available"> Beschikbaar
 	            <input id="eplanningType" type="radio" name="eplanningType" value="availableN" style="margin-left:10px;"> Beschikbaar Noord
 	            <input id="eplanningType" type="radio" name="eplanningType" value="availableZ" style="margin-left:10px;"> Beschikbaar Zuid
 	            <input id="eplanningType" type="radio" name="eplanningType" value="unavailable" style="margin-left:10px;"> Niet Beschikbaar
 	          </div>
 	        </div>
+	        
 	        <div class="control-group">
 	          <label class="control-label">Van</label>
 	          <div class="controls">
 	            <input id="eplanningFrom" class="span4" type="text" style="display:inline;">
 	          </div>
 	        </div>
+	        
 	        <div id="plTill" class="control-group">
 	          <label class="control-label">Tot</label>
 	          <div class="controls">
 	            <input id="eplanningTill" class="span4" type="text" style="display:inline;">
 	          </div>
 	        </div>
+	        
 	        <div class="control-group" style="float:left; margin-right:30px;">
 	          <label class="control-label">Wekelijkse terugkerend?</label>
 	          <div class="controls">
 	            <input id="eplanningReoccuring" type="checkbox" value="true">
 	          </div>
 	        </div>
+	        
 	        <div class="clear"></div>
 	      </div>
+	      
 	      <div class="modal-footer">
 	        <a class="btn" data-dismiss="modal" href="#"><i class="icon-remove"></i> Annuleer</a>
 	        <a onclick="deletePlanSubmit()" class="btn btn-warning"><i class="icon-remove icon-white"></i> Verwijder planning</a>
 	        <a onclick="editPlanSubmit()" class="btn btn-success"><i class="icon-ok icon-white"></i> Opslaan planning</a>
 	      </div>
+	      
 	    </form>
+	    
 	  </div>
 	  
 	  <h2><span class="entypo eMedium">P</span> Planboard</h2>
@@ -150,10 +171,19 @@
 	  
 	  <div id="mytimeline"></div>
 	  
+	  <!--
 	  <div id="groupTimelineHolder">
 	  	<div id="groupTimeline"></div>
 	  </div>
 	  <div id="memberTimeline"></div>
+	  -->
+	  
+	  <!--
+	  <ul>
+	  	<li ng-repeat="slot in slots">{{slot.text}}</li>
+	  </ul>
+	  -->
+	  
 	  
 	</div>
 </section>

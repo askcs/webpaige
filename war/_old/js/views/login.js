@@ -33,6 +33,7 @@ $(document).ready(function()
 */
 
  	pageInit('login', 'false');
+ 	
  	var login = JSON.parse(webpaige.get('login'));
  	if (login != null)
  	{

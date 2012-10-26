@@ -1,8 +1,7 @@
 'use strict';
-/* Controllers */
+/* Groups controller */
 
-
-function groups()
+function groups($scope)
 {
 }
-groups.$inject = [];
+groups.$inject = ['$scope'];

@@ -1,8 +1,7 @@
 'use strict';
-/* Controllers */
+/* Settings controller */
 
-
-function settings()
+function settings($scope)
 {
 }
-settings.$inject = [];
+settings.$inject = ['$scope'];

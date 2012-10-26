@@ -1,8 +1,7 @@
 'use strict';
-/* Controllers */
+/* Messages controller */
 
-
-function messages()
+function messages($scope)
 {
 }
-messages.$inject = [];
+messages.$inject = ['$scope'];
