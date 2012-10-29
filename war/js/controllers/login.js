@@ -1,5 +1,6 @@
 $(document).ready(function()
 {
+/*
 	var session = new ask.session(relogin);
 	// TODO //
 	function relogin() { window.location = "login.html"; }
@@ -8,7 +9,9 @@ $(document).ready(function()
 	console.log('session:', session);
 	
 	webpaige = new webpaige();
+*/
 	
+	//var webpaige = new webpaige();
 	 	
  	var login = JSON.parse(webpaige.get('login'));
  	
@@ -25,6 +28,9 @@ $(document).ready(function()
   
   $("#loginBtn").click(function()
   {
+  
+  	log('login inited');
+  	
 	  $("#ajaxLoader").show();
 	  
 	  var userDef = "Username";
@@ -143,7 +149,11 @@ function loginAsk (user, pass, r)
 						  		webpaige.config('firstGroupName', data[i].name);
 						  	}	 	    
 						  }
+							
+							
 							document.location = "index.html#/dashboard";
+							
+							//console.log('logged successfully. session: ', session.getSession());
 						}
 					);
  	

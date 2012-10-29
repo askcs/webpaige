@@ -1,0 +1,182 @@
+[
+  {
+    "count": 0,
+    "end": 1350597600,
+    "recursive": true,
+    "start": 1350573110,
+    "text": "com.ask-cs.State.Unavailable",
+    "type": "availability",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1350684000,
+    "recursive": true,
+    "start": 1350597600,
+    "text": "com.ask-cs.State.KNRM.BeschikbaarZuid",
+    "type": "availability",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1350770400,
+    "recursive": true,
+    "start": 1350684000,
+    "text": "com.ask-cs.State.Unavailable",
+    "type": "availability",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1350943200,
+    "recursive": true,
+    "start": 1350770400,
+    "text": "com.ask-cs.State.Available",
+    "type": "availability",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1351029600,
+    "recursive": true,
+    "start": 1350943200,
+    "text": "com.ask-cs.State.Unavailable",
+    "type": "availability",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1351116000,
+    "recursive": true,
+    "start": 1351029600,
+    "text": "com.ask-cs.State.KNRM.BeschikbaarNoord",
+    "type": "availability",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1351202400,
+    "recursive": true,
+    "start": 1351116000,
+    "text": "com.ask-cs.State.Unavailable",
+    "type": "availability",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1351288800,
+    "recursive": true,
+    "start": 1351202400,
+    "text": "com.ask-cs.State.KNRM.BeschikbaarZuid",
+    "type": "availability",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1351375200,
+    "recursive": true,
+    "start": 1351288800,
+    "text": "com.ask-cs.State.Unavailable",
+    "type": "availability",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1351551600,
+    "recursive": true,
+    "start": 1351375200,
+    "text": "com.ask-cs.State.Available",
+    "type": "availability",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1351638000,
+    "recursive": true,
+    "start": 1351551600,
+    "text": "com.ask-cs.State.Unavailable",
+    "type": "availability",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1351724400,
+    "recursive": true,
+    "start": 1351638000,
+    "text": "com.ask-cs.State.KNRM.BeschikbaarNoord",
+    "type": "availability",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1351782710,
+    "recursive": true,
+    "start": 1351724400,
+    "text": "com.ask-cs.State.Unavailable",
+    "type": "availability",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1350597600,
+    "recursive": false,
+    "start": 1350511200,
+    "text": "com.ask-cs.State.KNRM.BeschikbaarZuid",
+    "type": "",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1350630420,
+    "recursive": false,
+    "start": 1350597600,
+    "text": "com.ask-cs.State.Available",
+    "type": "",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1350640800,
+    "recursive": false,
+    "start": 1350630420,
+    "text": "com.ask-cs.State.KNRM.BeschikbaarNoord",
+    "type": "",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1350680400,
+    "recursive": false,
+    "start": 1350640800,
+    "text": "com.ask-cs.State.Available",
+    "type": "",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1350684000,
+    "recursive": false,
+    "start": 1350680400,
+    "text": "com.ask-cs.State.KNRM.BeschikbaarZuid",
+    "type": "",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1350770400,
+    "recursive": false,
+    "start": 1350684000,
+    "text": "com.ask-cs.State.Unavailable",
+    "type": "",
+    "wish": 0
+  },
+  {
+    "count": 0,
+    "end": 1350856800,
+    "recursive": false,
+    "start": 1350770400,
+    "text": "com.ask-cs.State.Available",
+    "type": "",
+    "wish": 0
+  }
+]

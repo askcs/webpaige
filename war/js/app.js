@@ -22,10 +22,14 @@ function app($scope)
 	$scope.username = ' Cengiz ';
 
 	var session = new ask.session(relogin);
-	// TODO //
-	function relogin() { window.location = "login.html"; }
 	
-	webpaige = new webpaige();
+	// TODO //
+	function relogin()
+	{
+		window.location = "login.html";
+	}
+	
+	//webpaige = new webpaige();
 		
 }
 app.$inject = ['$scope'];
