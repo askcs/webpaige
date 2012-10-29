@@ -196,6 +196,9 @@ function planSubmit()
 		 case 'availableZ':
 		 	state = 'com.ask-cs.State.KNRM.BeschikbaarZuid';
 		 break;
+		 case 'schipper':
+		 	state = 'com.ask-cs.State.KNRM.SchipperVanDienst';
+		 break;
 		 case 'unavailable':
 		 	state = 'com.ask-cs.State.Unavailable';
 		 break;
@@ -225,6 +228,9 @@ function editPlanSubmit()
 		 break;
 		 case 'availableZ':
 		 	state = 'com.ask-cs.State.KNRM.BeschikbaarZuid';
+		 break;
+		 case 'schipper':
+		 	state = 'com.ask-cs.State.KNRM.SchipperVanDienst';
 		 break;
 		 case 'unavailable':
 		 	state = 'com.ask-cs.State.Unavailable';
@@ -941,8 +947,12 @@ function editSlotModal(efrom, etill, ereoc, evalue, user)
     	$('input#eplanningType')[2].checked = true;
     	eoldSlotValue = 'com.ask-cs.State.KNRM.BeschikbaarZuid';
 	  break;
-	  case 'com.ask-cs.State.Unavailable':
+	  case 'com.ask-cs.State.KNRM.SchipperVanDienst':
     	$('input#eplanningType')[3].checked = true;
+    	eoldSlotValue = 'com.ask-cs.State.KNRM.SchipperVanDienst';
+	  break;
+	  case 'com.ask-cs.State.Unavailable':
+    	$('input#eplanningType')[4].checked = true;
     	eoldSlotValue = 'com.ask-cs.State.Unavailable';
 	  break;
   }
@@ -1514,6 +1524,7 @@ function colorState(state)
   if (state == 'com.ask-cs.State.KNRM.BeschikbaarNoord') return '<div class="availableN">' + state + '</div>';
   if (state == 'com.ask-cs.State.KNRM.BeschikbaarZuid') return '<div class="availableS">' + state + '</div>';
   if (state == 'com.ask-cs.State.Unavailable') return '<div class="unavailable">' + state + '</div>';
+  if (state == 'com.ask-cs.State.KNRM.SchipperVanDienst') return '<div class="schipper">' + state + '</div>';
 }
 
 function timeline_helper_state2html(state)
@@ -1522,7 +1533,8 @@ function timeline_helper_state2html(state)
 	    'ask.state.1': ['com.ask-cs.State.Available', 'green'],
 	    'ask.state.2': ['com.ask-cs.State.KNRM.BeschikbaarNoord', 'green'],
 	    'ask.state.3': ['com.ask-cs.State.KNRM.BeschikbaarZuid', 'green'],
-	    'ask.state.4': ['com.ask-cs.State.Unavailable', 'red']
+	    'ask.state.4': ['com.ask-cs.State.Unavailable', 'red'],
+	    'ask.state.5': ['com.ask-cs.State.KNRM.SchipperVanDienst', 'yellow']
 	 };
   var content = '?';
   if (state_map[state])
@@ -1535,7 +1547,8 @@ function timeline_helper_html2state(content)
 	    'ask.state.1': ['com.ask-cs.State.Available', 'green'],
 	    'ask.state.2': ['com.ask-cs.State.KNRM.BeschikbaarNoord', 'green'],
 	    'ask.state.3': ['com.ask-cs.State.KNRM.BeschikbaarZuid', 'green'],
-	    'ask.state.4': ['com.ask-cs.State.Unavailable', 'red']
+	    'ask.state.4': ['com.ask-cs.State.Unavailable', 'red'],
+	    'ask.state.5': ['com.ask-cs.State.KNRM.SchipperVanDienst', 'yellow']
 	 };
   var state = content.split('>')[1].split('<')[0];
   //reverse map search..
@@ -1562,7 +1575,8 @@ function timeline_helper_html2state2(content)
 	    'ask.state.1': ['com.ask-cs.State.Available', 'green'],
 	    'ask.state.2': ['com.ask-cs.State.KNRM.BeschikbaarNoord', 'green'],
 	    'ask.state.3': ['com.ask-cs.State.KNRM.BeschikbaarZuid', 'green'],
-	    'ask.state.4': ['com.ask-cs.State.Unavailable', 'red']
+	    'ask.state.4': ['com.ask-cs.State.Unavailable', 'red'],
+	    'ask.state.5': ['com.ask-cs.State.KNRM.SchipperVanDienst', 'yellow']
 	 };
   var state = content.split('>')[1].split('<')[0];
   //reverse map search..

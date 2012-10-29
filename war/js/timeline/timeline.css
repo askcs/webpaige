@@ -137,6 +137,14 @@ div.timeline-event {
 	text-indent: -9999px;
 }
 
+.schipper {
+	margin:0;
+	/* background-color: #3e673e; */
+	background-color: #4f824f;
+	border-bottom: 10px solid #e0c100;
+	text-indent: -9999px;
+}
+
 .unavailable {
 	margin: 0;
 	background-color: #a93232;	
