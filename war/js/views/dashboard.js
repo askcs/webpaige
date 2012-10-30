@@ -37,7 +37,7 @@ $(document).ready(function()
   });
 */
 
-	timelineHeaderInit();
+	//timelineHeaderInit();
   
   timelineInit();
   
@@ -126,6 +126,36 @@ $(document).ready(function()
 		var division = $(this).find(":selected").val();
 		timeline2.draw(webpaige.config(division));
 	});
+	
+	
+	
+	
+	
+/*
+	$(document).scroll(function(event)
+	{ 
+		var posWindow = $(window).scrollTop();
+		
+		var posTimelines = $('#timelines').position().top;
+		
+		var diff = posWindow - posTimelines;
+		
+		//console.log('oh: ', $('#timelineHeader').outerHeight());
+		
+		if (diff >= 0)
+		{
+			$('#timelineHeader').css({
+				'position': 'absolute',
+				'top': posWindow,
+				'z-index': 5000,
+				'height': '48px'
+			});
+			//console.log('working');
+		}
+		
+		//console.log('position Timelines', posTimelines, 'position: ', posWindow);
+	})
+*/
 	
 	
   
@@ -355,6 +385,7 @@ function membersTimelineInit(uuid)
   getMemberSlots(uuid);
 }
 
+/*
 function timelineHeaderInit()
 {
 		  var trange = webpaige.config('trange');
@@ -391,6 +422,7 @@ function timelineHeaderInit()
 	});
 		  timeline4.setVisibleChartRange(trange.start, trange.end);
 }
+*/
 
 
 
@@ -406,7 +438,7 @@ function onRangeChanged1()
   {
 */
   timeline3.setVisibleChartRange(range.start, range.end);
-  timeline4.setVisibleChartRange(range.start, range.end);
+  //timeline4.setVisibleChartRange(range.start, range.end);
 /*   } */
 }  
       
@@ -420,7 +452,7 @@ function onRangeChanged2()
   {
 */
   	timeline3.setVisibleChartRange(range.start, range.end);
-  	timeline4.setVisibleChartRange(range.start, range.end);
+  	//timeline4.setVisibleChartRange(range.start, range.end);
 /*   } */
 } 
      
@@ -429,9 +461,10 @@ function onRangeChanged3()
   var range = timeline3.getVisibleChartRange();
   timeline.setVisibleChartRange(range.start, range.end);
   timeline2.setVisibleChartRange(range.start, range.end);
-  timeline4.setVisibleChartRange(range.start, range.end);
+  //timeline4.setVisibleChartRange(range.start, range.end);
 }
      
+/*
 function onRangeChanged4() 
 {
   var range = timeline4.getVisibleChartRange();
@@ -439,6 +472,7 @@ function onRangeChanged4()
   timeline2.setVisibleChartRange(range.start, range.end);
   timeline3.setVisibleChartRange(range.start, range.end);
 }
+*/
 
 
 
@@ -1069,8 +1103,8 @@ function getSlots()
         //'max': new Date(2012, 11, 31),               // upper limit of visible range
         'intervalMin': 1000 * 60 * 60 * 24,          // one day in milliseconds
         'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2,   // about three months in milliseconds,
-        'showMajorLabels': false,
-        'showMinorLabels': false
+        //'showMajorLabels': false,
+        //'showMinorLabels': false
 		  };
 			
 			timeline.draw(timeline_data, options); 
@@ -1425,8 +1459,8 @@ function getGroupSlots(guuid, gname)
 	        //'max': trange.end,               // upper limit of visible range
 	        'intervalMin': 1000 * 60 * 60 * 24,          // one day in milliseconds
 	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2,   // about three months in milliseconds,
-        'showMajorLabels': false,
-        'showMinorLabels': false
+        //'showMajorLabels': false,
+        //'showMinorLabels': false
 		  };
 		  timeline2 = new links.Timeline(document.getElementById('groupTimeline'));
 		  google.visualization.events.addListener(timeline2, 'rangechange', onRangeChanged2);
@@ -1488,8 +1522,8 @@ function getMemberSlots(uuid)
 	        //'max': trange.end,               // upper limit of visible range
 	        'intervalMin': 1000 * 60 * 60 * 24,          // one day in milliseconds
 	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2,   // about three months in milliseconds,
-        'showMajorLabels': false,
-        'showMinorLabels': false
+        //'showMajorLabels': false,
+        //'showMinorLabels': false
 			  };			  
 		  }
 		  else
@@ -1507,8 +1541,8 @@ function getMemberSlots(uuid)
 	        //'max': trange.end,               // upper limit of visible range
 	        'intervalMin': 1000 * 60 * 60 * 24,          // one day in milliseconds
 	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2,   // about three months in milliseconds,
-        'showMajorLabels': false,
-        'showMinorLabels': false
+        //'showMajorLabels': false,
+        //'showMinorLabels': false
 			  };	
 		  }
 			

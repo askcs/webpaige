@@ -326,17 +326,20 @@ table thead {
 
 
 
-#timelines {
-	/* position: relative; */
-}
-
-#timelines #timelineHeader {
 /*
+#timelines {
+	position: relative;
+}
+*/
+
+/*
+#timelines #timelineHeader {
+	height: 48px;
+	width: 100%;
+	display: block;
 	position: absolute;
 	top: 0;
-	bottom: 0;
-	display: block;
-	width: 100%;
+	left: 0;
 	z-index: 5000;
-*/
 }
+*/
