@@ -129,10 +129,9 @@
         	<div class="control-group">
         		<div class="controls docs-input-sizes">
         			<select id="divisions">
-	        			<option value="both">Alle Divisies</option>
+	        			<option value="both">Beide Stations</option>
 	        			<option value="north">Station Noord</option>
 	        			<option value="south">Station Zuid</option>
-	        			<option value="schippers">Schipper Van Dienst</option>
         			</select>
         		</div>
         	</div>
@@ -172,7 +171,7 @@
               <div class="control-group">
                 <label class="control-label"><span class="dashboard_status"></span></label>
                 <div class="controls">
-                  <input id="planningType" type="radio" name="planningType" value="available"> Beschikbaar
+                  <input id="planningType" type="radio" name="planningType" value="available" checked="checked"> Beschikbaar
                   <br>
                   <input id="planningType" type="radio" name="planningType" value="availableN"> Beschikbaar Noord
                   <input id="planningType" type="radio" name="planningType" value="availableZ" style="margin-left:10px;">  Beschikbaar Zuid
@@ -299,17 +298,23 @@
         	</ul>
         </div>
         
-        <div id="mytimeline"></div>
+        <div id="timelines">
+        	
+        	<div id="timelineHeader"></div>
         
-        <div id="groupTimelineHolder">
-        	<div id="groupTimeline"></div>
+	        <div id="mytimeline"></div>
+	        
+	        <div id="groupTimelineHolder">
+	        	<div id="groupTimeline"></div>
+	        </div>
+	         
+	        <!--
+	        <h2><span class="entypo eMedium">P</span> Group Planboard</h2>
+	        <hr>
+	        -->
+	        <div id="memberTimeline"></div>
+	        
         </div>
-         
-        <!--
-        <h2><span class="entypo eMedium">P</span> Group Planboard</h2>
-        <hr>
-        -->
-        <div id="memberTimeline"></div>
         
       </div><!--/span-->
       

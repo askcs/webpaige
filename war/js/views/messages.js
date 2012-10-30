@@ -9,7 +9,7 @@
  	
 	 	$('a[rel=tooltip]').tooltip();
 	 	
-	 	if (webpaige.getRole() != 1)
+	 	if (webpaige.getRole() > 2)
 	 	{
 		 	$('#smsCheck').hide();
 	 	}

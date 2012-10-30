@@ -322,3 +322,21 @@ table thead {
   background-repeat: repeat-x;
 	color: white;
 }
+
+
+
+
+#timelines {
+	/* position: relative; */
+}
+
+#timelines #timelineHeader {
+/*
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	display: block;
+	width: 100%;
+	z-index: 5000;
+*/
+}

@@ -36,6 +36,8 @@ $(document).ready(function()
     	$('#plTill').show();
   });
 */
+
+	timelineHeaderInit();
   
   timelineInit();
   
@@ -75,6 +77,8 @@ $(document).ready(function()
   
   $("#groupsList").change(function()
   {
+  	$('#divisions option[value="both"]').attr('selected','selected');
+  	
   	timelineInit();
 		var guuid = $(this).find(":selected").val();
 		var gname = $(this).find(":selected").text();
@@ -351,6 +355,43 @@ function membersTimelineInit(uuid)
   getMemberSlots(uuid);
 }
 
+function timelineHeaderInit()
+{
+		  var trange = webpaige.config('trange');
+  timeline_data4 = [];
+  var options = {
+			    'selectable': false,
+			    'editable': false,
+			    'snapEvents': false,
+			    'groupChangeable': false,
+	        'min': new Date(trange.start),                 // lower limit of visible range
+	        'max': new Date(trange.end),   
+	        //'min': new Date(2012, 0, 1),                 // lower limit of visible range
+	        //'max': new Date(2012, 11, 31),               // upper limit of visible range
+	        //'min': trange.start,                 // lower limit of visible range
+	        //'max': trange.end,               // upper limit of visible range
+	        'intervalMin': 1000 * 60 * 60 * 24,          // one day in milliseconds
+	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2,   // about three months in milliseconds,
+  	//'height': '48px',
+  	'groupsWidth': '100px',
+  	'axisOnTop': true
+  };
+  timeline4 = new links.Timeline(document.getElementById('timelineHeader'));
+  
+  google.visualization.events.addListener(timeline4, 'rangechange', onRangeChanged4);
+  
+	//timeline4.setVisibleChartRange( window.tstart, window.tend ); 
+			
+  timeline4.draw(timeline_data4, options);
+	timeline4.addItem({
+		'start':new Date(0),
+		'end':new Date(0),
+		'content':'available',
+		'group': 'no group'
+	});
+		  timeline4.setVisibleChartRange(trange.start, trange.end);
+}
+
 
 
 
@@ -365,6 +406,7 @@ function onRangeChanged1()
   {
 */
   timeline3.setVisibleChartRange(range.start, range.end);
+  timeline4.setVisibleChartRange(range.start, range.end);
 /*   } */
 }  
       
@@ -378,6 +420,7 @@ function onRangeChanged2()
   {
 */
   	timeline3.setVisibleChartRange(range.start, range.end);
+  	timeline4.setVisibleChartRange(range.start, range.end);
 /*   } */
 } 
      
@@ -386,6 +429,15 @@ function onRangeChanged3()
   var range = timeline3.getVisibleChartRange();
   timeline.setVisibleChartRange(range.start, range.end);
   timeline2.setVisibleChartRange(range.start, range.end);
+  timeline4.setVisibleChartRange(range.start, range.end);
+}
+     
+function onRangeChanged4() 
+{
+  var range = timeline4.getVisibleChartRange();
+  timeline.setVisibleChartRange(range.start, range.end);
+  timeline2.setVisibleChartRange(range.start, range.end);
+  timeline3.setVisibleChartRange(range.start, range.end);
 }
 
 
@@ -567,33 +619,47 @@ function addSlot(from, till, reoc, value, user)
 {
 	// resources ?
 	var resources = JSON.parse(webpaige.get('resources'));
+	
+	var now = parseInt((new Date()).getTime());
+	
+	console.log('passed values', from, till, reoc, value, user, now);
+	
+	
+	if (from < now || till < now)
+	{
+		alert('Het is niet toegestaan ​​om gebeurtenissen in het verleden te toevoegen.');		
+	}
+	else
+	{
 		
-		 var label = {
-			 gname : webpaige.config('gname'),
-			 guuid : webpaige.config('guuid')
-		 };	
-		 
-  var body = 	'{"end":' + (till / 1000) + 
-  						',"recursive":' + reoc + 
-  						',"start":' + (from / 1000) + 
-  						',"text":"' + value + '"}';
-	webpaige.con(
-		options = {
-			type: 'post',
-			path: '/askatars/'+user+'/slots',
-			json: body,
-			label: label,
-			loading: 'Nieuwe beschikbaarheid aan het toevoegen..'
-			,session: session.getSession()	
-		},
-		function(data, label)
-	  {  
-			getSlots();
-				
-				getGroupSlots(label.guuid, label.gname);
-				getMemberSlots(label.guuid);
-		}
-	); 
+			 var label = {
+				 gname : webpaige.config('gname'),
+				 guuid : webpaige.config('guuid')
+			 };	
+			 
+	  var body = 	'{"end":' + (till / 1000) + 
+	  						',"recursive":' + reoc + 
+	  						',"start":' + (from / 1000) + 
+	  						',"text":"' + value + '"}';
+		webpaige.con(
+			options = {
+				type: 'post',
+				path: '/askatars/'+user+'/slots',
+				json: body,
+				label: label,
+				loading: 'Nieuwe beschikbaarheid aan het toevoegen..'
+				,session: session.getSession()	
+			},
+			function(data, label)
+		  {  
+				getSlots();
+					
+					getGroupSlots(label.guuid, label.gname);
+					getMemberSlots(label.guuid);
+			}
+		);
+		
+	} 
 }
 
 
@@ -795,78 +861,27 @@ function updateSlotModal()
 	}
 }
 
+
+
+
 function updateSlot(oldSlot, newSlot, user)
 {
+	var startof = Math.round(oldSlot.start / 1000);
 	var endof = Math.round(oldSlot.end / 1000);
 	var now = parseInt((new Date()).getTime() / 1000);
+	
 	if (endof > now)
 	{
 	  var oldState = oldSlot.content.split('>')[1].split('<')[0];
 	  var newState = newSlot.content.split('>')[1].split('<')[0];
-	  
-  	// resources ?
-  	//var resources = JSON.parse(webpaige.get('resources'));
-		
-		//console.log('passed user: ', user);
-		
-/*
-		var real = {};
-		
-		if (user != 'own')
-		{
-			real.uuid = user.uuid;
-			
-			//console.log('good way');
-			
-			//console.log(user.reoc);
-			
-			if (user.reoc == 'Wekelijkse terugkerend')
-			{
-				var recursive = true;
-				
-				//console.log('rec true');
-				
-			}
-			else
-			{
-				var recursive = false;
-			}
-		}
-		else
-		{
-			real.uuid = resources.uuid;
-		
-			if (oldSlot.group == 'Wekelijkse terugkerend' || newSlot.group == 'Wekelijkse terugkerend')
-			{
-				var recursive = true;
-			}
-			else
-			{
-				var recursive = false;
-			}
-		}
-*/
-		
-/*
-			if (newSlot.group == 'Wekelijkse terugkerend')
-			{
-				var nrecursive = true;
-			}
-			else
-			{
-				var nrecursive = false;
-			}
-*/
 		
 	  var query =	'start=' + Math.round(newSlot.start / 1000) + 
 	  						'&end=' + Math.round(newSlot.end / 1000) + 
 	  						'&text=' + newState + 
 	  						'&recursive=' + user.reoc;
-	  						//'&recursive=' + (newSlot.group == 'Wekelijkse terugkerend' || user.reoc == 'Wekelijkse terugkerend');
 	  var body = 	'{"color":null' + 
 	  						',"count":0' + 
 	  						',"end":' + Math.round(oldSlot.end / 1000) + 
-	  						//',"recursive":' + (oldSlot.group == 'Wekelijkse terugkerend' || user.reoc == 'Wekelijkse terugkerend') + 
 	  						',"recursive":' + user.reoc + 
 	  						',"start":' + Math.round(oldSlot.start/1000) + 
 	  						',"text":"' + oldState + '"' +
@@ -888,20 +903,26 @@ function updateSlot(oldSlot, newSlot, user)
 			function(data, label)
 		  {  
 				getSlots();
-				
-				//console.log('lab: ', label);
-				
 				getGroupSlots(label.guuid, label.gname);
 				getMemberSlots(label.guuid);
 			}
 		);
 	}
+	/*
+	else if (endof < now && startof > now)
+	{
+	}
+	*/
 	else
 	{
 		timeline.cancelChange();
 		alert('Het is niet toegestaan ​​om gebeurtenissen uit het verleden te veranderen.');
 	}
 }
+
+
+
+
 
 function editSlotModal(efrom, etill, ereoc, evalue, user)
 {
@@ -1047,7 +1068,9 @@ function getSlots()
         //'min': new Date(2012, 0, 1),                 // lower limit of visible range
         //'max': new Date(2012, 11, 31),               // upper limit of visible range
         'intervalMin': 1000 * 60 * 60 * 24,          // one day in milliseconds
-        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2   // about three months in milliseconds
+        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2,   // about three months in milliseconds,
+        'showMajorLabels': false,
+        'showMinorLabels': false
 		  };
 			
 			timeline.draw(timeline_data, options); 
@@ -1114,14 +1137,42 @@ function getGroupSlots(guuid, gname)
 	      if (xcurrent < xwish)
 	      {
 	      	var color = '#a93232';
+	      	var span = '';
 	      }
 	      else if (xcurrent == xwish)
 	      {
 		      var color = '#e0c100';
+	      	var span = '';
 	      }
 	      else if (xcurrent > xwish)
 	      {
-		      var color = '#4f824f';
+	      	switch (num)
+	      	{
+		      	case 1:
+		      		var color = '#4f824f';
+		      	break;
+		      	case 2:
+		      		var color = '#477547';
+		      	break;
+		      	case 3:
+		      		var color = '#436f43';
+		      	break;
+		      	case 4:
+		      		var color = '#3d673d';
+		      	break;
+		      	case 5:
+		      		var color = '#396039';
+		      	break;
+		      	case 6:
+		      		var color = '#335833';
+		      	break;
+		      	case 7:
+		      		var color = '#305330';
+		      	break;
+		      	default:
+		      		var color = '#294929';
+	      	}
+	      	var span = '<span class="badge badge-inverse">' + num + '</span>';
 	      }
 	      
 	      if (xcurrent > xwish) {
@@ -1130,7 +1181,7 @@ function getGroupSlots(guuid, gname)
 	      
 	      style = 'height:' + height + 'px;' + 'background-color: ' + color + ';';
 	      var actual = '<div class="bar" style="' + style + '" ' +
-	              ' title="Huidig aantal beschikbaar: ' + num + ' personen"><span class="badge badge-inverse">' + num + '</span></div>';
+	              ' title="Huidig aantal beschikbaar: ' + num + ' personen">'+span+'</div>';
 	      var item = {
 	          'group': label,
 	          'start': Math.round(data[i].start * 1000),
@@ -1182,14 +1233,42 @@ function getGroupSlots(guuid, gname)
 			      if (xcurrent < xwish)
 			      {
 			      	var color = '#a93232';
+			      	var span = '';
 			      }
 			      else if (xcurrent == xwish)
 			      {
 				      var color = '#e0c100';
+			      	var span = '';
 			      }
 			      else if (xcurrent > xwish)
 			      {
-				      var color = '#4f824f';
+			      	switch (num)
+			      	{
+				      	case 1:
+				      		var color = '#4f824f';
+				      	break;
+				      	case 2:
+				      		var color = '#477547';
+				      	break;
+				      	case 3:
+				      		var color = '#436f43';
+				      	break;
+				      	case 4:
+				      		var color = '#3d673d';
+				      	break;
+				      	case 5:
+				      		var color = '#396039';
+				      	break;
+				      	case 6:
+				      		var color = '#335833';
+				      	break;
+				      	case 7:
+				      		var color = '#305330';
+				      	break;
+				      	default:
+				      		var color = '#294929';
+			      	}
+			      	var span = '<span class="badge badge-inverse">' + num + '</span>';
 			      }
 			      
 			      if (xcurrent > xwish) {
@@ -1198,7 +1277,7 @@ function getGroupSlots(guuid, gname)
 			      
 			      style = 'height:' + height + 'px;' + 'background-color: ' + color + ';';
 			      var actual = '<div class="bar" style="' + style + '" ' +
-			              ' title="Huidig aantal beschikbaar: ' + num + ' personen"><span class="badge badge-inverse">' + num + '</span></div>';
+			              ' title="Huidig aantal beschikbaar: ' + num + ' personen">'+span+'</div>';
 			      var item = {
 			          'group': label,
 			          'start': Math.round(data[i].start * 1000),
@@ -1256,14 +1335,42 @@ function getGroupSlots(guuid, gname)
 			      if (xcurrent < xwish)
 			      {
 			      	var color = '#a93232';
+			      	var span = '';
 			      }
 			      else if (xcurrent == xwish)
 			      {
 				      var color = '#e0c100';
+				      var span = '';
 			      }
 			      else if (xcurrent > xwish)
 			      {
-				      var color = '#4f824f';
+			      	switch (num)
+			      	{
+				      	case 1:
+				      		var color = '#4f824f';
+				      	break;
+				      	case 2:
+				      		var color = '#477547';
+				      	break;
+				      	case 3:
+				      		var color = '#436f43';
+				      	break;
+				      	case 4:
+				      		var color = '#3d673d';
+				      	break;
+				      	case 5:
+				      		var color = '#396039';
+				      	break;
+				      	case 6:
+				      		var color = '#335833';
+				      	break;
+				      	case 7:
+				      		var color = '#305330';
+				      	break;
+				      	default:
+				      		var color = '#294929';
+			      	}
+				      var span = '<span class="badge badge-inverse">' + num + '</span>';
 			      }
 			      
 			      if (xcurrent > xwish) {
@@ -1272,7 +1379,7 @@ function getGroupSlots(guuid, gname)
 			      
 			      style = 'height:' + height + 'px;' + 'background-color: ' + color + ';';
 			      var actual = '<div class="bar" style="' + style + '" ' +
-			              ' title="Huidig aantal beschikbaar: ' + num + ' personen"><span class="badge badge-inverse">' + num + '</span></div>';
+			              ' title="Huidig aantal beschikbaar: ' + num + ' personen">'+span+'</div>';
 			      var item = {
 			          'group': label,
 			          'start': Math.round(data[i].start * 1000),
@@ -1317,7 +1424,9 @@ function getGroupSlots(guuid, gname)
 	        //'min': trange.start,                 // lower limit of visible range
 	        //'max': trange.end,               // upper limit of visible range
 	        'intervalMin': 1000 * 60 * 60 * 24,          // one day in milliseconds
-	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2   // about three months in milliseconds
+	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2,   // about three months in milliseconds,
+        'showMajorLabels': false,
+        'showMinorLabels': false
 		  };
 		  timeline2 = new links.Timeline(document.getElementById('groupTimeline'));
 		  google.visualization.events.addListener(timeline2, 'rangechange', onRangeChanged2);
@@ -1378,7 +1487,9 @@ function getMemberSlots(uuid)
 	        //'min': trange.start,                 // lower limit of visible range
 	        //'max': trange.end,               // upper limit of visible range
 	        'intervalMin': 1000 * 60 * 60 * 24,          // one day in milliseconds
-	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2   // about three months in milliseconds
+	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2,   // about three months in milliseconds,
+        'showMajorLabels': false,
+        'showMinorLabels': false
 			  };			  
 		  }
 		  else
@@ -1395,7 +1506,9 @@ function getMemberSlots(uuid)
 	        //'min': trange.start,                 // lower limit of visible range
 	        //'max': trange.end,               // upper limit of visible range
 	        'intervalMin': 1000 * 60 * 60 * 24,          // one day in milliseconds
-	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2   // about three months in milliseconds
+	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2,   // about three months in milliseconds,
+        'showMajorLabels': false,
+        'showMinorLabels': false
 			  };	
 		  }
 			
