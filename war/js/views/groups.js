@@ -431,7 +431,7 @@ function editMemberModalInit(guuid, uuid)
 	  
 	  	var roles = [
 	  		{
-		  		name: 'Volunteer',
+		  		name: 'Vrijwillliger',
 		  		value: 3
 	  		},
 	  		{
@@ -779,7 +779,7 @@ function renderMembers(json, name, uuid)
 			
 	  	var roles = [
 	  		{
-		  		name: 'Volunteer',
+		  		name: 'Vrijwillliger',
 		  		value: 3
 	  		},
 	  		{

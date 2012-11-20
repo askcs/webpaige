@@ -145,6 +145,14 @@ div.timeline-event {
 	text-indent: -9999px;
 }
 
+.unreachable {
+	margin:0;
+	/* background-color: #3e673e; */
+	background-color: #65619b;
+	border-bottom: 10px solid #65619b;
+	text-indent: -9999px;
+}
+
 .unavailable {
 	margin: 0;
 	background-color: #a93232;	

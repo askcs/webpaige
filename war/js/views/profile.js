@@ -79,7 +79,7 @@
 				session: session.getSession()	
 			},
 			function(data, label)
-		  {  	
+		  { 	
 	  		$('#updateProfile').modal('show');
 			  $('#name').val(data.name); 
 			  $('#email').val(data.EmailAddress); 
@@ -192,10 +192,15 @@
 	  	'"PostZip":"' + postcode + '", ' +
 	  	'"PostCity":"' + city + '"' +
 	  	'}';
+	  	
+	  console.log(tags);
+	  
 		webpaige.con(
 			options = {
 				type: 'post',
-				path: '/resources?tags=' + tags,
+				//path: '/resources?tags=' + tags,
+				path: '/resources',
+				json: tags,
 				loading: 'Gebruiker informatie wordt gewijzigd..',
 				message: 'Gebruiker informatie is gewijzigd.',
 				label: 'resources'
@@ -207,6 +212,7 @@
 	    	renderProfile();
 			}
 		);
+		
 	}
 	
 //})();

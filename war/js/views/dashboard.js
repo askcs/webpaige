@@ -659,7 +659,7 @@ function addSlot(from, till, reoc, value, user)
 	console.log('passed values', from, till, reoc, value, user, now);
 	
 	
-	if (from < now || till < now)
+	if (from < now && till < now)
 	{
 		alert('Het is niet toegestaan ​​om gebeurtenissen in het verleden te toevoegen.');		
 	}
@@ -752,10 +752,13 @@ function deleteSlot(from, till, reoc, value, user)
 			 guuid : webpaige.config('guuid')
 		 };	
 	
-	if (from > now)
+	if (till > now)
 	{
 		// resources ?
 		//var resources = JSON.parse(webpaige.get('resources'));
+		
+		//console.log('delete action taken');
+		
 	  var path = 	'/askatars/' 
 	  						+ user.uuid + '/slots?start=' 
 	  						+ from + '&end=' 
@@ -778,7 +781,8 @@ function deleteSlot(from, till, reoc, value, user)
 				getGroupSlots(label.guuid, label.gname);
 				getMemberSlots(label.guuid);
 			}
-		);  
+		);
+		 
 	}
 	else
 	{
@@ -1101,7 +1105,7 @@ function getSlots()
         'max': new Date(trange.end),               	// upper limit of visible range
         //'min': new Date(2012, 0, 1),                 // lower limit of visible range
         //'max': new Date(2012, 11, 31),               // upper limit of visible range
-        'intervalMin': 1000 * 60 * 60 * 24,          // one day in milliseconds
+        'intervalMin': 1000 * 60 * 60 * 1,          // one day in milliseconds
         'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2,   // about three months in milliseconds,
         //'showMajorLabels': false,
         //'showMinorLabels': false
@@ -1457,7 +1461,7 @@ function getGroupSlots(guuid, gname)
 	        //'max': new Date(2012, 11, 31),               // upper limit of visible range
 	        //'min': trange.start,                 // lower limit of visible range
 	        //'max': trange.end,               // upper limit of visible range
-	        'intervalMin': 1000 * 60 * 60 * 24,          // one day in milliseconds
+	        'intervalMin': 1000 * 60 * 60 * 1,          // one day in milliseconds
 	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2,   // about three months in milliseconds,
         //'showMajorLabels': false,
         //'showMinorLabels': false
@@ -1520,7 +1524,7 @@ function getMemberSlots(uuid)
 	        //'max': new Date(2012, 11, 31),               // upper limit of visible range
 	        //'min': trange.start,                 // lower limit of visible range
 	        //'max': trange.end,               // upper limit of visible range
-	        'intervalMin': 1000 * 60 * 60 * 24,          // one day in milliseconds
+	        'intervalMin': 1000 * 60 * 60 * 1,          // one day in milliseconds
 	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2,   // about three months in milliseconds,
         //'showMajorLabels': false,
         //'showMinorLabels': false
@@ -1539,7 +1543,7 @@ function getMemberSlots(uuid)
 	        //'max': new Date(2012, 11, 31),               // upper limit of visible range
 	        //'min': trange.start,                 // lower limit of visible range
 	        //'max': trange.end,               // upper limit of visible range
-	        'intervalMin': 1000 * 60 * 60 * 24,          // one day in milliseconds
+	        'intervalMin': 1000 * 60 * 60 * 1,          // one day in milliseconds
 	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2,   // about three months in milliseconds,
         //'showMajorLabels': false,
         //'showMinorLabels': false
@@ -1672,6 +1676,7 @@ function colorState(state)
   if (state == 'com.ask-cs.State.KNRM.BeschikbaarZuid') return '<div class="availableS">' + state + '</div>';
   if (state == 'com.ask-cs.State.Unavailable') return '<div class="unavailable">' + state + '</div>';
   if (state == 'com.ask-cs.State.KNRM.SchipperVanDienst') return '<div class="schipper">' + state + '</div>';
+  if (state == 'com.ask-cs.State.Unreached') return '<div class="unreachable">' + state + '</div>';
 }
 
 function timeline_helper_state2html(state)
@@ -1681,7 +1686,8 @@ function timeline_helper_state2html(state)
 	    'ask.state.2': ['com.ask-cs.State.KNRM.BeschikbaarNoord', 'green'],
 	    'ask.state.3': ['com.ask-cs.State.KNRM.BeschikbaarZuid', 'green'],
 	    'ask.state.4': ['com.ask-cs.State.Unavailable', 'red'],
-	    'ask.state.5': ['com.ask-cs.State.KNRM.SchipperVanDienst', 'yellow']
+	    'ask.state.5': ['com.ask-cs.State.KNRM.SchipperVanDienst', 'yellow'],
+	    'ask.state.6': ['com.ask-cs.State.Unreached', 'purple']
 	 };
   var content = '?';
   if (state_map[state])
@@ -1695,7 +1701,8 @@ function timeline_helper_html2state(content)
 	    'ask.state.2': ['com.ask-cs.State.KNRM.BeschikbaarNoord', 'green'],
 	    'ask.state.3': ['com.ask-cs.State.KNRM.BeschikbaarZuid', 'green'],
 	    'ask.state.4': ['com.ask-cs.State.Unavailable', 'red'],
-	    'ask.state.5': ['com.ask-cs.State.KNRM.SchipperVanDienst', 'yellow']
+	    'ask.state.5': ['com.ask-cs.State.KNRM.SchipperVanDienst', 'yellow'],
+	    'ask.state.6': ['com.ask-cs.State.Unreached', 'purple']
 	 };
   var state = content.split('>')[1].split('<')[0];
   //reverse map search..
@@ -1723,7 +1730,8 @@ function timeline_helper_html2state2(content)
 	    'ask.state.2': ['com.ask-cs.State.KNRM.BeschikbaarNoord', 'green'],
 	    'ask.state.3': ['com.ask-cs.State.KNRM.BeschikbaarZuid', 'green'],
 	    'ask.state.4': ['com.ask-cs.State.Unavailable', 'red'],
-	    'ask.state.5': ['com.ask-cs.State.KNRM.SchipperVanDienst', 'yellow']
+	    'ask.state.5': ['com.ask-cs.State.KNRM.SchipperVanDienst', 'yellow'],
+	    'ask.state.6': ['com.ask-cs.State.Unreached', 'purple']
 	 };
   var state = content.split('>')[1].split('<')[0];
   //reverse map search..

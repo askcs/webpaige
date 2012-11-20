@@ -746,7 +746,7 @@
 			  //console.log('loaded users :', data)
 			  //debugger;
 			  
-			  var users = $('<optgroup label="USERS"></optgroup>');
+			  var users = $('<optgroup label="GEBRUIKERS"></optgroup>');
 			  
 				if (data && data.length > 0)
 				{
@@ -775,7 +775,7 @@
 			function(data)
 		  {  
 			  //var data = data ? JSON.parse(data) : undefined;
-			  var groups = $('<optgroup label="GROUPS"></optgroup>');
+			  var groups = $('<optgroup label="GROEPEN"></optgroup>');
 			  
 				if (data && data.length > 0)
 				{
