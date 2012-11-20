@@ -167,7 +167,7 @@ function membersTimelineInit(uuid)
 {
   timeline_data3 = [];
   var options = {
-    'groupsWidth': '100px'
+    'groupsWidth': '150px'
   };
   timeline3 = new links.Timeline(document.getElementById('memberTimeline'));
   if (webpaige.getRole() == 1)
@@ -445,7 +445,6 @@ function updateSlotModal()
     var query = 'start=' + newslot.from + '&end=' + newslot.till + '&text=' + newslot.type + '&recursive=' + newslot.reoc;
     var body = '{"color":null' + ',"count":0' + ',"end":' + oldslot.till + ',"recursive":' + oldslot.reoc + ',"start":' + oldslot.from + ',"text":"' + oldslot.type + '","wish":0}';
     var user = (oldslot.uuid != 'own') ? oldslot.uuid : resources.uuid;
-    //console.log('passed uuid: ', oldslot.uuid);
     var label = {
       gname: webpaige.config('gname'),
       guuid: webpaige.config('guuid')
@@ -586,24 +585,38 @@ function getSlots()
     timeline_data.addColumn('datetime', 'end');
     timeline_data.addColumn('string', 'content');
     timeline_data.addColumn('string', 'group');
+    
+    
     for (var i in slots)
     {
       var resources = JSON.parse(webpaige.get('resources'));
+      
       var content = colorState(slots[i].text);
+      
       timeline_data.addRow([
       new Date(slots[i].start * 1000),
       new Date(slots[i].end * 1000),
       content,
       slots[i].recursive ? '<span style="display:none;">b</span>Wekelijkse terugkerend<span style="display:none;">' + resources.uuid + ':true</span>' : '<span style="display:none;">a</span>Planning<span style="display:none;">' + resources.uuid + ':false</span>']);
+   
+/*
+      timeline_data.addRow([
+      new Date(slots[i].start * 1000),
+      new Date(slots[i].end * 1000),
+      content,
+      '<span style="display:none;">c</span>Combined<span style="display:none;">' + resources.uuid + ':false</span>']);
+*/
+      
     }
+    
+    
     var trange = webpaige.config('trange');
     var options = {
-    	//'min': (new Date).add({days: -1}),
-    	//'max': (new Date).add({days: +13}),
+    	'axisOnTop': true,
       'selectable': true,
       'editable': true,
       'height': 'auto',
-      'groupsWidth': '100px',
+      'groupsWidth': '150px',
       'min': new Date(trange.start), // lower limit of visible range
       'max': new Date(trange.end), // upper limit of visible range
       'intervalMin': 1000 * 60 * 60 * 1, // one day in milliseconds
@@ -624,6 +637,15 @@ function getSlots()
       'content': 'available',
       'group': '<span style="display:none;">a</span>Planning<span style="display:none;">' + resources.uuid + ':false</span>'
     });
+/*
+    timeline.addItem(
+    {
+      'start': new Date(0),
+      'end': new Date(0),
+      'content': 'available',
+      'group': '<span style="display:none;">c</span>Combined<span style="display:none;">' + resources.uuid + ':false</span>'
+    });
+*/
     //timeline.setVisibleChartRange(trange.start, trange.end);
     timeline.setVisibleChartRange((new Date).add({days: -1}), (new Date).add({days: +13}));
   });
@@ -710,6 +732,7 @@ function getGroupSlots(guuid, gname)
       var actual = '<div class="bar" style="' + style + '" ' + ' title="Huidig aantal beschikbaar: ' + num + ' personen">' + span + '</div>';
       var item = {
         'group': label,
+        'groupsWidth': '150px',
         'start': Math.round(data[i].start * 1000),
         'end': Math.round(data[i].end * 1000),
         'content': requirement + actual
@@ -795,6 +818,7 @@ function getGroupSlots(guuid, gname)
         var actual = '<div class="bar" style="' + style + '" ' + ' title="Huidig aantal beschikbaar: ' + num + ' personen">' + span + '</div>';
         var item = {
           'group': label,
+          'groupsWidth': '150px',
           'start': Math.round(data[i].start * 1000),
           'end': Math.round(data[i].end * 1000),
           'content': requirement + actual
@@ -881,6 +905,7 @@ function getGroupSlots(guuid, gname)
         var actual = '<div class="bar" style="' + style + '" ' + ' title="Huidig aantal beschikbaar: ' + num + ' personen">' + span + '</div>';
         var item = {
           'group': label,
+          'groupsWidth': '150px',
           'start': Math.round(data[i].start * 1000),
           'end': Math.round(data[i].end * 1000),
           'content': requirement + actual
@@ -896,7 +921,7 @@ function getGroupSlots(guuid, gname)
       "style": "box",
       'selectable': true,
       'editable': false,
-      'groupsWidth': '100px',
+      'groupsWidth': '150px',
       'eventMarginAxis': 0,
       'min': new Date(trange.start), // lower limit of visible range
       'max': new Date(trange.end),
@@ -944,6 +969,7 @@ function getMemberSlots(uuid)
 	        'editable': true,
 	        'snapEvents': false,
 	        'groupChangeable': false,
+	        'groupsWidth': '150px',
 	        'min': new Date(trange.start), // lower limit of visible range
 	        'max': new Date(trange.end),
 	        'intervalMin': 1000 * 60 * 60 * 1, // one day in milliseconds
@@ -957,6 +983,7 @@ function getMemberSlots(uuid)
 	        'editable': false,
 	        'snapEvents': false,
 	        'groupChangeable': false,
+	        'groupsWidth': '150px',
 	        'min': new Date(trange.start), // lower limit of visible range
 	        'max': new Date(trange.end),
 	        'intervalMin': 1000 * 60 * 60 * 1, // one day in milliseconds
@@ -993,25 +1020,44 @@ function renderMemberSlots(member, name)
       'start': new Date(0),
       'end': new Date(0),
       'content': 'available',
-      'group': '<span style="display:none;">' + label.uuid + ':true</span>' + label.name + ' <div style="display:none;">b</div>(Wekelijkse terugkerend)'
+      'group': '<span style="display:none;">' + label.uuid + ':true</span>' + label.name + ' <div style="display:none;">b</div>(W)'
     });
     timeline3.addItem(
     {
       'start': new Date(0),
       'end': new Date(0),
       'content': 'available',
-      'group': '<span style="display:none;">' + label.uuid + ':false</span>' + label.name + ' <div style="display:none;">a</div>(Planning)'
+      'group': '<span style="display:none;">' + label.uuid + ':false</span>' + label.name + ' <div style="display:none;">a</div>(P)'
     });
+/*
+    timeline3.addItem(
+    {
+      'start': new Date(0),
+      'end': new Date(0),
+      'content': 'available',
+      'group': '<span style="display:none;">' + label.name + ':false</span>' + label.name + ' <div style="display:none;">c</div>'
+    });
+*/
     for (var i in slots)
     {
       var content = colorState(slots[i].text);
+
       timeline3.addItem(
       {
         'start': new Date(slots[i].start * 1000),
         'end': new Date(slots[i].end * 1000),
         'content': content,
-        'group': slots[i].recursive ? '<span style="display:none;">' + label.uuid + ':true</span>' + label.name + ' <div style="display:none;">b</div>(Wekelijkse terugkerend)' : '<span style="display:none;">' + label.uuid + ':false</span>' + label.name + ' <div style="display:none;">a</div>(Planning)'
+        'group': slots[i].recursive ? '<span style="display:none;">' + label.uuid + ':true</span>' + label.name + ' <div style="display:none;">b</div>(W)' : '<span style="display:none;">' + label.uuid + ':false</span>' + label.name + ' <div style="display:none;">a</div>(P)'
       });
+/*
+      timeline3.addItem(
+      {
+        'start': new Date(slots[i].start * 1000),
+        'end': new Date(slots[i].end * 1000),
+        'content': content,
+        'group': '<span style="display:none;">' + label.name + ':false</span>' + label.name + ' <div style="display:none;">c</div>'
+      });
+*/
     }
   });
 }

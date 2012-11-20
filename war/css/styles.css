@@ -442,3 +442,10 @@ table thead {
 #composeBtn {
 	display: none;
 }
+
+#groupTimelineHolder {
+  margin-top: -20px;
+}
+#memberTimeline {
+  margin-top: -50px;
+}

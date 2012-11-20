@@ -4,6 +4,8 @@ div.timeline-frame {
   border: 1px solid #BEBEBE;
   overflow: hidden;
   background-color: #fff;
+  
+  font-size: 11px;
 } 
                                              
 div.timeline-axis {
@@ -214,6 +216,7 @@ div.timeline-event-content {
   /* margin: 5px; */
   white-space: nowrap;
   overflow: hidden;
+  height: 22px;
 }
 
 div.timeline-groups-axis {
