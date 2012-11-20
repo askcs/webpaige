@@ -1,30 +1,3 @@
-/*
-(function(){
-	//'use strict';
-
-	window.addEventListener( 'load', windowInit, false );
-	
-	function windowInit()
-	{
-	 	pageInit('groups', 'true');
-	 	loadGroups();
-	  addEventListeners();		
-	}
-
-	function addEventListeners()
-	{
-		document.getElementById('alertClose').addEventListener('click', closeAlerts, false);
-		document.getElementById('updateProfileTrigger').addEventListener('click', updateProfile, false);
-	}
-	
-	function closeAlerts()
-	{
-		$("#alertDiv").hide();		
-	}
-	
-})();
-*/
-
 
 $(document).ready(function()
 {
@@ -116,12 +89,6 @@ function loadGroups(uuid, name)
     	renderGroupsList(data);
 		}
 	);
-	/*
-	var cache = ASKCache("getGroups",'/network',null, 'uuid', session);
-	cache.addRenderer('group.html',function(json, oldData, data){
-			renderGroups(json, uuid, name);
-	});
-	*/
 }
 
 
@@ -270,22 +237,16 @@ function addNewMember()
 	$('#groupsListNew .chzn-select').html('');
 	
 	renderGroupsList(window.groups);
-	
-	//$('#newMember').modal('show');
 }
 
 
 function addNewMemberToGroup(name, uuid)
 {
-	//$('#groupsListNew .chzn-select option:selected').removeAttr('selected');
 	$('#groupsListNew .chzn-select').html('');
 	
 	renderGroupsList(window.groups);
 	
 	$('#newMember').modal('show');
-	//$('#newMember h3').html('New member (' + name + ')');
-	
-	//$('#newMember #guuid').val(uuid);
 	
   $('#groupsListNew .chzn-select').append(
     $('<option></option>')
@@ -307,17 +268,6 @@ function saveNewMember()
 	var uuid = $('#newMember #email').val();
 	var pass = $('#newMember #pass').val();
 	var guuids = $('#groupsListNew select').val();
-	
-	/*
-	console.log('role', role);
-	console.log('name', name);
-	console.log('tel', tel);
-	console.log('uuid', uuid);
-	console.log('pass', pass);
-	console.log('guuids', guuids);
-	*/
-	
-	// register user in ask
 
 	webpaige.con(
 		options = {
@@ -328,7 +278,6 @@ function saveNewMember()
 		},
 		function(data, label)
 	  {
-	  	// register role of the user	
 		  var tags = '{' +
 		  	'"role":"' + role + '"' +
 		  	'}';
@@ -348,40 +297,7 @@ function saveNewMember()
 					console.log('member role usccesfully added, ', role);
 				}
 			);
-						
-			// register user in sense environment
-			/*
-			var body = {};
-			var user = {};
-			user.email = uuid;
-			user.username = uuid;
-			user.name = fname;
-			user.surname = lname;
-			user.mobile = tel;
-			user.password = MD5(pass);
-			body.user = user;
-			var body = JSON.stringify(body);
-			var sense = JSON.parse(webpaige.get('sense'));
-			webpaige.con(
-				options = {
-					host: 'http://api.sense-os.nl',
-					path: '/users.json',
-					type: 'post',
-					json: body,
-					loading: 'Gebruiker account wordt geregistreerd in Sense environment..',
-					message: 'Gebruiker account is registered in Sense.',
-					session: null,
-					credentials: false,
-					label: 'Sense account'
-				},
-				function(data, label)
-			  {
-			  	console.log('Sense registration is successful..');  
-				}
-			);
-			*/
 			
-			// register user to given groups
 	  	for (var h in guuids)
 	  	{
 		    // add user to the group
@@ -407,11 +323,6 @@ function saveNewMember()
 
 function editMemberModalInit(guuid, uuid)
 {
-
-	//console.log(guuid, uuid);
-	//debugger;
-	
-	//renderGroupsListUser(window.groups);
 	
 	$('#groupsListEdit .chzn-select').html('');
 	
@@ -581,8 +492,6 @@ function editMember(uuid)
   	'"PostZip":"' + postcode + '", ' +
   	'"PostCity":"' + city + '"' +
   	'}';
-  	
-  //console.log('role :', role);
 					
 		
 	webpaige.con(
@@ -727,7 +636,6 @@ function renderGroups(data, uuid, name)
 
 function renderMembers(json, name, uuid)
 {
- 	//var data = json ? JSON.parse(json) : undefined;
  	var data = json;
  	
  	$('#live').remove();
@@ -761,9 +669,7 @@ function renderMembers(json, name, uuid)
 		thead.append('<th>Naam</th>');
 		
 		thead.append('<th>Role</th>');
-		//thead.append('<th>UUID</th>');
 		
-		//thead.append('<th>Emailadres</th>');
 		thead.append('<th>Telefoonnummer</th>');
 		thead.append('<th></th>');
 		table.append(thead);
@@ -772,8 +678,6 @@ function renderMembers(json, name, uuid)
     {
     	var tbodytr = $('<tr></tr>');
 			tbodytr.append('<td><input type="checkbox" class="checkbox" value="'+data[n].uuid+'" /></td>');
-			
-			//console.log(uuid, data[n].uuid);
 			
 			tbodytr.append('<td><a onclick="editMemberModalInit(\''+uuid+'\', \''+data[n].uuid+'\');">'+data[n].name+'</a></td>');
 			
@@ -801,9 +705,6 @@ function renderMembers(json, name, uuid)
 	  	}
 			tbodytr.append('<td>'+ role +'</td>');
 			
-			//tbodytr.append('<td>'+data[n].uuid+'</td>');
-			
-			//tbodytr.append('<td>'+data[n].resources.EmailAddress+'</td>');
 			tbodytr.append('<td>'+data[n].resources.PhoneAddress+'</td>');
 			tbodytr.append('<td><a class="btn btn-mini" onclick="removeMember(\''+name+'\', \''+uuid+'\', \''+data[n].uuid+'\');"><i class="icon-trash"></i> Verwijder</a></td>');
 			tbody.append(tbodytr);
@@ -823,7 +724,6 @@ function renderMembers(json, name, uuid)
 
 function renderSearch(data)
 {
-	//var data = data ? JSON.parse(data) : undefined;
 	
 	$('#groupsList li').removeClass('active');
  	

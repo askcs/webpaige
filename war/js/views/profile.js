@@ -1,5 +1,3 @@
-//(function(){
-	//'use strict';
 
 	window.addEventListener( 'load', windowInit, false );
 	
@@ -198,7 +196,6 @@
 		webpaige.con(
 			options = {
 				type: 'post',
-				//path: '/resources?tags=' + tags,
 				path: '/resources',
 				json: tags,
 				loading: 'Gebruiker informatie wordt gewijzigd..',
@@ -215,4 +212,3 @@
 		
 	}
 	
-//})();

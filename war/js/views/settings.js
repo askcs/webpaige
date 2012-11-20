@@ -1,5 +1,3 @@
-/* (function(){ */
-	//'use strict';
 
 window.addEventListener( 'load', windowInit, false );
 
@@ -31,8 +29,6 @@ var timeline;
 var timeline_selected = null;
 
 
-
-// Submitters
 function wishSubmit()
 {
   $('#newWish').modal('hide');
@@ -51,7 +47,6 @@ function wishSubmit()
   var till = till.getTime();
   
   addWish(from, till, wish, group);
-  //console.log(from, till, wish, group);
   
   $('#newWishForm')[0].reset();
 }
@@ -66,7 +61,6 @@ function editPlanSubmit()
   var enewFrom = $('#eplanningFrom').val();
   var enewTill = $('#eplanningTill').val();
   var enewReoccuring = $('input#eplanningReoccuring:checkbox:checked').val();
-  //var newAllDay = $('input#planningAllDay:checkbox:checked').val();
   
   if (enewReoccuring == "true") enewReoccuring = "true"; else enewReoccuring = "false";
   
@@ -140,7 +134,6 @@ function editWishSubmit()
 	  }	  
   }
   
-  //console.log(guuid, start, end, wish);
   addWish(start, end, wish, guuid);
 }
 
@@ -173,7 +166,6 @@ function wishesTimelineInit()
 {
   timeline_data = [];
   var options = { 
-  	// 'groupsWidth': '100px' 
   };
   timeline = new links.Timeline(document.getElementById('wishesTimeline'));
   
@@ -191,7 +183,6 @@ function getWishes()
 {
 	
   var now = parseInt((new Date()).getTime() / 1000);
-	//var resources = JSON.parse(webpaige.get('resources'));
   var range =	'start=' + (now - 86400 * 7 * 4 * 4) + 
   						'&end=' + (now + 86400 * 7 * 4 * 4);  
 	
@@ -215,7 +206,6 @@ function getWishes()
 				webpaige.con(
 					options = {
 						path: '/network/'+data[i].uuid+'/wish?'+range,
-						//path: '/parent/availability?'+range,
 						loading: data[i].name+' beschiekbaarheid wordt opgeladen..',
 						label: data[i].name
 						,session: session.getSession()	
@@ -282,13 +272,6 @@ function timelineOnEdit()
 function timelineOnDelete()
 {
 	timeline.cancelChange();
-/*
-  var sel = timeline.getSelection();
-  var row = sel[0].row;
-  var oldItem = timeline.getItem(row);
-  deleteSlot(oldItem.start / 1000, oldItem.end / 1000, oldItem.group, oldItem.content);
-  timeline.cancelDelete();
-*/
 }
 
 function timelineOnSelect()
@@ -301,13 +284,6 @@ function timelineOnSelect()
 function timelineOnChange()
 {
 	timeline.cancelChange();
-	
-/*
-  var sel = timeline.getSelection();
-  var row = sel[0].row;
-  var newItem = timeline.getItem(row);
-  updateSlot(timeline_selected, newItem);
-*/
 }
 
 
@@ -383,5 +359,3 @@ function renderGroupsList()
 		}
 	);
 }
-	
-/* })(); */

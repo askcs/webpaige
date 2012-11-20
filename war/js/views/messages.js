@@ -1,6 +1,3 @@
-/* (function(){ */
-	//'use strict';
-
 	window.addEventListener( 'load', windowInit, false );
 	
 	function windowInit()
@@ -29,61 +26,11 @@
 	    resetForms();
 			sendMessage(receivers, title, message);
 	  });
-	  
-	  
-	  /*
-	  $('#sms').click(function () {
-			if(this.checked)
-			{
-				$('#subjectDiv').hide();
-				$('.counter').show();
-			}
-			else
-			{
-				$('#subjectDiv').show();
-				$('.counter').hide();
-			}
-		});
-		*/
-		
-		
-		
-		/*
-		$("#groups .chzn-select").chosen().change(
-			function() {
-				console.log('groups changed');
-			}
-		);
-		*/
-		
-		
-		//default usage
-		//$("#msgcontent").charCount();
-		//custom usage
-		/*
-		$("#msgcontent").charCount({
-			allowed: 160,		
-			warning: 20,
-			counterText: 'Characters left: '	
-		});
-		*/
-
 		
 	  loadUsers(); 
 	  //loadGroups(); 
 		loadMessages();
 		addEventListeners();
-		
-		/*
-		if(confirmUser('ulusoy.cengiz@gmail.com'))
-		{
-			console.log('returned true');
-		}
-		else
-		{
-			console.log('returned false');			
-		}
-		*/
   
 
 		var local = {
@@ -120,33 +67,7 @@
 	  var receivers = $('#compose select').val(); 
 		
 	  var subject = $('#compose #title').val();
-	  //var content = $('#compose textarea').val().replace( /\r?\n/g, "\r\n" );
 	  var content = $('#compose textarea').val();
-	  
-	  
-	  //console.log('message',content);
-	  //resetForms();
-	  
-	  /*  
-		for(var n in receivers)
-			receivers[n] = '"' + receivers[n] + '"';
-		*/ 
-		
-		/*
-		var receivers = [];
-		console.log(rawReceivers);
-		for(var n in rawReceivers)
-		{
-			if (confirmGroup(rawReceivers[n]))
-			{
-				
-			}
-			else
-			{
-				console.log(rawReceivers[n]);
-			}
-		}
-		*/
 		
 		var sms = $('input#sms[name="sms"]:checked').val();
 		var paigem = $('input#paigem[name="paigem"]:checked').val();
@@ -173,8 +94,6 @@
 	  						'","types":[' + 
 	  						types + 
 	  						']}';
-	  
-	  //console.log('query :', query);
 	  
 		webpaige.con(
 			options = {
@@ -209,35 +128,7 @@
 			{
 		    $('#replyMessage').modal('show');
 		    
-		    //console.log('requester :', messages[n].requester.split('personalagent/')[1].split('/')[0]);
-		    
 		    var requester = messages[n].requester.split('personalagent/')[1].split('/')[0];
-		    
-		    console.log('to whom: ', requester);
-		    
-		    
-		    /*
-				webpaige.con(
-					options = {
-						path: '/node/'+requester+'/resource',
-						loading: 'Getting resources of the sender..',
-						message: 'Resources are obtained.',
-						label: 'resource'
-						,session: session.getSession()	
-					},
-					function(data, label)
-				  {
-		    
-				    $('#replyMessage .receivers .chzn-select').append(
-					    $('<option></option>')
-							        .val(requester)
-							        .html(data.name)
-							        .attr("selected", "selected"));
-						$("#replyMessage .receivers .chzn-select").trigger("liszt:updated");
-				
-					}
-				);
-				*/
 		    
 		    $('#replyMessage .receivers .chzn-select').append(
 			    $('<option></option>')
@@ -245,10 +136,6 @@
 					        .html(requester)
 					        .attr("selected", "selected"));
 				$("#replyMessage .receivers .chzn-select").trigger("liszt:updated");
-
-	
-		    //$('#receivers:selected').val(messages[n].requester); 
-	    	//$(".chzn-select").trigger("liszt:updated");
 			}
 		}
 	}
@@ -271,10 +158,7 @@
 		
 		$('#displayMessageModal').modal('show');
 		
-		//debugger;
-		
 		var messages = JSON.parse(webpaige.get('messages'));
-	  //var messages = messages ? JSON.parse(messages) : undefined;
 	  
 		for (var n in messages)
 		{
@@ -322,7 +206,6 @@
 				}
 				
 				var datetime = new Date(messages[n].creationTime);
-				//var date = new Date(messages[n].creationTime * 1000);
 				$('#messageDate').html(datetime.toString("ddd dd MMM yyyy HH:mm"));
 				
 				if (messages[n].subject != null)
@@ -447,8 +330,6 @@
 	
 	function resetForms()
 	{
-		//$('form')[0].reset();
-		//$('form')[1].reset();
 		$('.chzn-select option:selected').removeAttr('selected');
 	  $(".chzn-select").trigger("liszt:updated");
 	}
@@ -463,11 +344,6 @@
 				var url = '/question?0=dm';
 				var btn = $('#inbox');
 				var status = 'Inbox wordt opgeladen..';
-			break;
-			case 'outbox':
-				var url = '/question?0=sent';
-				var btn = $('#outbox');
-				var status = 'Outbox wordt opgeladen..';
 			break;
 			case 'trash':
 				var url = '/question';
@@ -493,19 +369,9 @@
 			},
 			function(data, label)
 		  {  
-		  	// needing this for replying messages 
-		  	//webpaige.set('messages', ''); 
 		  	webpaige.set('messages', JSON.stringify(data)); 
-		  	
-		  	//console.log('msg stored');
 		  		
 		  	var filtered = [];
-				/*
-		  	var uniquesIdx = {};
-		  	var uniques = [];
-				*/
-		  	
-		  	//var data = data ? JSON.parse(data) : undefined;
 				
 				data.reverse(
 					data.sort(
@@ -524,31 +390,7 @@
 					case 'inbox':
 						for(var n in data)
 						{
-							//if (data[n].module == 'message' && data[n].requester != resources.uuid && data[n].state != 'TRASH')
 							if (data[n].box == 'inbox' && data[n].requester != resources.uuid && data[n].state != 'TRASH')
-							{
-								filtered.push(data[n]);
-								/*
-								for (var i in filtered)
-								{
-									if (!uniquesIdx[filtered[i].requester])
-									{
-										uniquesIdx[filtered[i].requester] = filtered[i];
-										uniques.push(filtered[i]);
-									}
-								}
-								*/
-							}
-						}
-			  		renderMessages(filtered, type);
-					break;
-					
-					case 'outbox':
-			  		//renderMessages(data, type);
-						for(var n in data)
-						{
-							//if (data[n].module == 'message' && data[n].state != 'TRASH')
-							if (data[n].box == 'outbox' && data[n].state != 'TRASH')
 							{
 								filtered.push(data[n]);
 							}
@@ -557,7 +399,6 @@
 					break;
 					
 					case 'trash':
-			  		//renderMessages(data, type);
 						for(var n in data)
 						{
 							if (data[n].state == 'TRASH')
@@ -572,7 +413,6 @@
 						for(var n in data)
 						{
 							if (data[n].box == 'inbox' && data[n].requester != resources.uuid)
-							//if (data[n].module == 'message' && data[n].requester != resources.uuid)
 							{
 								filtered.push(data[n]);
 							}
@@ -587,7 +427,6 @@
 	
 	function renderMessages(data, type)
 	{
-	  //console.log(data);
 	 	
 	 	$('#live').remove();
 	 	
@@ -644,33 +483,13 @@
 					if (data[n].responder.length > 1)
 					{
 						responders = '<i>Meerdere ontvangers</i>';
-						/*
-						for (var m in data[n].responder)
-						{
-							responders = responders + ', ' + data[n].responder[m].split('personalagent/')[1].split('/')[0];
-						}
-						*/
 					}
 					else
 					{
 						responders = data[n].responder[0].split('personalagent/')[1].split('/')[0];
-						/*
-						var groups = JSON.parse(webpaige.get('groups'));
-						for (var d in groups)
-						{
-							if (groups[d].uuid == responders)
-							{
-								responders = groups[d].name;
-							}
-						}
-						*/
 					}
 					
 					var person = (type == 'outbox') ?  responders : data[n].requester.split('personalagent/')[1].split('/')[0];
-					
-					/*
-					var person = (type == 'outbox') ?  data[n].responder.split('personalagent/')[1].split('/')[0] : data[n].requester.split('personalagent/')[1].split('/')[0];
-					*/
 
 					tbodytr.append('<td>'+person+'</td>');
 				}			
@@ -741,26 +560,17 @@
 			},
 			function(data)
 		  {  
-			  //var data = data ? JSON.parse(data) : undefined;
-			  
-			  //console.log('loaded users :', data)
-			  //debugger;
 			  
 			  var users = $('<optgroup label="GEBRUIKERS"></optgroup>');
 			  
 				if (data && data.length > 0)
 				{
-				
-					//webpaige.set('users', JSON.stringify(data));
 					
 			    for(var n in data)
 			    {
 			    	$(users).append("<option value=" + data[n].id + ">" + data[n].name + "</option>");
 			    }
 			    $(".receivers .chzn-select").append(users);
-			    //$("#receivers .chzn-select").trigger("liszt:updated");
-			    
-			    //
 				} 
 			}
 		);
@@ -774,12 +584,10 @@
 			},
 			function(data)
 		  {  
-			  //var data = data ? JSON.parse(data) : undefined;
 			  var groups = $('<optgroup label="GROEPEN"></optgroup>');
 			  
 				if (data && data.length > 0)
 				{
-					// this is needed for checking group uuid's for sending messages
 					webpaige.config('groups', data);
 					
 			    for(var n in data)
@@ -795,71 +603,6 @@
 		
 	}
 	
-	
-	
-/*
-	function loadUsers()
-	{
-	  var query = '{"key":""}';
-		webpaige.con(
-			options = {
-				type: 'post',
-				path: '/network/searchPaigeUser',
-				json: query,
-				loading: 'Searching for users in network..'
-				,session: session.getSession()	
-			},
-			function(data)
-		  {  
-				renderUsers(data);
-			}
-		); 
-	}
-	
-	function renderUsers(data)
-	{
-	  var data = data ? JSON.parse(data) : undefined;
-	  
-		if (data && data.length > 0)
-		{
-	    for(var n in data)
-	    {
-	    	$('#receivers .chzn-select').append("<option value=" + data[n].id + ">" + data[n].name + "</option>");
-	    }
-	    $("#receivers .chzn-select").trigger("liszt:updated");
-		}  
-	}
-	
-	function loadGroups()
-	{
-		webpaige.con(
-			options = {
-				path: '/network',
-				loading: 'Loading group lists..'
-				,session: session.getSession()	
-			},
-			function(data)
-		  {  
-				renderGroups(data);
-			}
-		); 
-	}
-	
-	function renderGroups(data)
-	{
-	  //var data = data ? JSON.parse(data) : undefined;
-	  
-		if (data && data.length > 0)
-		{
-	    for(var n in data)
-	    {
-	    	$('#groups .chzn-select').append("<option value=" + data[n].uuid + ">" + data[n].name + "</option>");
-	    }
-	    $("#groups .chzn-select").trigger("liszt:updated");
-		}  
-	}
-*/
-	
 		
 	function toggleChecked(uuid, status)
 	{
@@ -870,144 +613,3 @@
 		})
 	}
 	
-	
-/*
-	function confirmGroup(guuid)
-	{
-	
-		//debugger;
-		
-		var groups = webpaige.config('groups');
-		
-		for (var i in groups)
-		{
-			if (groups[i].uuid == guuid)
-			{					
-				webpaige.con(
-					options = {
-						path: '/network/'+groups[i].uuid+'/members',
-						loading: 'Loading members..',
-						label: 'members'
-						,session: session.getSession()	
-					},
-					function(data, label)
-				  {
-				  	data = JSON.parse(data);
-				  	  
-			  		//console.log('group members :', JSON.parse(data));
-			  		
-			  		for (var m in data)
-			  		{
-				  		//receivers.push(data[m].uuid);
-				  		
-				  		console.log(data[m].uuid);
-			  		}
-					}
-				);
-				
-				return true;				
-			}
-			else
-			{
-				return false;
-			}
-		}		
-	}
-*/
-	
-	
-	
-/*
-	function confirmUser(uuid)
-	{
-		var users = JSON.parse(webpaige.get('users'));
-		
-		console.log(users);
-		
-		for (var i in users)
-		{
-			//console.log(users[i].id);
-			if (users[i].id == uuid)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-	}
-*/
-
-	
-/* })(); */
-
-
-
-
-
-
-
-
-
-/*
- * 	Character Count Plugin - jQuery plugin
- * 	Dynamic character count for text areas and input fields
- *	written by Alen Grakalic	
- *	http://cssglobe.com/post/7161/jquery-plugin-simplest-twitterlike-dynamic-character-count-for-textareas
- *
- *	Copyright (c) 2009 Alen Grakalic (http://cssglobe.com)
- *	Dual licensed under the MIT (MIT-LICENSE.txt)
- *	and GPL (GPL-LICENSE.txt) licenses.
- *
- *	Built for jQuery library
- *	http://jquery.com
- *
- */
- 
-/*
-(function($) {
-
-	$.fn.charCount = function(options){
-	  
-		// default configuration properties
-		var defaults = {	
-			allowed: 140,		
-			warning: 25,
-			css: 'counter',
-			counterElement: 'span',
-			cssWarning: 'warning',
-			cssExceeded: 'exceeded',
-			counterText: ''
-		}; 
-			
-		var options = $.extend(defaults, options); 
-		
-		function calculate(obj){
-			var count = $(obj).val().length;
-			var available = options.allowed - count;
-			if(available <= options.warning && available >= 0){
-				$(obj).next().addClass(options.cssWarning);
-			} else {
-				$(obj).next().removeClass(options.cssWarning);
-			}
-			if(available < 0){
-				$(obj).next().addClass(options.cssExceeded);
-			} else {
-				$(obj).next().removeClass(options.cssExceeded);
-			}
-			$(obj).next().html(options.counterText + available);
-		};
-				
-		this.each(function() {  			
-			$(this).after('<'+ options.counterElement +' class="' + options.css + '">'+ options.counterText +'</'+ options.counterElement +'>');
-			calculate(this);
-			$(this).keyup(function(){calculate(this)});
-			$(this).change(function(){calculate(this)});
-		});
-	  
-	};
-
-})(jQuery);
-*/
-
