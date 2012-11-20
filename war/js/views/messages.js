@@ -458,6 +458,7 @@ function loadUsers()
 
   function (data)
   {
+  	$('#composeBtn').show();
     var users = $('<optgroup label="GEBRUIKERS"></optgroup>');
     if (data && data.length > 0)
     {
@@ -468,6 +469,7 @@ function loadUsers()
       $(".receivers .chzn-select").append(users);
     }
   });
+  
   webpaige.con(
   options = {
     path: '/network',

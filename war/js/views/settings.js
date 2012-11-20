@@ -211,6 +211,14 @@ function timelineOnChange()
 {
   timeline.cancelChange();
 }
+
+function goToday()
+{
+  var trange = webpaige.config('treset');
+  window.range = 'start=' + trange.bstart + '&end=' + trange.bend;
+  webpaige.config('trange', trange);
+  wishesTimelineInit();
+}
 // Timeline navigations
 function timelineZoomIn()
 {

@@ -598,6 +598,8 @@ function getSlots()
     }
     var trange = webpaige.config('trange');
     var options = {
+    	//'min': (new Date).add({days: -1}),
+    	//'max': (new Date).add({days: +13}),
       'selectable': true,
       'editable': true,
       'height': 'auto',
@@ -622,7 +624,8 @@ function getSlots()
       'content': 'available',
       'group': '<span style="display:none;">a</span>Planning<span style="display:none;">' + resources.uuid + ':false</span>'
     });
-    timeline.setVisibleChartRange(trange.start, trange.end);
+    //timeline.setVisibleChartRange(trange.start, trange.end);
+    timeline.setVisibleChartRange((new Date).add({days: -1}), (new Date).add({days: +13}));
   });
 }
 
@@ -903,7 +906,8 @@ function getGroupSlots(guuid, gname)
     timeline2 = new links.Timeline(document.getElementById('groupTimeline'));
     google.visualization.events.addListener(timeline2, 'rangechange', onRangeChanged2);
     timeline2.draw(ndata, options);
-    timeline2.setVisibleChartRange(trange.start, trange.end);
+    //timeline2.setVisibleChartRange(trange.start, trange.end);
+    timeline2.setVisibleChartRange((new Date).add({days: -1}), (new Date).add({days: +13}));
   });
 }
 
@@ -919,45 +923,55 @@ function getMemberSlots(uuid)
 
   function (data, label)
   {
-    timeline_data3 = new google.visualization.DataTable();
-    timeline_data3.addColumn('datetime', 'start');
-    timeline_data3.addColumn('datetime', 'end');
-    timeline_data3.addColumn('string', 'content');
-    timeline_data3.addColumn('string', 'group');
-    var members = data;
-    for (var i in members)
-    {
-      renderMemberSlots(members[i], members[i].name);
-    }
-    var trange = webpaige.config('trange');
-    if (webpaige.getRole() == 1)
-    {
-      var options = {
-        'selectable': true,
-        'editable': true,
-        'snapEvents': false,
-        'groupChangeable': false,
-        'min': new Date(trange.start), // lower limit of visible range
-        'max': new Date(trange.end),
-        'intervalMin': 1000 * 60 * 60 * 1, // one day in milliseconds
-        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2 // about three months in milliseconds,
-      };
-    }
-    else
-    {
-      var options = {
-        'selectable': false,
-        'editable': false,
-        'snapEvents': false,
-        'groupChangeable': false,
-        'min': new Date(trange.start), // lower limit of visible range
-        'max': new Date(trange.end),
-        'intervalMin': 1000 * 60 * 60 * 1, // one day in milliseconds
-        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2 // about three months in milliseconds,
-      };
-    }
-    timeline3.draw(timeline_data3, options);
-    timeline3.setVisibleChartRange(trange.start, trange.end);
+  	if (data.length > 0)
+  	{
+	  	$('#memberTimeline').show();
+	    timeline_data3 = new google.visualization.DataTable();
+	    timeline_data3.addColumn('datetime', 'start');
+	    timeline_data3.addColumn('datetime', 'end');
+	    timeline_data3.addColumn('string', 'content');
+	    timeline_data3.addColumn('string', 'group');
+	    var members = data;
+	    for (var i in members)
+	    {
+	      renderMemberSlots(members[i], members[i].name);
+	    }
+	    var trange = webpaige.config('trange');
+	    if (webpaige.getRole() == 1)
+	    {
+	      var options = {
+	        'selectable': true,
+	        'editable': true,
+	        'snapEvents': false,
+	        'groupChangeable': false,
+	        'min': new Date(trange.start), // lower limit of visible range
+	        'max': new Date(trange.end),
+	        'intervalMin': 1000 * 60 * 60 * 1, // one day in milliseconds
+	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2 // about three months in milliseconds,
+	      };
+	    }
+	    else
+	    {
+	      var options = {
+	        'selectable': false,
+	        'editable': false,
+	        'snapEvents': false,
+	        'groupChangeable': false,
+	        'min': new Date(trange.start), // lower limit of visible range
+	        'max': new Date(trange.end),
+	        'intervalMin': 1000 * 60 * 60 * 1, // one day in milliseconds
+	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2 // about three months in milliseconds,
+	      };
+	    }
+	    timeline3.draw(timeline_data3, options);
+	    //timeline3.setVisibleChartRange(trange.start, trange.end);
+	    timeline3.setVisibleChartRange((new Date).add({days: -1}), (new Date).add({days: +13}));
+  	}
+  	else
+  	{
+	  	// console.log('this group has no members');
+	  	$('#memberTimeline').hide();
+  	}
   });
 }
 
