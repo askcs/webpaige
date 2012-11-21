@@ -17,7 +17,7 @@ function pageInit(active, logged)
 	var menuLinks = ['dashboard', 'messages', 'groups']
 	 	
   //var user = JSON.parse(localStorage.getItem('user'));
-  var resources = JSON.parse(webpaige.get('resources'));
+  var resources = webpaige.get('resources');
    
 	var navbar = $('<div class="navbar navbar-inner container-fluid"></div>');
 	
@@ -132,14 +132,20 @@ webpaige = function()
 
 webpaige.prototype.get = function(label)
 {
-	return localStorage.getItem(label);
+	return JSON.parse(localStorage.getItem(label));
 }
 
 
 webpaige.prototype.set = function(label, data)
 {
-	window.data[label] = data;
-	localStorage.setItem(label, data);
+	//window.data[label] = data;
+/*
+	if (!webpaige.get(label))
+	{
+		data = $.extend(webpaige.get('label'), data);
+	}
+*/
+	localStorage.setItem(label, JSON.stringify(data))
 }
 
 
@@ -156,11 +162,11 @@ webpaige.prototype.config = function(key, value)
 	*/
 		//console.log(key, value);
 			
-		var config = JSON.parse(webpaige.get('config'));
+		var config = webpaige.get('config');
 		if (value != null)
 		{
 			config[key] = value;
-			webpaige.set('config', JSON.stringify(config));
+			webpaige.set('config', config);
 			return true;
 		}
 		else
@@ -357,4 +363,44 @@ webpaige.prototype.i18n = function(local)
 	  }
 	});
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+webpaige.prototype.cacher = function(key, value)
+{			
+	var config = JSON.parse(webpaige.get('cache'));
+	if (value != null)
+	{
+		config[key] = value;
+		webpaige.set('cache', JSON.stringify(config));
+		return true;
+	}
+	else
+	{
+		if (key == 'all')
+		{
+			return config;
+		}
+		else
+		{
+			return config[key];
+		}
+	}
+}
+
+
+
+
+
+
 

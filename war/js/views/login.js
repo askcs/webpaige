@@ -1,7 +1,7 @@
 $(document).ready(function ()
 {
   pageInit('login', 'false');
-  var login = JSON.parse(webpaige.get('login'));
+  var login = webpaige.get('login');
   if (login != null)
   {
     $('#username').val(login.user);
@@ -97,7 +97,7 @@ function loginAsk(user, pass, r)
       var login = {};
       login.user = user;
       login.remember = r;
-      webpaige.set('login', JSON.stringify(login));
+      webpaige.set('login', login);
     }
     else
     {
@@ -117,7 +117,7 @@ function loginAsk(user, pass, r)
 
     function (data, label)
     {
-      webpaige.set(label, JSON.stringify(data));
+      webpaige.set(label, data);
       webpaige.config('userRole', data.role);
       var trange = {};
       now = parseInt((new Date()).getTime() / 1000);
@@ -155,6 +155,7 @@ function loginAsk(user, pass, r)
           }
         }
         // finally redirect
+        //debugger;
         document.location = "dashboard.html";
       });
     });
@@ -179,7 +180,7 @@ function loginAskWithOutMD5(user, pass, r)
       var login = {};
       login.user = user;
       login.remember = r;
-      webpaige.set('login', JSON.stringify(login));
+      webpaige.set('login', login);
     }
     else
     {
@@ -198,7 +199,7 @@ function loginAskWithOutMD5(user, pass, r)
 
     function (data, label)
     {
-      webpaige.set(label, JSON.stringify(data));
+      webpaige.set(label, data);
       webpaige.config('userRole', data.role);
       var trange = {};
       now = parseInt((new Date()).getTime() / 1000);

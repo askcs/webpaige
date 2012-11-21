@@ -333,7 +333,7 @@ function addSlot(from, till, reoc, value, user)
   // resources ?
   var resources = JSON.parse(webpaige.get('resources'));
   var now = parseInt((new Date()).getTime());
-  console.log('passed values', from, till, reoc, value, user, now);
+  //console.log('passed values', from, till, reoc, value, user, now);
   if (from < now && till < now)
   {
     alert('Het is niet toegestaan ​​om gebeurtenissen in het verleden te toevoegen.');
