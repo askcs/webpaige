@@ -125,9 +125,11 @@ function buildCache()
 	// remove others	
 	//localStorage.removeItem('rresources');
 	localStorage.removeItem('messages');
-	localStorage.removeItem('slots');
 	localStorage.removeItem('groups');
 	localStorage.removeItem('contacts');
+	localStorage.removeItem('aggs');
+	localStorage.removeItem('wishes');
+	localStorage.removeItem('slots');
 	
 	// some parameters needed for some calls
   var trange = webpaige.config('trange');
@@ -350,7 +352,71 @@ function buildCache()
 		  ) //slots seperate
 		  
 	  }
-  ) //resources  
+  ) //resources
   
-	//editor.set(webpaige.cacher('all'));
 }
+
+
+
+
+
+function loadCache()
+{																							  		
+	window.app = {};
+	for (var i in localStorage)
+	{
+		var tmp = {};
+		tmp[i] = localStorage[i];
+		$.extend( window.app, tmp );		
+	}
+	editor.set(window.app);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function escalate()
+{
+	var manifest = {
+		1: {
+			friendly: 'Resources',
+			url: ''
+		},
+		2: {
+			friendly: 'Messages',
+			url: ''
+		},
+		3: {
+			friendly: 'Contacts',
+			url: ''
+		}
+	}
+}
+
+
+
