@@ -114,8 +114,7 @@ function getGroups()
 
 function buildCache()
 {
-	// remove cache snippets
-	// look for group caches
+	// remove cache snippets and look for group caches
 	if (webpaige.get('groups'))
 	{
 		$.each(webpaige.get('groups'), function(index, group)
@@ -124,7 +123,7 @@ function buildCache()
 		});		
 	}
 	// remove others	
-	localStorage.removeItem('rresources');
+	//localStorage.removeItem('rresources');
 	localStorage.removeItem('messages');
 	localStorage.removeItem('slots');
 	localStorage.removeItem('groups');
@@ -141,7 +140,7 @@ function buildCache()
   	{
 	    path: '/resources',
 	    loading: 'Loading resources..',
-	    label: 'rresources',
+	    label: 'resources',
 	    session: session.getSession()
 	  },
 	  function (data, label)
@@ -149,7 +148,7 @@ function buildCache()
 	  	// set resources
 	  	webpaige.set(label, data);
 	  	
-	  	// load user slots
+	  	// load user slots seperate
 		  webpaige.con(
 			  {
 			    path: '/askatars/' + window.uuid + '/slots?' + window.range,
@@ -159,132 +158,199 @@ function buildCache()
 			  },
 			  function (data, label)
 			  {
-			  	// set user slots
-					webpaige.set(label, data);
-					
-					// search for contacts in the network
-				  var query = '{"key":""}';
+		  		// save slots seperate							
+		  		var tmp = {};												
+		  		tmp[window.uuid] = { separate: data };
+		  		webpaige.set('slots', tmp);	
+	  	
+			  	// load user slots combined
 				  webpaige.con(
-				  {
-					    type: 'post',
-					    path: '/network/searchPaigeUser',
-					    json: query,
-					    loading: 'Searching contacts in network..',
-					    label: 'contacts',
+					  {
+					    path: '/askatars/' + window.uuid + '/slots?' + window.range + '&type=both',
+					    loading: 'Loading user slots (combined)..',
+					    label: 'slots',
 					    session: session.getSession()
 					  },
 					  function (data, label)
 					  {
-					  	// save contacts in cache
-						  webpaige.set(label, data);
-						  
-						  // load messages
+			      	// save user slots combined			
+			      	var slots = webpaige.get('slots');								
+				  		var tmp = {};										
+				  		tmp[window.uuid] = { combined: data };
+				  		webpaige.set('slots', $.extend( true, slots, tmp ));										
+							
+							// search for contacts in the network
+						  var query = '{"key":""}';
 						  webpaige.con(
-							  {
-							    path: '/question',
-							    loading: 'Loading messages..',
-							    label: 'messages',
+						  	{
+							    type: 'post',
+							    path: '/network/searchPaigeUser',
+							    json: query,
+							    loading: 'Searching contacts in network..',
+							    label: 'contacts',
 							    session: session.getSession()
 							  },
 							  function (data, label)
 							  {
-							  	// save messages
+							  	// save contacts in cache
 								  webpaige.set(label, data);
 								  
-								  // load groups
+								  // load messages
 								  webpaige.con(
 									  {
-									    path: '/network',
-									    loading: 'Loading groups..',
-									    label: 'groups',
+									    path: '/question',
+									    loading: 'Loading messages..',
+									    label: 'messages',
 									    session: session.getSession()
 									  },
 									  function (data, label)
 									  {
-									  	// save groups
-									  	webpaige.set(label, data);
-									  	
-									  	// loop groups
-									  	$.each(data, function (index, group)
-									  	{
-									  		// save individual groups
-									  		webpaige.set(group.uuid, {
-										  		name: group.name
-									  		});
-									  	
-									  		// load wishes of individual group
-									      webpaige.con(
-									      {
-									        path: '/network/' + group.uuid + '/wish?' + window.range,
-									        loading: 'Loading wishes for ' + group.name + ' ..',
-									        label: group,
-									        session: session.getSession()
-									      },
-									      function (data, group)
-									      {
-									      	// save wishes for that group
-									      	var cache = webpaige.get(group.uuid);
-										  		webpaige.set(group.uuid, $.extend(cache, {wishes: data}));
-										  		
-										  		// load group agg. values of that group
-										      webpaige.con(
-												  {
-												    path: '/calc_planning/' + group.uuid + '?' + window.range,
-												    loading: 'Loading aggs for ' + group.name + ' ..',
-												    label: group,
-												    session: session.getSession()
-												  },
-										      function (data, group)
-										      {
-										      	// save group agg. data of that group
-										      	var cache = webpaige.get(group.uuid);
-										      	webpaige.set(group.uuid, $.extend(cache, {aggs: data}));
-										      	
-										      	// load members of that group
-											      webpaige.con(
-													  {
-													    path: '/network/' + group.uuid + '/members',
-													    loading: 'Loading members for ' + group.name + ' ..',
-													    label: group,
-													    session: session.getSession()
-													  },
-											      function (data, group)
-											      {
-											      	// save member list in that group
-											      	var cache = webpaige.get(group.uuid);
-											      	webpaige.set(group.uuid, $.extend(cache, {members: data}));
-											      	
-											      	
-											      	
-											      });
-										      
-										      
-										      
-										      });
-									      
-									      
-									      });
-									  	
-									  	})
-									  	
-									  	//editor.set(webpaige.cacher('all'));
+									  	// save messages
+										  webpaige.set(label, data);
+										  
+										  // load groups
+										  webpaige.con(
+											  {
+											    path: '/network',
+											    loading: 'Loading groups..',
+											    label: 'groups',
+											    session: session.getSession()
+											  },
+											  function (data, label)
+											  {
+											  	// save groups
+											  	webpaige.set(label, data);
+												  		
+										  		// init localStorage groups
+										  		webpaige.set('wishes', '');
+										  		webpaige.set('aggs', '');
+											  	
+											  	// loop groups
+											  	$.each(data, 
+											  	function (index, group)
+												  	{
+												  		// save individual groups
+												  		webpaige.set(group.uuid, {name: group.name});
+												  	
+												  		// load wishes of individual group
+												      webpaige.con(
+													      {
+													        path: '/network/' + group.uuid + '/wish?' + window.range,
+													        loading: 'Loading wishes for ' + group.name + ' ..',
+													        label: group,
+													        session: session.getSession()
+													      },
+													      function (data, group)
+													      {
+													      	// save wishes for that group
+													      	var wishes = webpaige.get('wishes');								
+														  		var tmp = {};										
+														  		tmp[group.uuid] = data;
+														  		webpaige.set('wishes', $.extend( wishes, tmp ));	
+														  		
+														  		// load group agg. values of that group
+														      webpaige.con(
+																	  {
+																	    path: '/calc_planning/' + group.uuid + '?' + window.range,
+																	    loading: 'Loading aggs for ' + group.name + ' ..',
+																	    label: group,
+																	    session: session.getSession()
+																	  },
+															      function (data, group)
+															      {
+															      	// save group agg. data of that group
+															      	var aggs = webpaige.get('aggs');								
+																  		var tmp = {};										
+																  		tmp[group.uuid] = data;
+																  		webpaige.set('aggs', $.extend( aggs, tmp ));	
+															      	
+															      	// load members of that group
+																      webpaige.con(
+																			  {
+																			    path: '/network/' + group.uuid + '/members',
+																			    loading: 'Loading members for ' + group.name + ' ..',
+																			    label: group,
+																			    session: session.getSession()
+																			  },
+																	      function (data, group)
+																	      {
+																	      	// save member list in that group
+																	      	webpaige.set(group.uuid, $.extend( webpaige.get(group.uuid), { members: data } ));
+																	      	
+																	      	// loop members
+																	      	$.each(data, 
+																	      	function (index, member)
+																		      	{
+																					  	// load user slots seperate
+																						  webpaige.con(
+																							  {
+																							    path: '/askatars/' + member.uuid + '/slots?' + window.range,
+																							    loading: 'Loading ' + member.name + ' slots..',
+																							    label: member,
+																							    session: session.getSession()
+																							  },
+																							  function (data, member)
+																							  {
+																						  		// save slots seperate
+																					      	var slots = webpaige.get('slots');								
+																						  		var tmp = {};										
+																						  		tmp[member.uuid] = { seperate: data };
+																						  		webpaige.set('slots', $.extend( true, slots, tmp ));
+																						  		
+																						  		
+																							  	// load user slots seperate
+																								  webpaige.con(
+																									  {
+																									    path: '/askatars/' + member.uuid + '/slots?' + window.range + '&type=both',
+																									    loading: 'Loading ' + member.name + ' slots..',
+																									    label: member,
+																									    session: session.getSession()
+																									  },
+																									  function (data, member)
+																									  {
+																								  		// save slots seperate
+																							      	var slots = webpaige.get('slots');								
+																								  		var tmp = {};										
+																								  		tmp[member.uuid] = { combined: data };
+																								  		webpaige.set('slots', $.extend( true, slots, tmp ));
+																								  	}
+																								  ) // member seperate slots
+																						  
+																						  
+																						  	}
+																						  ) // member seperate slots
+																		      	}
+																	      	) // each member
+																	      	
+																	      }
+																      ) //members
+																      
+															      }
+															    ) //aggs
+															    
+													      }
+												      ) //wishes
+												      
+												  	}
+											  	) //each groups
+											  	
+											  }
+										  ) //groups
+										  
 									  }
-								  )
-  
-  
-  
+								  ) //messages
+								  
 							  }
-						  )
-  
-  
+						  ) //contacts
+						  
 					  }
-				  )
-					
+				  ) //slots combined
+				  
 			  }
-		  )
-  
-  
-  
+		  ) //slots seperate
+		  
 	  }
-  )
+  ) //resources  
+  
+	//editor.set(webpaige.cacher('all'));
 }
