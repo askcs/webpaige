@@ -5,10 +5,29 @@ function windowInit()
 {
   pageInit('settings', 'true');
   renderGroupsList();
-  $('#from').datetimepicker();
-  $('#till').datetimepicker();
-  $('#efrom').datetimepicker();
-  $('#etill').datetimepicker();
+  
+  var dtoptions = {
+		closeText: 'Sluiten',
+		prevText: '< Vorige',
+		nextText: 'Volgende >',
+		currentText: 'Nu',
+		monthNames: ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"],
+		monthNamesShort: ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"],
+		dayNames: ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"],
+		dayNamesShort: ["zo", "ma", "di", "wo", "do", "vr", "za"],
+		dayNamesMin: ["zo", "ma", "di", "wo", "do", "vr", "za"],
+		weekHeader: 'ma',
+		dateFormat: 'dd-mm-yy',
+		firstDay: 1,
+		isRTL: false,
+		showMonthAfterYear: false,
+		yearSuffix: ''
+	};
+
+  $('#from').datetimepicker(dtoptions);
+  $('#till').datetimepicker(dtoptions);
+  $('#efrom').datetimepicker(dtoptions);
+  $('#etill').datetimepicker(dtoptions);
   wishesTimelineInit();
   var local = {
     title: 'settings_title',
