@@ -71,7 +71,7 @@ $(document).ready(function()
         "rate": 1,
         "resources": {
             "id": "4783vroon",
-            "askPass": "9cd42f8bf89bb22bd392a3280bf272aa",
+            "askPass": "d3745e9ed55d046445dda6ed33d0b660",
             "name": "Mario  Vroon",
             "PhoneAddress": "+31642479178",
             "role": "2"
@@ -155,6 +155,7 @@ $(document).ready(function()
         "state": "com.ask-cs.State.NoPlanning",
         "uuid": "4640kuiphof"
     },
+/*
     {
         "config": {},
         "name": "Schippers  GSM",
@@ -169,6 +170,7 @@ $(document).ready(function()
         "state": "com.ask-cs.State.NoPlanning",
         "uuid": ""
     },
+*/
     {
         "config": {},
         "name": "Gerben  1Hop",
