@@ -49,8 +49,23 @@ $(document).ready(function ()
   });
   $('#newEventBtn').click(function ()
   {
-    var resources = JSON.parse(webpaige.get('resources'));
-    $('#userWho').val(resources.uuid);
+  
+    //var resources = JSON.parse(webpaige.get('resources'));
+    //$('#userWho').val(resources.uuid);
+    
+    
+    var row = $('#mytimeline .timeline-groups-text').html();
+    
+	  var user = $.trim(row.split('>')[3].split('<')[0]);
+	  user = user.split(':');
+	  var real = {
+	    uuid: user[0],
+	    reoc: user[1]
+	  };
+    
+    //console.log('user: ', user);
+    $('#userWho').val(real.uuid);
+    
     $('#newEvent').modal('show');
   });
   $(window).bind('resize', function ()
@@ -248,8 +263,25 @@ function onRangeChanged3()
 function timelineOnAdd()
 {
   timeline.cancelAdd();
-  var resources = JSON.parse(webpaige.get('resources'));
-  $('#userWho').val(resources.uuid);
+  
+  
+  //var resources = JSON.parse(webpaige.get('resources'));
+  //$('#userWho').val(resources.uuid);
+  
+  
+  var sel = timeline.getSelection();
+  var row = sel[0].row;
+  var curItem = timeline.getItem(row);
+  var user = $.trim(timeline.getItem(row).group.split('>')[3].split('<')[0]);
+  user = user.split(':');
+  var real = {
+    uuid: user[0],
+    reoc: user[1]
+  };
+  $('#userWho').val(real.uuid);
+  
+  
+  
   $('#newEvent').modal('show');
   $('#tmlabel').hide();
 }
