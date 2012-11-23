@@ -1,98 +1,36 @@
-			    
-function getResources()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function emptyCache()
 {
-  webpaige.con(
-	  options = {
-	    path: '/resources',
-	    loading: 'Loading resources..',
-	    label: 'c_resources',
-	    session: session.getSession()
-	  },
-	  function (data, label)
-	  {
-	  	editor.set(data);
-	  }
-  )
+	// remove cache snippets and look for group caches
+	if (webpaige.get('groups'))
+	{
+		$.each(webpaige.get('groups'), function(index, group)
+		{
+			localStorage.removeItem(group.uuid);
+		});		
+	}
+	// remove others	
+	//localStorage.removeItem('rresources');
+	localStorage.removeItem('messages');
+	localStorage.removeItem('groups');
+	localStorage.removeItem('contacts');
+	localStorage.removeItem('aggs');
+	localStorage.removeItem('wishes');
+	localStorage.removeItem('slots');
 }
-
-function getSlots()
-{
-	var resources = JSON.parse(webpaige.get('resources'));
-  var trange = webpaige.config('trange');
-  range = 'start=' + trange.bstart + '&end=' + trange.bend;
-  webpaige.con(
-	  options = {
-	    path: '/askatars/' + resources.uuid + '/slots?' + range,
-	    loading: 'Loading user slots..',
-	    label: 'c_slots',
-	    session: session.getSession()
-	  },
-	  function (data, label)
-	  {
-	  	editor.set(data);
-	  }
-  )
-}
-
-function getContacts()
-{
-  var query = '{"key":""}';
-  webpaige.con(
-  options = {
-	    type: 'post',
-	    path: '/network/searchPaigeUser',
-	    json: query,
-	    loading: 'Searching contacts in network..',
-	    label: 'c_contacts',
-	    session: session.getSession()
-	  },
-	  function (data, label)
-	  {
-	  	editor.set(data);
-	  }
-  )
-}
-
-function getMessages()
-{
-  webpaige.con(
-	  options = {
-	    path: '/question',
-	    loading: 'Loading messages..',
-	    label: 'c_messages',
-	    session: session.getSession()
-	  },
-	  function (data, label)
-	  {
-	  	editor.set(data);
-	  }
-  )
-}
-
-function getGroups()
-{
-  webpaige.con(
-	  options = {
-	    path: '/network',
-	    loading: 'Loading groups..',
-	    label: 'c_groups',
-	    session: session.getSession()
-	  },
-	  function (data, label)
-	  {
-	  	console.log(data);
-	  	editor.set(data);
-	  }
-  )
-}
-
-
-
-
-
-
-
-
 
 
 
@@ -115,21 +53,7 @@ function getGroups()
 function buildCache()
 {
 	// remove cache snippets and look for group caches
-	if (webpaige.get('groups'))
-	{
-		$.each(webpaige.get('groups'), function(index, group)
-		{
-			localStorage.removeItem(group.uuid);
-		});		
-	}
-	// remove others	
-	//localStorage.removeItem('rresources');
-	localStorage.removeItem('messages');
-	localStorage.removeItem('groups');
-	localStorage.removeItem('contacts');
-	localStorage.removeItem('aggs');
-	localStorage.removeItem('wishes');
-	localStorage.removeItem('slots');
+	emptyCache();
 	
 	// some parameters needed for some calls
   var trange = webpaige.config('trange');
@@ -383,6 +307,216 @@ function loadCache()
 
 
 
+
+
+
+
+/*
+function registerCall(err, results)
+{
+	console.log('testing');
+	console.log(arguments);
+}
+*/
+
+
+function seriousCache()
+{
+	var host='http://3rc2.ask-services.appspot.com/ns_knrm';
+	
+	$.ajaxSetup({
+    contentType: 'application/json',
+    xhrFields: { 
+    	withCredentials: true
+    }		
+	})
+	
+	async.parallel(
+	{
+	
+    resources: function(register)
+    {
+      setTimeout(function()
+      {
+      	$.ajax(
+      	{
+      		url: host + '/resources'
+      	})
+      	.always(function(data)
+      	{
+      		register(null, arguments);
+      	});
+      	
+      }, 100);
+    },
+	
+    question: function(register)
+    {
+      setTimeout(function()
+      {
+      	$.ajax(
+      	{
+      		url: host + '/question',
+      	})
+      	.always(function(data)
+      	{
+      		register(null, arguments);
+      	});
+      	
+      }, 200);
+    },
+	
+/*
+    resources: function(registerCall)
+    {
+      setTimeout(function()
+      {
+      	$.ajax(
+      	{
+      		url: host + '/resources',
+			    contentType: 'application/json',
+			    xhrFields: { 
+			    	withCredentials: true
+			    }
+      	})
+      	.done(function(data)
+      	{
+      		registerCall('success', arguments);
+      	})
+      	.fail(function(data)
+      	{
+      		registerCall('error', arguments);
+      	}
+      	);
+      	
+      }, 100);
+    },
+*/
+    
+/*
+    two: function(callback)
+    {
+      setTimeout(function()
+      {
+      	getMessages();
+      	callback(null, 2);
+      }, 1200);
+    },
+*/
+    
+	},
+	
+	function(err, results)
+	{
+		console.log(results);
+	    // results is now equals to: {one: 1, two: 2}
+	});
+}
+
+
+
+function errorCatcher(jqXHR, textStatus, errorThrown)
+{
+	console.log(jqXHR, textStatus, errorThrown);
+}
+
+
+
+
+
+
+
+			    
+function getResources()
+{
+  webpaige.con(
+	  options = {
+	    path: '/resources',
+	    loading: 'Loading resources..',
+	    label: 'resources',
+	    session: session.getSession()
+	  },
+	  function (data, label)
+	  {
+	  	editor.set(data);
+	  }
+  )
+}
+
+
+function getSlots()
+{
+	var resources = JSON.parse(webpaige.get('resources'));
+  var trange = webpaige.config('trange');
+  range = 'start=' + trange.bstart + '&end=' + trange.bend;
+  webpaige.con(
+	  options = {
+	    path: '/askatars/' + resources.uuid + '/slots?' + range,
+	    loading: 'Loading user slots..',
+	    label: 'c_slots',
+	    session: session.getSession()
+	  },
+	  function (data, label)
+	  {
+	  	editor.set(data);
+	  }
+  )
+}
+
+
+
+
+function getContacts()
+{
+  var query = '{"key":""}';
+  webpaige.con(
+  options = {
+	    type: 'post',
+	    path: '/network/searchPaigeUser',
+	    json: query,
+	    loading: 'Searching contacts in network..',
+	    label: 'c_contacts',
+	    session: session.getSession()
+	  },
+	  function (data, label)
+	  {
+	  	editor.set(data);
+	  }
+  )
+}
+
+function getMessages()
+{
+  webpaige.con(
+	  options = {
+	    path: '/question',
+	    loading: 'Loading messages..',
+	    label: 'c_messages',
+	    session: session.getSession()
+	  },
+	  function (data, label)
+	  {
+	  	editor.set(data);
+	  }
+  )
+}
+
+function getGroups()
+{
+  webpaige.con(
+	  options = {
+	    path: '/network',
+	    loading: 'Loading groups..',
+	    label: 'c_groups',
+	    session: session.getSession()
+	  },
+	  function (data, label)
+	  {
+	  	console.log(data);
+	  	editor.set(data);
+	  }
+  )
+}
 
 
 
