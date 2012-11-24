@@ -42,127 +42,12 @@ resources
 
 
 
-Cache = function()
+cache = function()
 {
-	
-	$.ajaxSetup(
-	{
-    contentType: 'application/json',
-    xhrFields: { 
-    	withCredentials: true
-    }		
-	})
-	
-	window.app = {};
-}
-
-
-Cache.prototype.reset = function()
-{
-	var config = webpaige.get('config');
-	var resources = webpaige.get('resources');
-	var login = webpaige.get('login');
-	localStorage.clear();
-	webpaige.set('config', config);
-	webpaige.set('resources', resources);
-	webpaige.set('login', login);
-}
-
-
-
-//function initCache()
-Cache.prototype.build = function()
-{
-	this.reset(); 	
-	
 	this.defaults = {
-		host: 'http://localhost:9000/ns_knrm'
+		
 	}
-	
-	loadSeries([
-		{
-			name: 'resources',
-			url: '/resources'
-		},
-		{
-			name: 'messages',
-			url: '/question'
-		},
-		{
-			name: 'groups',
-			url: 'network'
-		}
-	])
-		
-	//console.log('wapp', window.app);
-	
 }
-
-
-
-function loadSeries(calls)
-{
-	$.each(function (index, call)
-	{
-	
-		console.log(call)
-/*
-		async.series(
-		{
-	    resources: function(register)
-	    {
-	    	$.ajax(
-	    	{
-	    		url: defaults + '/resources'
-	    	})
-	    	.always(function(data)
-	    	{
-	    		register(null, arguments);
-	    	})
-	    }
-	    
-		},
-		
-		function(err, results)
-		{
-			$.extend(window.app, results);
-		});
-*/
-		
-	})
-}
-
-
-
-
-
-function initCache()
-{
-	cache = new Cache();
-	cache.build();
-}
-
-
-
-
-function loadResources()
-{
-	$.ajax(
-	{
-		url: host + '/reources'
-	})
-	.always(function(data)
-	{
-		register(null, arguments);
-		subajax();
-	});
-}
-
-
-
-
-
-
 
 
 
@@ -208,7 +93,7 @@ function loadCache()
 
 
 
-function seriousCache_()
+function seriousCache()
 {
 	var host='http://localhost:9000/ns_knrm';
 	
@@ -250,6 +135,13 @@ function seriousCache_()
 function subajax()
 {
 	var host='http://localhost:9000/ns_knrm';
+	
+	$.ajaxSetup({
+    contentType: 'application/json',
+    xhrFields: { 
+    	withCredentials: true
+    }		
+	})
 	
 	async.parallel(
 	{
