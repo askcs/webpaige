@@ -42,6 +42,19 @@ resources
 
 
 
+
+
+function initCache()
+{
+	console.log('cache inited');
+	cache = new Cache();
+	cache.build();
+	
+}
+
+
+
+
 Cache = function()
 {
 	
@@ -59,6 +72,7 @@ Cache = function()
 
 Cache.prototype.reset = function()
 {
+	// check this later on
 	var config = webpaige.get('config');
 	var resources = webpaige.get('resources');
 	var login = webpaige.get('login');
@@ -70,43 +84,13 @@ Cache.prototype.reset = function()
 
 
 
-//function initCache()
-Cache.prototype.build = function()
+Cache.prototype.series = function(calls)
 {
-	this.reset(); 	
-	
-	this.defaults = {
-		host: 'http://localhost:9000/ns_knrm'
-	}
-	
-	loadSeries([
-		{
-			name: 'resources',
-			url: '/resources'
-		},
-		{
-			name: 'messages',
-			url: '/question'
-		},
-		{
-			name: 'groups',
-			url: 'network'
-		}
-	])
-		
-	//console.log('wapp', window.app);
-	
-}
-
-
-
-function loadSeries(calls)
-{
-	$.each(function (index, call)
+	$.each(calls, function (index, call)
 	{
 	
-		console.log(call)
-/*
+		//console.log(call.name);
+		
 		async.series(
 		{
 	    resources: function(register)
@@ -127,20 +111,51 @@ function loadSeries(calls)
 		{
 			$.extend(window.app, results);
 		});
-*/
 		
 	})
 }
 
 
 
-
-
-function initCache()
+//function initCache()
+Cache.prototype.build = function()
 {
-	cache = new Cache();
-	cache.build();
+	this.reset(); 	
+	
+	this.defaults = {
+		host: 'http://localhost:9000/ns_knrm'
+	}
+	
+	this.series([
+		{
+			name: 'resources',
+			url: '/resources'
+		},
+		{
+			name: 'messages',
+			url: '/question'
+		},
+		{
+			name: 'groups',
+			url: 'network'
+		}
+	])
+	
+	console.log('building cache');
+		
+	//console.log('wapp', window.app);
+	
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -293,6 +308,156 @@ function subajax()
 		console.log(results);
 	});
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function asinker()
+{
+	var host='http://localhost:9000/ns_knrm';
+	
+	$.ajaxSetup(
+	{
+    contentType: 'application/json',
+    xhrFields: { 
+    	withCredentials: true
+    }		
+	})
+	
+	$.ajax(
+	{
+		url: host + '/resources',
+	})
+	.always(
+	function(data)
+	{
+		//console.log(arguments);
+	
+		// second stage
+		async.parallel(
+		{
+	    contacts: function(callback)
+	    {
+	      setTimeout(function()
+	      {
+	      	callback(null, true)
+	      }, 100);
+	    },
+	    question: function(callback)
+	    {
+	      setTimeout(function()
+	      {
+	      	callback(null, true)	      	
+	      }, 200);
+	    },
+	    network: function(callback)
+	    {
+	      setTimeout(function()
+	      {
+	      	callback(null, true)	      	
+	      }, 300);
+	    }
+		},
+		function(err, results)
+		{
+			console.log('first serie results', results);
+			
+			if (results.network)
+			{				
+				var groups = ['group1', 'group2', 'group3'];
+				
+				var pros = {},
+				tmp = {};
+				
+				$.each(groups, function (index, group)
+				{
+					tmp[group] = function(callback, index, group)
+					{
+						setTimeout(function()
+						{ 
+							callback(null, true)
+						}, (index * 100) + 100) 
+					}					
+					$.extend(pros, tmp)
+				})
+				
+				async.parallel(pros,
+				function(err, results)
+				{
+					console.log('escalate network', results);					
+				});
+			}
+		});
+	
+	});
+
+	//return true	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
