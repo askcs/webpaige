@@ -234,6 +234,7 @@ function saveNewMember()
   var uuid = $('#newMember #email').val();
   var pass = $('#newMember #pass').val();
   var guuids = $('#groupsListNew select').val();
+  
   webpaige.con(
   options = {
     path: '/register?uuid=' + uuid + '&pass=' + MD5(pass) + '&name=' + name + '&phone=' + tel + '&direct=true&module=default',
@@ -248,8 +249,10 @@ function saveNewMember()
     webpaige.con(
     options = {
       type: 'put',
-      path: '/node/' + uuid + '/resource',
-      json: tags,
+      //path: '/node/' + uuid + '/resource',
+      path: '/node/' + uuid + '/role',
+      //json: tags,
+      json: role,
       loading: 'Contact informatie wordt opgeslagen..',
       message: 'Contact informatie is opgeslagen.',
       label: 'member',
@@ -457,6 +460,7 @@ function editMember(uuid)
         loadGroups(guuid, data.name);
       });
     });
+    
   });
 }
 
