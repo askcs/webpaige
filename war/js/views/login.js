@@ -1,6 +1,14 @@
 $(document).ready(function ()
 {
   pageInit('login', 'false');
+  
+  var browser = (webpaige.whoami())[0].toLowerCase();  
+  if (browser == 'msie')
+  {
+	  $('#loginForm').hide();
+	  $('#browseHappy').show();
+  }
+  
   var login = JSON.parse(webpaige.get('login'));
   if (login != null)
   {
