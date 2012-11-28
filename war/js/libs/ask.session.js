@@ -1,6 +1,6 @@
 //var host='http://10.200.200.196:9000/ns_knrm';
 var host='http://3rc2.ask-services.appspot.com/ns_knrm';
-//var host = 'http://localhost:9000';
+//var host = 'http://localhost:9000/ns_knrm';
 
 if (ask == undefined)
   var ask = {};
