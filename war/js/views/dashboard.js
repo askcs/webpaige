@@ -6,7 +6,7 @@ $(document).ready(function ()
   var trange = webpaige.config('trange');
   window.range = 'start=' + trange.bstart + '&end=' + trange.bend;
   
-  window.inited = webpaige.config('inited');
+  //window.inited = webpaige.config('inited');
   
   renderGroupsList();
   
@@ -829,7 +829,7 @@ function getSlots(uuid)
 
 
 
-		if (window.inited == true) {
+		if (webpaige.config('inited') == true) {
     timeline.setVisibleChartRange(trange.start, trange.end);
     } else {
     timeline.setVisibleChartRange((new Date).add({days: -1}), (new Date).add({days: +13}));
@@ -1142,7 +1142,7 @@ function getGroupSlots(guuid, gname)
     
     
     
-    if (window.inited == true) {
+    if (webpaige.config('inited') == true) {
     timeline2.setVisibleChartRange(trange.start, trange.end);
     } else {
     timeline2.setVisibleChartRange((new Date).add({days: -1}), (new Date).add({days: +13}));
@@ -1237,12 +1237,12 @@ function getMemberSlots(uuid, mid)
 	    
 	    
 	    
-	    if (window.inited == true) {
+	    if (webpaige.config('inited') == true) {
 	    timeline3.setVisibleChartRange(trange.start, trange.end);
-	    console.log('working!');
+	    //console.log('working!');
 	    } else {
 	    timeline3.setVisibleChartRange((new Date).add({days: -1}), (new Date).add({days: +13}));
-	    
+	    webpaige.config('inited', true);
 	    }
 	    
 	    
