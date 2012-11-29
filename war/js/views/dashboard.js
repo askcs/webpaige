@@ -32,13 +32,6 @@ $(document).ready(function ()
   $('#planningTill').datetimepicker(dtoptions);
   $('#eplanningFrom').datetimepicker(dtoptions);
   $('#eplanningTill').datetimepicker(dtoptions);
-
-/*
-  $('#planningFrom').datetimepicker();
-  $('#planningTill').datetimepicker();
-  $('#eplanningFrom').datetimepicker();
-  $('#eplanningTill').datetimepicker();
-*/
   
   timelineInit();
   var guuid = webpaige.config('firstGroupUUID');
@@ -166,6 +159,9 @@ function planSubmit()
     case 'unavailable':
       state = 'com.ask-cs.State.Unavailable';
       break;
+    case 'unreachable':
+      state = 'com.ask-cs.State.Unreached';
+      break;
   }
   var userWho = $('#userWho').val();
   addSlot(planningFrom, planningTill, planningReoccuring, state, userWho);
@@ -193,6 +189,9 @@ function editPlanSubmit()
       break;
     case 'unavailable':
       state = 'com.ask-cs.State.Unavailable';
+      break;
+    case 'unreachable':
+      state = 'com.ask-cs.State.Unreached';
       break;
   }
   var enewFrom = $('#eplanningFrom').val();
@@ -704,6 +703,9 @@ function editSlotModal(efrom, etill, ereoc, evalue, user)
     case 'com.ask-cs.State.Unavailable':
       $('input#eplanningType')[4].checked = true;
       eoldSlotValue = 'com.ask-cs.State.Unavailable';
+      break;
+    case 'com.ask-cs.State.Unreached':
+      eoldSlotValue = 'com.ask-cs.State.Unreached';
       break;
   }
   efrom = new Date(efrom.getTime());
