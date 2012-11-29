@@ -127,22 +127,45 @@ function loginAsk(user, pass, r)
     {
       webpaige.set(label, JSON.stringify(data));
       webpaige.config('userRole', data.role);
+      
+      
+      
       var trange = {};
+/*
       now = parseInt((new Date()).getTime() / 1000);
+      
       trange.bstart = (now - 86400 * 7 * 1);
       trange.bend = (now + 86400 * 7 * 1);
-      trange.start = new Date();
+*/
+      
+      //trange.start = new Date();
       trange.start = Date.today().add(
       {
-        days: -5
+        days: -7
       });
-      trange.end = new Date();
+      
+      //trange.end = new Date();
       trange.end = Date.today().add(
       {
-        days: 5
+        days: 7
       });
+      
+/*
+      trange.bstart = (trange.start.getTime() / 1000) - 3600;
+      trange.bend = (trange.end.getTime() / 1000) + 3600;
+*/
+      
+      trange.bstart = (trange.start.getTime() / 1000);
+      trange.bend = (trange.end.getTime() / 1000);
+      
       webpaige.config('trange', trange);
       webpaige.config('treset', trange);
+      
+      webpaige.config('inited', false);
+      
+      
+      
+      
       var url = (data.role < 3) ? '/network' : '/parent';
       webpaige.con(
       options = {

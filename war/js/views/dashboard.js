@@ -1,8 +1,13 @@
 $(document).ready(function ()
 {
+	
   pageInit('dashboard', 'true');
+  
   var trange = webpaige.config('trange');
   window.range = 'start=' + trange.bstart + '&end=' + trange.bend;
+  
+  window.inited = webpaige.config('inited');
+  
   renderGroupsList();
   
   var dtoptions = {
@@ -27,14 +32,23 @@ $(document).ready(function ()
   $('#planningTill').datetimepicker(dtoptions);
   $('#eplanningFrom').datetimepicker(dtoptions);
   $('#eplanningTill').datetimepicker(dtoptions);
+
+/*
+  $('#planningFrom').datetimepicker();
+  $('#planningTill').datetimepicker();
+  $('#eplanningFrom').datetimepicker();
+  $('#eplanningTill').datetimepicker();
+*/
   
   timelineInit();
   var guuid = webpaige.config('firstGroupUUID');
   var gname = webpaige.config('firstGroupName');
   webpaige.config('guuid', guuid);
   webpaige.config('gname', gname);
+  
   groupTimelineInit(guuid, gname);
   membersTimelineInit(guuid);
+  
   $('#groupAvBtn').addClass('active');
   $("#groupsList").change(function ()
   {
@@ -120,10 +134,20 @@ function planSubmit()
   var planningAllDay = $('input#planningAllDay:checkbox:checked').val();
   if (planningReoccuring == "true") planningReoccuring = "true";
   else planningReoccuring = "false";
-  var planningFrom = Date.parse(planningFrom, "dd-MMM-yyyy HH:mm");
+  
+  
+  console.log('1:', 'planningFrom',planningFrom, 'planningTill', planningTill);
+  
+  
+  var planningFrom = Date.parseExact(planningFrom, "d-M-yyyy HH:mm");
   var planningFrom = planningFrom.getTime();
-  var planningTill = Date.parse(planningTill, "dd-MMM-yyyy HH:mm");
+  var planningTill = Date.parseExact(planningTill, "d-M-yyyy HH:mm");
   var planningTill = planningTill.getTime();
+  
+  
+  console.log('2:', 'planningFrom',planningFrom, 'planningTill', planningTill);
+  
+  
   var state = '';
   switch (planningType)
   {
@@ -176,9 +200,9 @@ function editPlanSubmit()
   var enewReoccuring = $('input#eplanningReoccuring:checkbox:checked').val();
   if (enewReoccuring == "true") enewReoccuring = "true";
   else enewReoccuring = "false";
-  var enewFrom = Date.parse(enewFrom, "dd-MMM-yyyy HH:mm");
+  var enewFrom = Date.parseExact(enewFrom, "d-M-yyyy HH:mm");
   var enewFrom = enewFrom.getTime();
-  var enewTill = Date.parse(enewTill, "dd-MMM-yyyy HH:mm");
+  var enewTill = Date.parseExact(enewTill, "d-M-yyyy HH:mm");
   var enewTill = enewTill.getTime();
   window.newslot = {
     from: Math.round(enewFrom / 1000),
@@ -465,6 +489,8 @@ function addSlot(from, till, reoc, value, user)
   var resources = JSON.parse(webpaige.get('resources'));
   var now = parseInt((new Date()).getTime());
   console.log('passed values', from, till, reoc, value, user, now);
+  
+  
   if (from < now && till < now)
   {
     alert('Het is niet toegestaan ​​om gebeurtenissen in het verleden te toevoegen.');
@@ -493,6 +519,8 @@ function addSlot(from, till, reoc, value, user)
       getMemberSlots(label.guuid);
     });
   }
+  
+  
 }
 // check delete slot
 function deleteSlot(from, till, reoc, value, user)
@@ -538,7 +566,7 @@ function deleteSlotModal(from, till, reoc, value)
     gname: webpaige.config('gname'),
     guuid: webpaige.config('guuid')
   };
-  if (from > now)
+  if (till > now)
   {
     var resources = JSON.parse(webpaige.get('resources'));
     var path = '/askatars/' + user.uuid + '/slots?start=' + from + '&end=' + till + '&text=' + value + '&recursive=' + user.reoc;
@@ -710,7 +738,7 @@ function getSlots(uuid)
   webpaige.con(
   options = {
     path: '/askatars/' + xid + '/slots?' + window.range,
-    loading: 'De beschikbaarheiden worden opgeladen..',
+    loading: 'De beschikbaarheden worden opgeladen..',
     label: 'slots',
     session: session.getSession()
   },
@@ -755,8 +783,13 @@ function getSlots(uuid)
       'editable': true,
       'height': 'auto',
       'groupsWidth': '150px',
+      
+      //'min': new Date(trange.start), // lower limit of visible range
+      //'max': new Date(trange.end), // upper limit of visible range
+      
       'min': new Date(trange.start), // lower limit of visible range
       'max': new Date(trange.end), // upper limit of visible range
+      
       'intervalMin': 1000 * 60 * 60 * 1, // one day in milliseconds
       'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2 // about three months in milliseconds,
     };
@@ -784,8 +817,31 @@ function getSlots(uuid)
       'group': '<span style="display:none;">c</span>Combined<span style="display:none;">' + resources.uuid + ':false</span>'
     });
 */
-    //timeline.setVisibleChartRange(trange.start, trange.end);
+
+
+
+
+
+
+
+
+
+
+		if (window.inited == true) {
+    timeline.setVisibleChartRange(trange.start, trange.end);
+    } else {
     timeline.setVisibleChartRange((new Date).add({days: -1}), (new Date).add({days: +13}));
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
   });
 }
 
@@ -1069,8 +1125,40 @@ function getGroupSlots(guuid, gname)
     timeline2 = new links.Timeline(document.getElementById('groupTimeline'));
     google.visualization.events.addListener(timeline2, 'rangechange', onRangeChanged2);
     timeline2.draw(ndata, options);
-    //timeline2.setVisibleChartRange(trange.start, trange.end);
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    if (window.inited == true) {
+    timeline2.setVisibleChartRange(trange.start, trange.end);
+    } else {
     timeline2.setVisibleChartRange((new Date).add({days: -1}), (new Date).add({days: +13}));
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
   });
 }
 
@@ -1079,7 +1167,7 @@ function getMemberSlots(uuid, mid)
   webpaige.con(
   options = {
     path: '/network/' + uuid + '/members',
-    loading: 'De groep lidden beschikbaarheiden worden opgeladen..',
+    loading: 'De groep leden beschikbaarheden worden opgeladen..',
     label: uuid,
     session: session.getSession()
   },
@@ -1139,8 +1227,30 @@ function getMemberSlots(uuid, mid)
 	      };
 	    }
 	    timeline3.draw(timeline_data3, options);
-	    //timeline3.setVisibleChartRange(trange.start, trange.end);
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    if (window.inited == true) {
+	    timeline3.setVisibleChartRange(trange.start, trange.end);
+	    console.log('working!');
+	    } else {
 	    timeline3.setVisibleChartRange((new Date).add({days: -1}), (new Date).add({days: +13}));
+	    
+	    }
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
   	}
   	else
   	{
@@ -1380,6 +1490,7 @@ function timelineZoomOut()
 
 function timelineMoveLeft()
 {
+	webpaige.config('inited', true);
   var otrange = webpaige.config('trange');
   var trange = {};
   trange.bend = otrange.bstart;
@@ -1399,6 +1510,7 @@ function timelineMoveLeft()
 
 function timelineMoveRight()
 {
+	webpaige.config('inited', true);
   var otrange = webpaige.config('trange');
   var trange = {};
   trange.bstart = otrange.bend;

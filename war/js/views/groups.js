@@ -364,6 +364,9 @@ function editMember(uuid)
 
   function (data, label)
   {
+  
+  
+/*
     var ugroups = [];
     for (var i in data)
     {
@@ -389,6 +392,9 @@ function editMember(uuid)
         if (counter == 0)
         {
           var groups = $('#groupsListEdit select').val();
+          
+          console.log('groups to be added', groups);
+          
           var ugroups = webpaige.config('ugroups');
           for (var i in groups)
           {
@@ -410,6 +416,9 @@ function editMember(uuid)
         }
       });
     }
+*/
+    
+    
   });
   var role = $('#editMember #roles').val();
   var name = $('#editMember #name').val();
@@ -433,6 +442,36 @@ function editMember(uuid)
 
   function (data, label)
   {
+  
+  
+  
+/*
+          var groups = $('#groupsListEdit select').val();
+          
+          console.log('groups to be added', groups);
+          
+          var ugroups = webpaige.config('ugroups');
+          for (var i in groups)
+          {
+            if (jQuery.inArray(groups[i], ugroups) == -1)
+            {
+              webpaige.con(
+              options = {
+                type: 'post',
+                path: '/network/' + groups[i] + '/members/' + uuid,
+                loading: 'Contact wordt toegevoegd in groep..',
+                label: 'Contact is toegevoegd in groep.',
+                session: session.getSession()
+              },
+
+              function (data, label)
+              {});
+            }
+          }
+*/
+          
+          
+          
     webpaige.con(
     options = {
       type: 'put',
