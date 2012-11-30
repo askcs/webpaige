@@ -7,12 +7,6 @@ function appCtrl()
 appCtrl.$inject = [];
 
 
-function loginCtrl()
-{
-}
-loginCtrl.$inject = [];
-
-
 function dashboardCtrl()
 {
 }
@@ -41,15 +35,3 @@ function settingsCtrl()
 {
 }
 settingsCtrl.$inject = [];
-
-
-function forgotPassCtrl()
-{
-}
-forgotPassCtrl.$inject = [];
-
-
-function changePassCtrl()
-{
-}
-changePassCtrl.$inject = [];
