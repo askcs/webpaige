@@ -810,7 +810,7 @@ function getSlots(uuid)
       'content': 'available',
       'group': '<span style="display:none;">a</span>Planning<span style="display:none;">' + xid + ':false</span>'
     });
-/*
+    /*
     timeline.addItem(
     {
       'start': new Date(0),
@@ -818,7 +818,7 @@ function getSlots(uuid)
       'content': 'available',
       'group': '<span style="display:none;">c</span>Combined<span style="display:none;">' + resources.uuid + ':false</span>'
     });
-*/
+    */
 
 
 
