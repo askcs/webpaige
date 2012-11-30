@@ -4,11 +4,11 @@
 angular.module('webPaige', ['webPaige.filters', 'webPaige.services', 'webPaige.directives']).
   config(['$routeProvider',function($routeProvider)
   {
-    $routeProvider.when( '/dashboard', 	{templateUrl: 'js/views/dashboard.html', 		Ctrl: dashboard} );
-    $routeProvider.when( '/messages', 		{templateUrl: 'js/views/messages.html', 	Ctrl: messages} );
-    $routeProvider.when( '/groups', 			{templateUrl: 'js/views/groups.html', 		Ctrl: groups} );
-    $routeProvider.when( '/profile', 		{templateUrl: 'js/views/profile.html', 			Ctrl: profile} );
-    $routeProvider.when( '/settings', 		{templateUrl: 'js/views/settings.html', 	Ctrl: settings} );
+    $routeProvider.when( '/dashboard', 	{templateUrl: 'views/dashboard.html', 		Ctrl: dashboard} );
+    $routeProvider.when( '/messages', 		{templateUrl: 'views/messages.html', 	Ctrl: messages} );
+    $routeProvider.when( '/groups', 			{templateUrl: 'views/groups.html', 		Ctrl: groups} );
+    $routeProvider.when( '/profile', 		{templateUrl: 'views/profile.html', 			Ctrl: profile} );
+    $routeProvider.when( '/settings', 		{templateUrl: 'views/settings.html', 	Ctrl: settings} );
     
     $routeProvider.otherwise( {redirectTo: '/dashboard'} );
   }]);

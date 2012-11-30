@@ -3,5 +3,7 @@
 
 function groups($scope)
 {
+
+
 }
 groups.$inject = ['$scope'];
