@@ -350,7 +350,7 @@ function subajax()
 
 function asinker()
 {
-	var host='http://localhost:9000/ns_knrm';
+	var host = 'http://localhost:9000/ns_knrm';
 	
 	$.ajaxSetup(
 	{
@@ -364,7 +364,7 @@ function asinker()
 	{
 		url: host + '/resources',
 	})
-	.always(
+	.success(
 	function(data)
 	{
 		//console.log(arguments);
@@ -407,7 +407,7 @@ function asinker()
 				
 				$.each(groups, function (index, group)
 				{
-					tmp[group] = function(callback, index, group)
+					tmp[group] = function(callback, index)
 					{
 						setTimeout(function()
 						{ 
@@ -576,6 +576,12 @@ function getGroups()
 
 
 
+
+
+
+
+
+/*
 function escalate()
 {
 	var manifest = {
@@ -593,6 +599,7 @@ function escalate()
 		}
 	}
 }
+*/
 
 
 
@@ -698,7 +705,7 @@ function buildCache()
 								  // load messages
 								  webpaige.con(
 									  {
-									    path: '/question',
+									    path: '/question?0=dm',
 									    loading: 'Loading messages..',
 									    label: 'messages',
 									    session: session.getSession()
