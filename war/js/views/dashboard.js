@@ -1497,7 +1497,7 @@ function timelineZoomOut()
 
 function timelineMoveLeft()
 {
-	webpaige.config('inited', true);
+	
   var otrange = webpaige.config('trange');
   var trange = {};
   trange.bend = otrange.bstart;
@@ -1510,6 +1510,23 @@ function timelineMoveLeft()
     gname: webpaige.config('gname'),
     guuid: webpaige.config('guuid')
   };
+  
+  var now = Date.today().getTime() / 1000;
+  
+  console.log(trange, now);
+  
+  if (now > trange.bstart && now < trange.bend)
+  {
+	  console.log('you are in the right week');
+	  webpaige.config('inited', false);
+  }
+  else
+  {
+	  webpaige.config('inited', true);
+  }
+  
+  
+  
   getSlots();
   getGroupSlots(label.guuid, label.gname);
   getMemberSlots(label.guuid);
@@ -1530,6 +1547,21 @@ function timelineMoveRight()
     gname: webpaige.config('gname'),
     guuid: webpaige.config('guuid')
   };
+  
+  var now = Date.today().getTime() / 1000;
+  
+  console.log(trange, now);
+  
+  if (now > trange.bstart && now < trange.bend)
+  {
+	  console.log('you are in the right week');
+	  webpaige.config('inited', false);
+  }
+  else
+  {
+	  webpaige.config('inited', true);
+  }
+  
   getSlots();
   getGroupSlots(label.guuid, label.gname);
   getMemberSlots(label.guuid);
