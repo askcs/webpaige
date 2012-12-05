@@ -8,8 +8,6 @@ $(document).ready(function ()
   var trange = webpaige.config('trange');
   window.range = 'start=' + trange.bstart + '&end=' + trange.bend;
   
-  //window.inited = webpaige.config('inited');
-  
   renderGroupsList();
   
   var dtoptions = {
@@ -1245,7 +1243,7 @@ function getMemberSlots(uuid, mid)
 	    //console.log('working!');
 	    } else {
 	    timeline3.setVisibleChartRange((new Date).add({days: -1}), (new Date).add({days: +13}));
-	    webpaige.config('inited', true);
+	    //webpaige.config('inited', true);
 	    }
 	    
 	    
