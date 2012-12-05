@@ -3,6 +3,8 @@ $(document).ready(function ()
 	
   pageInit('dashboard', 'true');
   
+  webpaige.config('inited', false);
+  
   var trange = webpaige.config('trange');
   window.range = 'start=' + trange.bstart + '&end=' + trange.bend;
   
@@ -45,6 +47,7 @@ $(document).ready(function ()
   $('#groupAvBtn').addClass('active');
   $("#groupsList").change(function ()
   {
+	webpaige.config('inited', false);
     $('#divisions option[value="both"]').attr('selected', 'selected');
     timelineInit();
     var guuid = $(this).find(":selected").val();
@@ -1460,6 +1463,10 @@ function renderGroupsList()
 
 function goToday()
 {
+	webpaige.config('inited', false);
+	
+	//console.log(
+	
   var trange = webpaige.config('treset');
   window.range = 'start=' + trange.bstart + '&end=' + trange.bend;
   webpaige.config('trange', trange);
