@@ -711,11 +711,11 @@ function editSlotModal(efrom, etill, ereoc, evalue, user)
   }
   efrom = new Date(efrom.getTime());
   eoldSlotFrom = Math.round(efrom / 1000);
-  efrom = efrom.toString("dd-MMM-yyyy HH:mm");
+  efrom = efrom.toString("dd-M-yyyy HH:mm");
   $('#eplanningFrom').val(efrom);
   etill = new Date(etill.getTime());
   eoldSlotTill = Math.round(etill / 1000);
-  etill = etill.toString("dd-MMM-yyyy HH:mm");
+  etill = etill.toString("dd-M-yyyy HH:mm");
   $('#eplanningTill').val(etill);
   $('input#eplanningReoccuring')[0].checked = eval(user.reoc);
   window.oldslot = {
