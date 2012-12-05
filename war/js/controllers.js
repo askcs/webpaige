@@ -1,6 +1,7 @@
 'use strict';
 /* Controllers */
 
+/*
 function appCtrl()
 {
 }
@@ -9,6 +10,9 @@ appCtrl.$inject = [];
 
 function dashboardCtrl()
 {
+
+	console.log('this one inited')
+	
 }
 dashboardCtrl.$inject = [];
 
@@ -35,3 +39,4 @@ function settingsCtrl()
 {
 }
 settingsCtrl.$inject = [];
+*/
