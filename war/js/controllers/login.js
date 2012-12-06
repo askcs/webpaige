@@ -1,17 +1,5 @@
 $(document).ready(function()
 {
-/*
-	var session = new ask.session(relogin);
-	// TODO //
-	function relogin() { window.location = "login.html"; }
-	
-	
-	console.log('session:', session);
-	
-	webpaige = new webpaige();
-*/
-	
-	//var webpaige = new webpaige();
 	 	
  	var login = JSON.parse(webpaige.get('login'));
  	
@@ -28,8 +16,6 @@ $(document).ready(function()
   
   $("#loginBtn").click(function()
   {
-  
-  	log('login inited');
   	
 	  $("#ajaxLoader").show();
 	  
@@ -55,25 +41,27 @@ $(document).ready(function()
 	    return false;
 	  }
 	  
-	  loginAsk (user.toLowerCase(), MD5(pass), r);
+	  loginAsk(user.toLowerCase(), MD5(pass), r);
   });
-  
-  /*
-	window.addEventListener( 'keypress', function (event)
-	{
-		if ( event.keyCode === 13 ) loginHandler();		
-	});
-	*/
 	
 });
 
 
-function loginAsk (user, pass, r)
+
+
+
+function loginAsk_(user, pass, r)
 {
 	webpaige.set('config', '{}');
-	
-	
-	console.log('session outside ajax :', session);
+}
+
+
+
+
+
+function loginAsk2(user, pass, r)
+{
+	webpaige.set('config', '{}');
 	
 	
 	// logging in ask
@@ -96,14 +84,15 @@ function loginAsk (user, pass, r)
       	webpaige.remove('login');
       }
       
-      console.log('session in ajax call: ', session);
-      
       session.setSession(data["X-SESSION_ID"]);
       document.cookie = "sessionId=" + session;
       
+      
+      
+      
       // loading resources
 			webpaige.con(
-				options = {
+				{
 					path: '/resources',
 					loading: 'Persoonlijke gegevens aan het laden..',
 					label: 'resources',
@@ -133,7 +122,7 @@ function loginAsk (user, pass, r)
 		      var url = (data.role < 3) ? '/network' : '/parent';
 					
 					webpaige.con(
-						options = {
+						{
 							path: url,
 							loading: 'Groep & contacten informatie aan het laden..',
 							label: 'groups'
@@ -150,12 +139,10 @@ function loginAsk (user, pass, r)
 						  	}	 	    
 						  }
 							
-							
-							document.location = "index.html#/dashboard";
-							
-							//console.log('logged successfully. session: ', session.getSession());
+							//document.location = "index.html#/dashboard";
 						}
 					);
+					
  	
 				}
 			);
@@ -163,23 +150,327 @@ function loginAsk (user, pass, r)
 	);
 }
 
-	
-function loginAs(type)
+
+
+
+
+
+
+function saveCookie(data)
 {
-	switch (type)
-	{
-		case 'planner':
-			user = 'beheer';
-			pass = '319fcaa585c17eff5dcc2a57e8fc853f';
-		break;
-		case 'teamleider':
-			user = '4058fok';
-			pass = '288116504f5e303e4be4ff1765b81f5d';
-		break;
-		case 'volunteer':
-			user = '4780aldewereld';
-			pass = 'd9a6c9bad827746190792cf6f30d5271';
-		break;		
-	}
-	loginAsk (user, pass, true);
+	session.setSession(data["X-SESSION_ID"]);
+	document.cookie = "sessionId=" + session;
 }
+
+
+
+
+
+function saveUser(user, r)
+{
+	if (r != null)
+	{
+		webpaige.set('login', JSON.stringify({
+	  	user: user,
+	  	remember: r
+		}));
+	}
+	else
+	{
+		webpaige.remove('login');
+	}
+}
+
+
+
+
+
+
+function loginAsk(user, pass, r)
+{
+	//reset config
+	webpaige.set('config', '{}');
+	
+	//set host
+	//var host = 'http://localhost:9000/ns_knrm';
+	var host = 'http://3rc2.ask-services.appspot.com/ns_knrm';
+	
+	// generic ajax settings
+	$.ajaxSetup(
+	{
+    contentType: 'application/json',
+    xhrFields: { 
+    	withCredentials: true
+    }		
+	})
+	
+	async.waterfall([
+    function(callback)
+    {
+		  $.ajax(
+			{
+				url: host + '/login?uuid=' + user + '&pass=' + pass,
+			})
+			.success(
+			function(data)
+			{
+	      saveUser(user, r);
+	      saveCookie(data);
+    		callback(null, data["X-SESSION_ID"]);
+			})
+    },
+    function(session, callback)
+    {
+		  $.ajax(
+			{
+				url: host + '/resources',
+			})
+			.success(
+			function(user)
+			{			
+				setupRanges();					      
+    		callback(null, user);
+			})
+    },
+    function(path, callback)
+    {
+    	async.parallel({
+		    network: function(callback)
+		    {
+	        setTimeout(function()
+	        {
+					  $.ajax(
+						{
+							url: host + '/network',
+						})
+						.success(
+						function(data)
+						{				
+			    		callback(null, 'done');
+						})
+	        }, 300);
+		    },
+		    parent: function(callback)
+		    {
+	        setTimeout(function()
+	        {
+					  $.ajax(
+						{
+							url: host + '/parent',
+						})
+						.success(
+						function(data)
+						{				
+			    		callback(null, 'done');
+						})
+	        }, 200);
+		    },
+		    messages: function(callback)
+		    {
+	        setTimeout(function()
+	        {
+					  $.ajax(
+						{
+							url: host + '/question?0=dm',
+						})
+						.success(
+						function(data)
+						{				
+			    		callback(null, 'done');
+						})
+	        }, 100);
+		    },
+			},
+			function(err, results)
+			{
+				console.log('results of parallel calls: ', results); 
+			});	
+			
+    }
+	], function (err, results)
+	{
+		console.log('results of main calls: ', results);   
+	});
+}
+
+
+
+
+var calls = {
+
+  login: {
+    status: true,
+    traverse: {
+    
+      resources: {
+        status: true,
+        traverse: {
+        
+          network: {
+            status: true,
+            traverse: {}
+          },
+        
+          parent: {
+            status: true,
+            traverse: {}
+          },
+          
+          messages: {
+            status: true,
+            traverse: {}
+          }
+          
+        }
+      }
+      
+    }
+  }
+  
+}
+
+
+function setupRanges()
+{				
+	var trange = {};	
+	
+  now = parseInt((new Date()).getTime() / 1000);
+  
+  trange.bstart = (now - 86400 * 7 * 1);
+  trange.bend = (now + 86400 * 7 * 1);					
+	
+  trange.start = new Date();
+  trange.start = Date.today().add({ days: -5 });
+  trange.end = new Date();
+  trange.end = Date.today().add({ days: 5 });
+  
+  console.log(trange);
+  
+  webpaige.config('trange', trange);	
+  webpaige.config('treset', trange);
+}
+
+
+
+
+
+
+function asinker()
+{
+	var host = 'http://localhost:9000/ns_knrm';
+	
+	$.ajaxSetup(
+	{
+    contentType: 'application/json',
+    xhrFields: { 
+    	withCredentials: true
+    }		
+	})
+	
+	$.ajax(
+	{
+		url: host + '/resources',
+	})
+	.success(
+	function(data)
+	{
+		//console.log(arguments);
+	
+		// second stage
+		async.parallel(
+		{
+	    contacts: function(callback)
+	    {
+	      setTimeout(function()
+	      {
+	      	callback(null, true)
+	      }, 100);
+	    },
+	    question: function(callback)
+	    {
+	      setTimeout(function()
+	      {
+	      	callback(null, true)	      	
+	      }, 200);
+	    },
+	    network: function(callback)
+	    {
+	      setTimeout(function()
+	      {
+	      	callback(null, true)	      	
+	      }, 300);
+	    }
+		},
+		function(err, results)
+		{
+			console.log('first serie results', results);
+			
+			if (results.network)
+			{				
+				var groups = ['group1', 'group2', 'group3'];
+				
+				var pros = {},
+				tmp = {};
+				
+				$.each(groups, function (index, group)
+				{
+					tmp[group] = function(callback, index)
+					{
+						setTimeout(function()
+						{ 
+							callback(null, true)
+						}, (index * 100) + 100) 
+					}					
+					$.extend(pros, tmp)
+				})
+				
+				async.parallel(pros,
+				function(err, results)
+				{
+					console.log('escalate network', results);					
+				});
+			}
+		});
+	
+	});
+
+	//return true	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

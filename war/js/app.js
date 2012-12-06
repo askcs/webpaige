@@ -13,6 +13,9 @@ angular.module('webPaige', ['webPaige.filters', 'webPaige.services', 'webPaige.d
     $routeProvider.otherwise( {redirectTo: '/dashboard'} );
   }]);
 
+
+
+
 // App controller
 function app($scope)
 {
