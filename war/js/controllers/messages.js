@@ -427,7 +427,7 @@ function renderMessages(data, type)
       datetime = datetime.toString("ddd dd MMM yyyy HH:mm");
       tbodytr.append('<td>' + datetime + '</td>');
       var tdbtns = $('<td></td>');
-      btngroup = $('<div class="btn-group"></div>');
+      var btngroup = $('<div class="btn-group"></div>');
       if (type == 'inbox')
       {
         btngroup.append('<a class="btn btn-mini" onclick="replyMessage(\'' + data[n].uuid + '\');"><i class="icon-share-alt"></i></a>');
