@@ -156,6 +156,222 @@ function loginAsk2(user, pass, r)
 
 
 
+
+
+
+
+
+
+
+
+
+
+var calls = {
+
+  login: {
+    status: true,
+    content: {}
+  },
+    
+  resources: {
+    status: true,
+    content: {}
+  },
+  
+  contacts: {
+    status: true,
+    content: {}
+  },
+  
+  messages: {
+    status: true,
+    content: {}
+  },
+    
+  network: {
+    status: true,
+    content: {},
+    traverse: {}
+  },
+
+  parent: {
+    status: true,
+    content: {},
+    traverse: {}
+  }
+  
+}
+
+
+
+
+// todos
+// 1. register calls to be made in a call check list
+// 2. build cache
+// 3. make a preloader
+// 4. pass the arguments
+
+
+
+
+
+function loginAsk(user, pass, r)
+{
+	webpaige.set('config', '{}');
+	
+	//var host = 'http://localhost:9000/ns_knrm';
+	var host = 'http://3rc2.ask-services.appspot.com/ns_knrm';
+	
+	$.ajaxSetup(
+	{
+    contentType: 'application/json',
+    xhrFields: { 
+    	withCredentials: true
+    }		
+	})
+	
+	async.waterfall([
+	
+    function(callback)
+    {
+		  $.ajax(
+			{
+				url: host + '/login?uuid=' + user + '&pass=' + pass,
+			})
+			.success(
+			function(data)
+			{
+	      saveUser(user, r);
+	      saveCookie(data);
+    		callback(null, data["X-SESSION_ID"]);
+			})
+    },
+    
+    function(session, callback)
+    {
+		  $.ajax(
+			{
+				url: host + '/resources',
+			})
+			.success(
+			function(user)
+			{			
+				setupRanges();					      
+    		callback(null, user);
+			})
+    },
+    
+    function(path, callback)
+    {
+    	async.parallel({
+		    
+		    contacts: function(callback)
+		    {
+	        setTimeout(function()
+	        {
+					  $.ajax(
+						{
+							url: host + '/network/searchPaigeUser',
+							type: 'post',
+							data: '{"key":""}' 
+						})
+						.success(
+						function(data)
+						{				
+			    		callback(null, 'done');
+						})
+	        }, 100);
+		    },
+		    
+		    messages: function(callback)
+		    {
+	        setTimeout(function()
+	        {
+					  $.ajax(
+						{
+							url: host + '/question?0=dm',
+						})
+						.success(
+						function(data)
+						{				
+			    		callback(null, 'done');
+						})
+	        }, 200);
+		    },
+    	
+		    network: function(callback)
+		    {
+	        setTimeout(function()
+	        {
+					  $.ajax(
+						{
+							url: host + '/network',
+						})
+						.success(
+						function(data)
+						{				
+			    		callback(null, 'done');
+						})
+	        }, 300);
+		    },
+		    
+		    parent: function(callback)
+		    {
+	        setTimeout(function()
+	        {
+					  $.ajax(
+						{
+							url: host + '/parent',
+						})
+						.success(
+						function(data)
+						{				
+			    		callback(null, 'done');
+						})
+	        }, 400);
+		    }
+		    
+			},
+			function(err, results)
+			{
+				console.log('results of parallel calls: ', results); 
+			});	
+			
+    }
+	], function (err, results)
+	{
+		console.log('results of main calls: ', results);   
+	});
+}
+
+
+
+
+function setupRanges()
+{				
+	var trange = {};	
+	
+  now = parseInt((new Date()).getTime() / 1000);
+  
+  trange.bstart = (now - 86400 * 7 * 1);
+  trange.bend = (now + 86400 * 7 * 1);					
+	
+  trange.start = new Date();
+  trange.start = Date.today().add({ days: -5 });
+  trange.end = new Date();
+  trange.end = Date.today().add({ days: 5 });
+  
+  //console.log(trange);
+  
+  webpaige.config('trange', trange);	
+  webpaige.config('treset', trange);
+}
+
+
+
+
+
+
 function saveCookie(data)
 {
 	session.setSession(data["X-SESSION_ID"]);
@@ -186,169 +402,9 @@ function saveUser(user, r)
 
 
 
-function loginAsk(user, pass, r)
-{
-	//reset config
-	webpaige.set('config', '{}');
-	
-	//set host
-	//var host = 'http://localhost:9000/ns_knrm';
-	var host = 'http://3rc2.ask-services.appspot.com/ns_knrm';
-	
-	// generic ajax settings
-	$.ajaxSetup(
-	{
-    contentType: 'application/json',
-    xhrFields: { 
-    	withCredentials: true
-    }		
-	})
-	
-	async.waterfall([
-    function(callback)
-    {
-		  $.ajax(
-			{
-				url: host + '/login?uuid=' + user + '&pass=' + pass,
-			})
-			.success(
-			function(data)
-			{
-	      saveUser(user, r);
-	      saveCookie(data);
-    		callback(null, data["X-SESSION_ID"]);
-			})
-    },
-    function(session, callback)
-    {
-		  $.ajax(
-			{
-				url: host + '/resources',
-			})
-			.success(
-			function(user)
-			{			
-				setupRanges();					      
-    		callback(null, user);
-			})
-    },
-    function(path, callback)
-    {
-    	async.parallel({
-		    network: function(callback)
-		    {
-	        setTimeout(function()
-	        {
-					  $.ajax(
-						{
-							url: host + '/network',
-						})
-						.success(
-						function(data)
-						{				
-			    		callback(null, 'done');
-						})
-	        }, 300);
-		    },
-		    parent: function(callback)
-		    {
-	        setTimeout(function()
-	        {
-					  $.ajax(
-						{
-							url: host + '/parent',
-						})
-						.success(
-						function(data)
-						{				
-			    		callback(null, 'done');
-						})
-	        }, 200);
-		    },
-		    messages: function(callback)
-		    {
-	        setTimeout(function()
-	        {
-					  $.ajax(
-						{
-							url: host + '/question?0=dm',
-						})
-						.success(
-						function(data)
-						{				
-			    		callback(null, 'done');
-						})
-	        }, 100);
-		    },
-			},
-			function(err, results)
-			{
-				console.log('results of parallel calls: ', results); 
-			});	
-			
-    }
-	], function (err, results)
-	{
-		console.log('results of main calls: ', results);   
-	});
-}
 
 
 
-
-var calls = {
-
-  login: {
-    status: true,
-    traverse: {
-    
-      resources: {
-        status: true,
-        traverse: {
-        
-          network: {
-            status: true,
-            traverse: {}
-          },
-        
-          parent: {
-            status: true,
-            traverse: {}
-          },
-          
-          messages: {
-            status: true,
-            traverse: {}
-          }
-          
-        }
-      }
-      
-    }
-  }
-  
-}
-
-
-function setupRanges()
-{				
-	var trange = {};	
-	
-  now = parseInt((new Date()).getTime() / 1000);
-  
-  trange.bstart = (now - 86400 * 7 * 1);
-  trange.bend = (now + 86400 * 7 * 1);					
-	
-  trange.start = new Date();
-  trange.start = Date.today().add({ days: -5 });
-  trange.end = new Date();
-  trange.end = Date.today().add({ days: 5 });
-  
-  console.log(trange);
-  
-  webpaige.config('trange', trange);	
-  webpaige.config('treset', trange);
-}
 
 
 
