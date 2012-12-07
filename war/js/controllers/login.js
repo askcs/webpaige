@@ -222,6 +222,38 @@ function loginAsk(user, pass, r)
 	//var host = 'http://localhost:9000/ns_knrm';
 	var host = 'http://3rc2.ask-services.appspot.com/ns_knrm';
 	
+  $.ajax(
+	{
+		url: host + '/login?uuid=' + user + '&pass=' + pass,
+    contentType: 'application/json',
+    xhrFields: { 
+    	withCredentials: true
+    }	
+	})
+	.success(
+	function(data)
+	{
+    saveUser(user, r);
+    saveCookie(data);
+		document.location = "index.html#/preloader";
+	})
+}
+
+
+
+
+
+
+
+
+/*
+function loginAsk(user, pass, r)
+{
+	webpaige.set('config', '{}');
+	
+	//var host = 'http://localhost:9000/ns_knrm';
+	var host = 'http://3rc2.ask-services.appspot.com/ns_knrm';
+	
 	$.ajaxSetup(
 	{
     contentType: 'application/json',
@@ -343,10 +375,12 @@ function loginAsk(user, pass, r)
 		console.log('results of main calls: ', results);   
 	});
 }
+*/
 
 
 
 
+/*
 function setupRanges()
 {				
 	var trange = {};	
@@ -366,6 +400,7 @@ function setupRanges()
   webpaige.config('trange', trange);	
   webpaige.config('treset', trange);
 }
+*/
 
 
 
