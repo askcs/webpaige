@@ -20,6 +20,9 @@ angular.module('webPaige', ['webPaige.filters', 'webPaige.services', 'webPaige.d
 // App controller
 function app($scope)
 {
+
+	//var user = {};
+	
 	$scope.username = ' Cengiz ';
 
 	var session = new ask.session(relogin);

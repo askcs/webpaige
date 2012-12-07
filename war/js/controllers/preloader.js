@@ -6,17 +6,7 @@ var preloader = function($scope)
 	this.initSettings();	
 	this.setupRanges();
 	
-	$.ajaxSetup(
-	{
-    contentType: 'application/json',
-    xhrFields: { 
-    	withCredentials: true
-    },
-    beforeSend: function(xhr)
-    {
-    	xhr.setRequestHeader('X-SESSION_ID', session.getSession());
-    }		
-	})
+	//debugger;
 	
 	async.waterfall([
     
@@ -29,6 +19,8 @@ var preloader = function($scope)
 			.success(
 			function(user)
 			{
+	
+				window.app['resources'] = user;
 			
 				localStorage.setItem('resources', JSON.stringify(user));
 				$('#preloader .progress .bar').css({ width : '20%'});	
@@ -58,6 +50,8 @@ var preloader = function($scope)
 						.success(
 						function(data)
 						{		
+						
+							window.app['contacts'] = data;
 							
 							localStorage.setItem('contacts', data);
 							$('#preloader .progress .bar').css({ width : '40%'});	
@@ -83,6 +77,8 @@ var preloader = function($scope)
 						function(data)
 						{	
 						
+							window.app['messages'] = data;
+						
 							localStorage.setItem('messages', JSON.stringify(data));
 							$('#preloader .progress .bar').css({ width : '60%'});	
 							$('#preloader span').text('Messages loaded');		
@@ -105,7 +101,9 @@ var preloader = function($scope)
 						})
 						.success(
 						function(data)
-						{				
+						{	
+						
+							window.app['groups'] = data;			
 						
 							localStorage.setItem('groups', JSON.stringify(data));
 							$('#preloader .progress .bar').css({ width : '80%'});	
@@ -131,6 +129,8 @@ var preloader = function($scope)
 						function(data)
 						{			
 						
+							window.app['parent'] = data;
+						
 							localStorage.setItem('parent', JSON.stringify(data));
 							$('#preloader .progress .bar').css({ width : '100%'});	
 							$('#preloader span').text('Groups loaded');		
@@ -147,6 +147,9 @@ var preloader = function($scope)
 			function(err, results)
 			{
 				//console.log('results of parallel calls: ', results);
+				
+				localStorage.setItem('app', window.app);
+				
 				document.location = "#/dashboard"; 
 			});	
 			
@@ -168,10 +171,25 @@ preloader.prototype = {
 
 	setupRanges: function()
 	{				
-		var trange = {};	
+/* 		var trange = {};	 */
 		
 	  var now = parseInt((new Date()).getTime() / 1000);
 	  
+	  var period = {
+		  bstart: (now - 86400 * 7 * 1),
+		  bend: (now + 86400 * 7 * 1),
+		  start: Date.today().add({ days: -5 }),
+		  end: Date.today().add({ days: 5 })
+	  }
+	  
+	  window.app['ranges'] = {
+		  period: period,
+		  reset: period
+	  }
+	  
+	  
+	  
+/*
 	  trange.bstart = (now - 86400 * 7 * 1);
 	  trange.bend = (now + 86400 * 7 * 1);					
 		
@@ -179,9 +197,12 @@ preloader.prototype = {
 	  trange.start = Date.today().add({ days: -5 });
 	  trange.end = new Date();
 	  trange.end = Date.today().add({ days: 5 });
+*/
 	  
+/*
 	  webpaige.config('trange', trange);	
 	  webpaige.config('treset', trange);
+*/
 	}
 }
 preloader.$inject = ['$scope'];
