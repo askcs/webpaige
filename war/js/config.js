@@ -45,6 +45,13 @@ var states = {
 var density = ['#294929', '#4f824f', '#477547', '#436f43', '#3d673d', '#396039', '#335833', '#305330'];
 
 
+// determine divisions
+var divisions = [
+	'knrm.StateGroup.BeschikbaarNoord',
+	'knrm.StateGroup.BeschikbaarZuid',
+]
+
+
 // application window variable container for processed data
 window.app = {};
 

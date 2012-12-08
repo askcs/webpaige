@@ -217,9 +217,7 @@ var preloader = function($scope)
 								
 						document.location = "#/dashboard"; 
 						
-					});
-					
-					
+					});					
 		
 		    }
 		    

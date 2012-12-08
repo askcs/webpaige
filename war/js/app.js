@@ -21,7 +21,7 @@ angular.module('webPaige', ['webPaige.filters', 'webPaige.services', 'webPaige.d
   config(['$routeProvider',function($routeProvider)
   {
     $routeProvider.when( '/preloader', 	{templateUrl: 'views/preloader.html', 		Ctrl: preloader} );
-    $routeProvider.when( '/dashboard', 	{templateUrl: 'views/dashboard.html', 		Ctrl: dashboard} );
+    $routeProvider.when( '/dashboard', 	{templateUrl: 'views/dashboard.html', 		Ctrl: window.dashboard} );
     $routeProvider.when( '/messages', 		{templateUrl: 'views/messages.html', 	Ctrl: messages} );
     $routeProvider.when( '/groups', 			{templateUrl: 'views/groups.html', 		Ctrl: groups} );
     $routeProvider.when( '/profile', 		{templateUrl: 'views/profile.html', 			Ctrl: profile} );
