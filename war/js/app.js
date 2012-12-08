@@ -1,5 +1,21 @@
 'use strict';
 
+
+// general ajax sttings for ask back-end
+$.ajaxSetup(
+{
+  contentType: 'application/json',
+  xhrFields: { 
+  	withCredentials: true
+  },
+  beforeSend: function(xhr)
+  {
+  	xhr.setRequestHeader('X-SESSION_ID', session.getSession());
+  }		
+})
+
+
+
 // Declare app level module which depends on filters, and services
 angular.module('webPaige', ['webPaige.filters', 'webPaige.services', 'webPaige.directives']).
   config(['$routeProvider',function($routeProvider)

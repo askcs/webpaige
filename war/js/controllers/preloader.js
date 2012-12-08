@@ -2,17 +2,18 @@
 /* Preloader controller */
 
 var preloader = function($scope)
-{
-	// TODO: is this needed anymore?
-	this.initSettings();	
-	
+{	
 	// setup ranges 
 	this.setupRanges();
 	
 	async.waterfall([
+	
+	
     
     function(callback)
     {
+			$('#preloader span').text('Loading user information..');
+				
 		  $.ajax(
 			{
 				url: host + '/resources',
@@ -28,7 +29,6 @@ var preloader = function($scope)
 				
 				// inform user
 				$('#preloader .progress .bar').css({ width : '20%'});	
-				$('#preloader span').text('Resources loaded');
 				
 				// keep track of resource call
 				window.app.calls = {};	
@@ -42,78 +42,21 @@ var preloader = function($scope)
 			})
     },
     
+    
+    
+    
     function(user, callback)
     {
     	async.series({
-		   
-/*
-		    contacts: function(callback)
-		    {
-	        setTimeout(function()
-	        {
-					  $.ajax(
-						{
-							url: host + '/network/searchPaigeUser',
-							type: 'post',
-							data: '{"key":""}' 
-						})
-						.success(
-						function(data)
-						{		
-						
-							window.app.contacts = data;
-							
-							localStorage.setItem('contacts', data);
-							
-							$('#preloader .progress .bar').css({ width : '40%'});	
-							$('#preloader span').text('Contacts loaded');
-							
-							window.app.calls['contacts'] = true;		
-							
-			    		callback(null, 'done');
-						})
-						.fail(function()
-						{
-							window.app.calls['contacts'] = false;
-						})
-	        }, 100);
-		    },
-*/
 		    
-		    messages: function(callback)
-		    {
-	        setTimeout(function()
-	        {
-					  $.ajax(
-						{
-							url: host + '/question?0=dm',
-						})
-						.success(
-						function(data)
-						{	
-						
-							window.app.messages = data;
-						
-							localStorage.setItem('messages', JSON.stringify(data));
-							
-							$('#preloader .progress .bar').css({ width : '60%'});	
-							$('#preloader span').text('Messages loaded');		
-							
-							window.app.calls['messages'] = true;
-									
-			    		callback(null, 'done');
-						})
-						.fail(function()
-						{
-							window.app.calls['messages'] = false;
-						})
-	        }, 200);
-		    },
+		    
     	
 		    network: function(callback)
 		    {
 	        setTimeout(function()
 	        {
+						$('#preloader span').text('Loading groups..');	
+					  
 					  $.ajax(
 						{
 							url: host + '/network',
@@ -128,8 +71,7 @@ var preloader = function($scope)
 								
 							window.app.calls['network'] = true;	
 							
-							$('#preloader .progress .bar').css({ width : '80%'});	
-							$('#preloader span').text('Groups loaded');	
+							$('#preloader .progress .bar').css({ width : '40%'});	
 								
 			    		callback(null, 'done');
 						})
@@ -137,13 +79,17 @@ var preloader = function($scope)
 						{			
 							window.app.calls['network'] = true;	
 						})
-	        }, 300);
+	        }, 100);
 		    },
+		    
+		    
 		    
 		    parent: function(callback)
 		    {
 	        setTimeout(function()
 	        {
+	        	$('#preloader span').text('Loading parent group..');
+	        	
 					  $.ajax(
 						{
 							url: host + '/parent',
@@ -156,8 +102,7 @@ var preloader = function($scope)
 						
 							localStorage.setItem('parent', JSON.stringify(data));
 							
-							$('#preloader .progress .bar').css({ width : '100%'});	
-							$('#preloader span').text('Groups loaded');
+							$('#preloader .progress .bar').css({ width : '60%'});	
 							
 							window.app.calls['parent'] = true;		
 							
@@ -167,43 +112,141 @@ var preloader = function($scope)
 						{
 							window.app.calls['parent'] = true;
 						})
-	        }, 400);
+	        }, 200);
+		    },
+    	
+    	
+		    
+		    messages: function(callback)
+		    {
+					$('#preloader span').text('Loading messages..');	
+	        
+	        setTimeout(function()
+	        {
+					  $.ajax(
+						{
+							url: host + '/question?0=dm',
+						})
+						.success(
+						function(data)
+						{	
+						
+							window.app.messages = data;
+						
+							localStorage.setItem('messages', JSON.stringify(data));
+							
+							$('#preloader .progress .bar').css({ width : '80%'});		
+							
+							window.app.calls['messages'] = true;
+									
+			    		callback(null, 'done');
+						})
+						.fail(function()
+						{
+							window.app.calls['messages'] = false;
+						})
+	        }, 300);
+		    },
+		    
+		    
+		    
+		    members: function(callback)
+		    {
+		    	$('#preloader span').text('Loading members..');
+		    		
+					// magic of loading group members
+					// by producing an array of functional objects
+					var members = {},
+					tmp = {};
+				
+					$.each(window.app.groups, function (index, group)
+					{
+						tmp[group.uuid] = function(callback, index)
+						{
+							setTimeout(function()
+							{
+							  $.ajax(
+								{
+									url: host + '/network/' + group.uuid + '/members?fields=[role]',
+								})
+								.success(
+								function(data)
+								{			
+								
+									localStorage.setItem(group.uuid, JSON.stringify(data));
+									
+									window.app.calls[group.uuid] = true;	
+									
+					    		callback(null, true);
+								})
+								.fail(function()
+								{
+									window.app.calls[group.uuid] = false;	
+								}) 
+				
+							}, (index * 100) + 100) 
+						}					
+						$.extend(members, tmp)
+					})
+					
+					async.series(members,
+					function(err, results)
+					{			
+						// process unique members
+						var members = {};
+						$.each(window.app.groups, function(index, group)
+						{
+							var groupList = JSON.parse(localStorage.getItem(group.uuid));
+							
+							if (groupList.length > 0 || 
+									groupList != null ||
+									groupList != undefined)
+							{
+								$.each(groupList, function(index, member)
+								{
+									members[member.uuid] = member;
+								})
+							}
+							
+						})
+						window.app.members = members;		
+							
+						localStorage.setItem('members', JSON.stringify(members));								
+							
+						$('#preloader .progress .bar').css({ width : '100%'});	
+								
+						document.location = "#/dashboard"; 
+						
+					});
+					
+					
+		
 		    }
 		    
 			},
 			function(err, results)
 			{
 				// TODO: perform some checks
-				//console.log('results of parallel calls: ', results);
-				
-				//window.results = results;
-								
-				document.location = "#/dashboard"; 
 			});	
+			
+			
 			
     }
 	], function (err, results)
 	{
 		// TODO: what to do here?
-		console.log('something went wrong with resources call..');   
 	})
+	
+	
 }
 	
 preloader.prototype = {
 
 	constructor: preloader,
-	
-	// TODO: is this needed anymore?
-	initSettings: function()
-	{
-		webpaige.set('config', '{}');
-	},
 
 	// TODO: make this one efficient working
 	setupRanges: function()
-	{				
-		//var trange = {};	
-		
+	{						
 	  var now = parseInt((new Date()).getTime() / 1000);
 	  
 	  var period = {
@@ -220,5 +263,6 @@ preloader.prototype = {
 		  }
 	  }
 	},
+	
 }
 preloader.$inject = ['$scope'];

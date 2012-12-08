@@ -1,41 +1,5 @@
 'use strict';
 
-// checklist of calls
-var calls = {
-
-  login: {
-    status: true,
-    content: {}
-  },
-    
-  resources: {
-    status: true,
-    content: {}
-  },
-  
-  contacts: {
-    status: true,
-    content: {}
-  },
-  
-  messages: {
-    status: true,
-    content: {}
-  },
-    
-  network: {
-    status: true,
-    content: {},
-    traverse: {}
-  },
-
-  parent: {
-    status: true,
-    content: {},
-    traverse: {}
-  }
-  
-}
 
 // where is my host
 //var host = 'http://localhost:9000/ns_knrm';
@@ -76,13 +40,9 @@ var states = {
     }
 }
 
+
 // population density colors for group aggregrated view in timeline
 var density = ['#294929', '#4f824f', '#477547', '#436f43', '#3d673d', '#396039', '#335833', '#305330'];
-
-
-// TODO: change the variable name to more convenient one
-// main object for timeline
-var data = [];
 
 
 // application window variable container for processed data
@@ -112,23 +72,4 @@ window.app = {
 	
 	timeline: []
 }
-
-
-// general ajax sttings for ask back-end
-$.ajaxSetup(
-{
-  contentType: 'application/json',
-  xhrFields: { 
-  	withCredentials: true
-  },
-  beforeSend: function(xhr)
-  {
-  	xhr.setRequestHeader('X-SESSION_ID', session.getSession());
-  }		
-})
-
-
-
-
-
 
