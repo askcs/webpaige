@@ -6,8 +6,6 @@ var preloader = function($scope)
 	this.initSettings();	
 	this.setupRanges();
 	
-	//debugger;
-	
 	async.waterfall([
     
     function(callback)
@@ -148,7 +146,7 @@ var preloader = function($scope)
 			{
 				//console.log('results of parallel calls: ', results);
 				
-				localStorage.setItem('app', window.app);
+				//localStorage.setItem('appie', window.appie);
 				
 				document.location = "#/dashboard"; 
 			});	
@@ -182,11 +180,14 @@ preloader.prototype = {
 		  end: Date.today().add({ days: 5 })
 	  }
 	  
-	  window.app['ranges'] = {
+	  var ranges = {
 		  period: period,
 		  reset: period
 	  }
 	  
+	  window.app['ranges'] = ranges;
+	  
+	  webpaige.config('ranges', ranges);	
 	  
 	  
 /*
