@@ -1,5 +1,6 @@
 'use strict';
 
+// checklist of calls
 var calls = {
 
   login: {
@@ -35,11 +36,13 @@ var calls = {
   }
   
 }
-	
+
+// where is my host
 //var host = 'http://localhost:9000/ns_knrm';
 var host = 'http://3rc2.ask-services.appspot.com/ns_knrm';
 
 
+// let's define some states
 var states = {
     "com.ask-cs.State.Available": {
         "className": "state-available",
@@ -73,33 +76,45 @@ var states = {
     }
 }
 
-
+// population density colors for group aggregrated view in timeline
 var density = ['#294929', '#4f824f', '#477547', '#436f43', '#3d673d', '#396039', '#335833', '#305330'];
 
 
+// TODO: change the variable name to more convenient one
+// main object for timeline
 var data = [];
 
+
+// application window variable container for processed data
 window.app = {};
 
-var app = {};
 
-window.app.user = {
+// let's define thenstructure of it
+//var app = {};
+
+window.app = {
+	calls: {},
+	
 	resources: {},
-	questions: [],
+	messages: [],
 	groups: [],
 	parent: [],
 	contacts: [],
-	slots: {
-		seperated: [],
-		combined: []
-	}
+	slots: {},
+	wishes: {},
+	aggs: {},
+	
+	networks: {},
+	
+	members: [],
+	
+	settings: {},
+	
+	timeline: []
 }
 
-window.app.members = {}
 
-window.app.networks = {}
-
-	
+// general ajax sttings for ask back-end
 $.ajaxSetup(
 {
   contentType: 'application/json',

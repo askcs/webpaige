@@ -2,8 +2,11 @@
 /* Preloader controller */
 
 var preloader = function($scope)
-{	
+{
+	// TODO: is this needed anymore?
 	this.initSettings();	
+	
+	// setup ranges 
 	this.setupRanges();
 	
 	async.waterfall([
@@ -17,24 +20,33 @@ var preloader = function($scope)
 			.success(
 			function(user)
 			{
-	
-				window.app['resources'] = user;
+				// deploy resources in dom
+				window.app.resources = user;
 			
+				// cache resources in localStorage
 				localStorage.setItem('resources', JSON.stringify(user));
+				
+				// inform user
 				$('#preloader .progress .bar').css({ width : '20%'});	
-				$('#preloader span').text('Resources loaded');		
-								      
+				$('#preloader span').text('Resources loaded');
+				
+				// keep track of resource call
+				window.app.calls = {};	
+				window.app.calls['resources'] = true;
+				
     		callback(null, user);
 			})
 			.fail(function()
 			{
+				window.app.calls['resources'] = false;	
 			})
     },
     
     function(user, callback)
     {
     	async.series({
-		    
+		   
+/*
 		    contacts: function(callback)
 		    {
 	        setTimeout(function()
@@ -49,19 +61,24 @@ var preloader = function($scope)
 						function(data)
 						{		
 						
-							window.app['contacts'] = data;
+							window.app.contacts = data;
 							
 							localStorage.setItem('contacts', data);
+							
 							$('#preloader .progress .bar').css({ width : '40%'});	
-							$('#preloader span').text('Contacts loaded');		
+							$('#preloader span').text('Contacts loaded');
+							
+							window.app.calls['contacts'] = true;		
 							
 			    		callback(null, 'done');
 						})
 						.fail(function()
 						{
+							window.app.calls['contacts'] = false;
 						})
 	        }, 100);
 		    },
+*/
 		    
 		    messages: function(callback)
 		    {
@@ -75,16 +92,20 @@ var preloader = function($scope)
 						function(data)
 						{	
 						
-							window.app['messages'] = data;
+							window.app.messages = data;
 						
 							localStorage.setItem('messages', JSON.stringify(data));
+							
 							$('#preloader .progress .bar').css({ width : '60%'});	
 							$('#preloader span').text('Messages loaded');		
+							
+							window.app.calls['messages'] = true;
 									
 			    		callback(null, 'done');
 						})
 						.fail(function()
 						{
+							window.app.calls['messages'] = false;
 						})
 	        }, 200);
 		    },
@@ -101,16 +122,20 @@ var preloader = function($scope)
 						function(data)
 						{	
 						
-							window.app['groups'] = data;			
+							window.app.groups = data;			
 						
 							localStorage.setItem('groups', JSON.stringify(data));
+								
+							window.app.calls['network'] = true;	
+							
 							$('#preloader .progress .bar').css({ width : '80%'});	
 							$('#preloader span').text('Groups loaded');	
 								
 			    		callback(null, 'done');
 						})
 						.fail(function()
-						{
+						{			
+							window.app.calls['network'] = true;	
 						})
 	        }, 300);
 		    },
@@ -127,16 +152,20 @@ var preloader = function($scope)
 						function(data)
 						{			
 						
-							window.app['parent'] = data;
+							window.app.parent = data;
 						
 							localStorage.setItem('parent', JSON.stringify(data));
+							
 							$('#preloader .progress .bar').css({ width : '100%'});	
-							$('#preloader span').text('Groups loaded');		
+							$('#preloader span').text('Groups loaded');
+							
+							window.app.calls['parent'] = true;		
 							
 			    		callback(null, 'done');
 						})
 						.fail(function()
 						{
+							window.app.calls['parent'] = true;
 						})
 	        }, 400);
 		    }
@@ -144,32 +173,36 @@ var preloader = function($scope)
 			},
 			function(err, results)
 			{
+				// TODO: perform some checks
 				//console.log('results of parallel calls: ', results);
 				
-				//localStorage.setItem('appie', window.appie);
-				
+				//window.results = results;
+								
 				document.location = "#/dashboard"; 
 			});	
 			
     }
 	], function (err, results)
 	{
+		// TODO: what to do here?
 		console.log('something went wrong with resources call..');   
-	});
+	})
 }
 	
 preloader.prototype = {
 
 	constructor: preloader,
 	
+	// TODO: is this needed anymore?
 	initSettings: function()
 	{
 		webpaige.set('config', '{}');
 	},
 
+	// TODO: make this one efficient working
 	setupRanges: function()
 	{				
-/* 		var trange = {};	 */
+		//var trange = {};	
 		
 	  var now = parseInt((new Date()).getTime() / 1000);
 	  
@@ -180,30 +213,12 @@ preloader.prototype = {
 		  end: Date.today().add({ days: 5 })
 	  }
 	  
-	  var ranges = {
-		  period: period,
-		  reset: period
+	  window.app.settings = { 
+	  	ranges: {
+			  period: period,
+			  reset: period
+		  }
 	  }
-	  
-	  window.app['ranges'] = ranges;
-	  
-	  webpaige.config('ranges', ranges);	
-	  
-	  
-/*
-	  trange.bstart = (now - 86400 * 7 * 1);
-	  trange.bend = (now + 86400 * 7 * 1);					
-		
-	  trange.start = new Date();
-	  trange.start = Date.today().add({ days: -5 });
-	  trange.end = new Date();
-	  trange.end = Date.today().add({ days: 5 });
-*/
-	  
-/*
-	  webpaige.config('trange', trange);	
-	  webpaige.config('treset', trange);
-*/
-	}
+	},
 }
 preloader.$inject = ['$scope'];

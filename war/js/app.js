@@ -24,6 +24,7 @@ function app($scope)
 	//var user = {};
 	
 	$scope.username = ' Cengiz ';
+	// $scope.username = window.app.resources.name;
 
 	var session = new ask.session(relogin);
 	

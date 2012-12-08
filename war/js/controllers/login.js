@@ -6,6 +6,7 @@ $(document).ready(function()
  	if (login != null)
  	{
 	  $('#username').val(login.user);
+	  $('#password').val(login.pass);
 	  $('#remember').attr('checked', login.remember);
  	};
  	
@@ -41,7 +42,7 @@ $(document).ready(function()
 	    return false;
 	  }
 	  
-	  loginAsk(user.toLowerCase(), MD5(pass), r);
+	  loginAsk(user.toLowerCase(), pass, r);
   });
 	
 });
@@ -76,6 +77,7 @@ function loginAsk2(user, pass, r)
       {
       	var login = {};
       	login.user = user;
+      	login.password = user;
       	login.remember = r;
       	webpaige.set('login', JSON.stringify(login));
       }
@@ -164,47 +166,6 @@ function loginAsk2(user, pass, r)
 
 
 
-
-
-var calls = {
-
-  login: {
-    status: true,
-    content: {}
-  },
-    
-  resources: {
-    status: true,
-    content: {}
-  },
-  
-  contacts: {
-    status: true,
-    content: {}
-  },
-  
-  messages: {
-    status: true,
-    content: {}
-  },
-    
-  network: {
-    status: true,
-    content: {},
-    traverse: {}
-  },
-
-  parent: {
-    status: true,
-    content: {},
-    traverse: {}
-  }
-  
-}
-
-
-
-
 // todos
 // 1. register calls to be made in a call check list
 // 2. build cache
@@ -217,14 +178,14 @@ var calls = {
 
 function loginAsk(user, pass, r)
 {
-	webpaige.set('config', '{}');
+	//webpaige.set('config', '{}');
 	
 	//var host = 'http://localhost:9000/ns_knrm';
 	var host = 'http://3rc2.ask-services.appspot.com/ns_knrm';
 	
   $.ajax(
 	{
-		url: host + '/login?uuid=' + user + '&pass=' + pass,
+		url: host + '/login?uuid=' + user + '&pass=' + MD5(pass),
     contentType: 'application/json',
     xhrFields: { 
     	withCredentials: true
@@ -233,7 +194,7 @@ function loginAsk(user, pass, r)
 	.success(
 	function(data)
 	{
-    saveUser(user, r);
+    saveUser(user, pass, r);
     saveCookie(data);
 		document.location = "index.html#/preloader";
 	})
@@ -417,12 +378,13 @@ function saveCookie(data)
 
 
 
-function saveUser(user, r)
+function saveUser(user, pass, r)
 {
 	if (r != null)
 	{
 		webpaige.set('login', JSON.stringify({
 	  	user: user,
+	  	pass: pass,
 	  	remember: r
 		}));
 	}
