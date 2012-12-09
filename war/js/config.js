@@ -46,10 +46,18 @@ var density = ['#294929', '#4f824f', '#477547', '#436f43', '#3d673d', '#396039',
 
 
 // determine divisions
+/*
 var divisions = [
 	'knrm.StateGroup.BeschikbaarNoord',
 	'knrm.StateGroup.BeschikbaarZuid',
 ]
+*/
+var divisions = [
+	'knrm.StateGroup.BeschikbaarNoord',
+	'knrm.StateGroup.BeschikbaarZuid',
+]
+// for testing
+var divisions_ = []
 
 
 // application window variable container for processed data

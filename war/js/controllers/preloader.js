@@ -73,52 +73,97 @@ var preloader = function($scope)
 							
 							$('#preloader .progress .bar').css({ width : '40%'});	
 							
-	    		
+							
+							// map the divisions
+							var params = [];
+							if (divisions.length > 0)
+							{
+								$.each(divisions, function(index, value)
+								{
+									var param = '&stateGroup=' + value;
+									params.push(param);
+								})
+							}
+							params.unshift(null);
+							
+							
 							// magic of loading group members
 							// by producing an array of functional objects
 							var groups = {},
 							tmp = {},
-							aggs = {};
+							aggs = {},
+							key,
+							stateGroup,
+							ikey;
 						
+							// here run the loop for stateGroups
+							
 							$.each(window.app.groups, function (index, group)
 							{
-								tmp[group.uuid] = function(callback, index)
+							
+								aggs[group.uuid] = {};
+								
+								for (var i in params)
 								{
-									setTimeout(function()
-									{
 									
-										$('#preloader span').text('Loading group timeline of \'' + group.name + '\'..');
-										
-									  $.ajax(
+									if (params[i])
+									{
+										var key = params[i].substr(12);
+										var stateGroup = params[i];
+									}
+									else
+									{
+										var key = 'default';
+										var stateGroup = '';
+									}
+									
+									//console.log('outside', 'param', params[i], 'key', key, 'stateGroup', stateGroup);
+									
+									ikey = group.uuid + "_" + key;
+									
+									tmp[ikey] = function(callback, index)
+									{
+										setTimeout(function()
 										{
-											url: host + '/calc_planning/' 
-																+ group.uuid 
-																+ '?start=' 
-																+ window.app.settings.ranges.period.bstart 
-																+ '&end=' 
-																+ window.app.settings.ranges.period.bend
-										})
-										.success(
-										function(data)
-										{			
 										
-											//localStorage.setItem(group.uuid, JSON.stringify(data));
+											$('#preloader span').text('Loading aggregrated timeline of \'' + group.name + '\'..');
 											
-											//window.app.calls[group.uuid] = true;	
 											
-											aggs[group.uuid] = data;
+									
+											console.log('inside', 'param', params[i], 'key', key, 'stateGroup', stateGroup, eval(key));
 											
-							    		callback(null, true);
-										})
-										.fail(function()
-										{
-											//window.app.calls[group.uuid] = false;	
-										}) 
-						
-									}, (index * 100) + 100) 
-								}					
-								$.extend(groups, tmp)
+										  $.ajax(
+											{
+												url: host + '/calc_planning/' 
+																	+ group.uuid 
+																	+ '?start=' 
+																	+ window.app.settings.ranges.period.bstart 
+																	+ '&end=' 
+																	+ window.app.settings.ranges.period.bend
+																	+ stateGroup
+											})
+											.success(
+											function(data)
+											{			
+												
+												aggs[group.uuid][key] = data;
+												
+								    		callback(null, true);
+											})
+											.fail(function()
+											{
+												//window.app.calls[group.uuid] = false;	
+											}) 
+							
+										}, (index * 100) + 100) 
+									}													
+									$.extend(groups, tmp)
+								
+								}
+								
 							})
+							
+							//console.log(groups);
 							
 							async.series(groups,
 							function(err, results)
@@ -219,6 +264,9 @@ var preloader = function($scope)
 						// by producing an array of functional objects
 						var members = {},
 						tmp = {};
+						
+						// TODO: here or later should be checked
+						// if the user already in the list ?
 					
 						$.each(window.app.groups, function (index, group)
 						{
@@ -227,7 +275,7 @@ var preloader = function($scope)
 								setTimeout(function()
 								{
 									
-									$('#preloader span').text('Loading \'' + group.name + '\'..');
+									$('#preloader span').text('Loading members of \'' + group.name + '\'..');
 		    	
 								  $.ajax(
 									{
@@ -284,46 +332,76 @@ var preloader = function($scope)
 							// by producing an array of functional objects
 							var members = {},
 							tmp = {},
-							slots = {};
+							slots = {},
+							key,
+							itype,
+							ikey,
+							params = ['&type=both'];
+							
+							params.unshift(null);
+							
+							//console.log('params: ', params);
 			
 							$.each(window.app.members, function (index, member)
 							{
-								tmp[member.uuid] = function(callback, index)
+							
+								slots[member.uuid] = {};
+							
+								$.each(params, function(index, param)
 								{
-									setTimeout(function()
+									if (param != null)
 									{
-										
-										$('#preloader span').text('Loading timeslots of \'' + member.name + '\'..');
-										
-									  $.ajax(
+										key = param.substr(6);
+										itype = param;
+									}
+									else {
+										key = 'default';
+										itype = '';
+									}
+									
+									ikey = member.uuid + "_" + key;
+							
+									tmp[ikey] = function(callback, index)
+									{
+										setTimeout(function()
 										{
-											url: host + '/askatars/' 
-																+ member.uuid 
-																+ '/slots?start=' 
-																+ window.app.settings.ranges.period.bstart 
-																+ '&end=' 
-																+ window.app.settings.ranges.period.bend
-										})
-										.success(
-										function(data)
-										{			
-											//console.log(member.uuid, data);
 											
-											slots[member.uuid] = data;
+											$('#preloader span').text('Loading timeslots of \'' + member.name + '\'..');
 											
-							    		callback(null, true);
-										})
-										.fail(function()
-										{
-										}) 
-					
-									}, (index * 100) + 100) 
-								}					
-								$.extend(members, tmp)
+										  $.ajax(
+											{
+												url: host + '/askatars/' 
+																	+ member.uuid 
+																	+ '/slots?start=' 
+																	+ window.app.settings.ranges.period.bstart 
+																	+ '&end=' 
+																	+ window.app.settings.ranges.period.bend
+																	+ itype
+											})
+											.success(
+											function(data)
+											{			
+												//console.log(member.uuid, data);
+												
+												slots[member.uuid][key] = data;
+												
+								    		callback(null, true);
+											})
+											.fail(function()
+											{
+											}) 
+						
+										}, (index * 100) + 100) 
+									}					
+									$.extend(members, tmp)
+								
+								})
 		
 							})
 							
-							async.parallel(members,
+							console.log(members);
+							
+							async.series(members,
 							function(err, results)
 							{			
 							
@@ -342,8 +420,6 @@ var preloader = function($scope)
 								document.location = "#/dashboard"; 
 								
 							})
-						
-									
 							
 							
 						})
