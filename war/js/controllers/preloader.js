@@ -72,8 +72,66 @@ var preloader = function($scope)
 							window.app.calls['network'] = true;	
 							
 							$('#preloader .progress .bar').css({ width : '40%'});	
+							
+	    		
+							// magic of loading group members
+							// by producing an array of functional objects
+							var groups = {},
+							tmp = {},
+							aggs = {};
+						
+							$.each(window.app.groups, function (index, group)
+							{
+								tmp[group.uuid] = function(callback, index)
+								{
+									setTimeout(function()
+									{
+									
+										$('#preloader span').text('Loading group timeline of \'' + group.name + '\'..');
+										
+									  $.ajax(
+										{
+											url: host + '/calc_planning/' 
+																+ group.uuid 
+																+ '?start=' 
+																+ window.app.settings.ranges.period.bstart 
+																+ '&end=' 
+																+ window.app.settings.ranges.period.bend
+										})
+										.success(
+										function(data)
+										{			
+										
+											//localStorage.setItem(group.uuid, JSON.stringify(data));
+											
+											//window.app.calls[group.uuid] = true;	
+											
+											aggs[group.uuid] = data;
+											
+							    		callback(null, true);
+										})
+										.fail(function()
+										{
+											//window.app.calls[group.uuid] = false;	
+										}) 
+						
+									}, (index * 100) + 100) 
+								}					
+								$.extend(groups, tmp)
+							})
+							
+							async.series(groups,
+							function(err, results)
+							{
 								
-			    		callback(null, 'done');
+								window.app.aggs = aggs;
+								
+								localStorage.setItem('aggs', JSON.stringify(aggs));			
+								
+								callback(null, 'done');
+													
+							});	
+					
 						})
 						.fail(function()
 						{			
@@ -153,73 +211,146 @@ var preloader = function($scope)
 		    members: function(callback)
 		    {
 		    	$('#preloader span').text('Loading members..');
+	        
+	        setTimeout(function()
+	        {
 		    		
-					// magic of loading group members
-					// by producing an array of functional objects
-					var members = {},
-					tmp = {};
-				
-					$.each(window.app.groups, function (index, group)
-					{
-						tmp[group.uuid] = function(callback, index)
-						{
-							setTimeout(function()
-							{
-							  $.ajax(
-								{
-									url: host + '/network/' + group.uuid + '/members?fields=[role]',
-								})
-								.success(
-								function(data)
-								{			
-								
-									localStorage.setItem(group.uuid, JSON.stringify(data));
-									
-									window.app.calls[group.uuid] = true;	
-									
-					    		callback(null, true);
-								})
-								.fail(function()
-								{
-									window.app.calls[group.uuid] = false;	
-								}) 
-				
-							}, (index * 100) + 100) 
-						}					
-						$.extend(members, tmp)
-					})
+						// magic of loading group members
+						// by producing an array of functional objects
+						var members = {},
+						tmp = {};
 					
-					async.series(members,
-					function(err, results)
-					{			
-						// process unique members
-						var members = {};
-						$.each(window.app.groups, function(index, group)
+						$.each(window.app.groups, function (index, group)
 						{
-							var groupList = JSON.parse(localStorage.getItem(group.uuid));
-							
-							if (groupList.length > 0 || 
-									groupList != null ||
-									groupList != undefined)
+							tmp[group.uuid] = function(callback, index)
 							{
-								$.each(groupList, function(index, member)
+								setTimeout(function()
 								{
-									members[member.uuid] = member;
-								})
-							}
+									
+									$('#preloader span').text('Loading \'' + group.name + '\'..');
+		    	
+								  $.ajax(
+									{
+										url: host + '/network/' + group.uuid + '/members?fields=[role]',
+									})
+									.success(
+									function(data)
+									{			
+									
+										localStorage.setItem(group.uuid, JSON.stringify(data));
+										
+										window.app.calls[group.uuid] = true;	
+										
+						    		callback(null, true);
+									})
+									.fail(function()
+									{
+										window.app.calls[group.uuid] = false;	
+									}) 
+					
+								}, (index * 100) + 100) 
+							}					
+							$.extend(members, tmp)
+						})
+						
+						async.series(members,
+						function(err, results)
+						{			
+							// process unique members
+							var members = {};
+							$.each(window.app.groups, function(index, group)
+							{
+								var groupList = JSON.parse(localStorage.getItem(group.uuid));
+								
+								if (groupList.length > 0 || 
+										groupList != null ||
+										groupList != undefined)
+								{
+									$.each(groupList, function(index, member)
+									{
+										members[member.uuid] = member;
+									})
+								}
+								
+							})
+							window.app.members = members;		
+								
+							localStorage.setItem('members', JSON.stringify(members));								
+								
+							$('#preloader .progress .bar').css({ width : '90%'});	
+							
+							
+							// magic of loading group members
+							// by producing an array of functional objects
+							var members = {},
+							tmp = {},
+							slots = {};
+			
+							$.each(window.app.members, function (index, member)
+							{
+								tmp[member.uuid] = function(callback, index)
+								{
+									setTimeout(function()
+									{
+										
+										$('#preloader span').text('Loading timeslots of \'' + member.name + '\'..');
+										
+									  $.ajax(
+										{
+											url: host + '/askatars/' 
+																+ member.uuid 
+																+ '/slots?start=' 
+																+ window.app.settings.ranges.period.bstart 
+																+ '&end=' 
+																+ window.app.settings.ranges.period.bend
+										})
+										.success(
+										function(data)
+										{			
+											//console.log(member.uuid, data);
+											
+											slots[member.uuid] = data;
+											
+							    		callback(null, true);
+										})
+										.fail(function()
+										{
+										}) 
+					
+									}, (index * 100) + 100) 
+								}					
+								$.extend(members, tmp)
+		
+							})
+							
+							async.parallel(members,
+							function(err, results)
+							{			
+							
+								//console.log('slots', slots);
+								
+								window.app.slots = slots;
+								
+								// TODO: come back to here later
+								localStorage.setItem('slots', JSON.stringify(slots));				
+									
+								$('#preloader .progress .bar').css({ width : '100%'});	
+								
+								
+								// console.log('slots:', window.app.slots);
+							
+								document.location = "#/dashboard"; 
+								
+							})
+						
+									
+							
 							
 						})
-						window.app.members = members;		
-							
-						localStorage.setItem('members', JSON.stringify(members));								
-							
-						$('#preloader .progress .bar').css({ width : '100%'});	
-								
-						document.location = "#/dashboard"; 
-						
-					});					
+					
+	        }, 400);				
 		
-		    }
+		    },
 		    
 			},
 			function(err, results)
