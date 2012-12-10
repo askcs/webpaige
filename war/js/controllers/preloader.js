@@ -177,6 +177,74 @@ var preloader = function($scope)
 		    },
 		    
 		    
+    	
+		    wishes: function(callback)
+		    {
+					$('#preloader span').text('Loading wishes..');
+					$('#preloader .progress .bar').css({ width : '50%'});
+							
+					// magic of loading group members
+					// by producing an array of functional objects
+					var wishes = {},
+					tmp = {},
+					key;
+					
+					// loop the groups	
+		    	$.each(window.app.groups, function (index, group)
+		    	{													
+						(function(index)
+						{
+							tmp[group.uuid] = function(callback, index)
+							{
+								setTimeout(function()
+								{
+									$('#preloader span').text('Loading wishes.. (' + group.name + ')');
+									
+								  $.ajax(
+									{
+										url: host + '/network/' 
+															+ group.uuid 
+															+ '/wish?start=' 
+															+ window.app.settings.ranges.period.bstart 
+															+ '&end=' 
+															+ window.app.settings.ranges.period.bend
+									})
+									.success(
+									function(data)
+									{		
+										wishes[group.uuid] = data;
+										
+										//window.app.calls[group.uuid][key] = true;	
+										
+						    		callback(null, true);
+									})
+									.fail(function()
+									{
+										//window.app.calls[group.uuid][key] = false;	
+									}) 
+					
+								}, (index * 100) + 100) 
+							}													
+							$.extend(wishes, tmp)
+							
+						}) (index)
+		    	})
+		    	
+		    	console.log('wishes:', wishes);
+							
+					async.series(wishes,
+					function(err, results)
+					{
+						window.app.wishes = wishes;
+						
+						localStorage.setItem('wishes', JSON.stringify(wishes));			
+						
+						callback(null, 'done');
+					});	
+	        
+		    },
+		    
+		    
 		    
 		    parent: function(callback)
 		    {
