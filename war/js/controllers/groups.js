@@ -52,7 +52,7 @@ var groups = function($scope)
   });
 }
 
-groups.prototype = {
+groups.prototype = $.extend({}, app.prototype, {
 
 	constructor: groups,
 	
@@ -711,5 +711,6 @@ groups.prototype = {
 	  }
 	}
 
-}
+})
+
 groups.$inject = ['$scope'];

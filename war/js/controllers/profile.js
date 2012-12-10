@@ -8,8 +8,8 @@ var profile = function($scope)
   this.renderProfile();
   this.addEventListeners();
 }
-	
-profile.prototype = {
+
+profile.prototype = $.extend({}, app.prototype, {
 
 	constructor: profile,
 	
@@ -195,5 +195,6 @@ profile.prototype = {
 
 
 
-}
+})
+
 profile.$inject = ['$scope'];

@@ -40,7 +40,7 @@ var messages = function($scope)
   this.loadMessages();
 }
 
-messages.prototype = {
+messages.prototype = $.extend({}, app.prototype, {
 
 	constructor: messages,
 	
@@ -518,6 +518,6 @@ messages.prototype = {
 
 
 
-}
+})
 
 messages.$inject = ['$scope'];

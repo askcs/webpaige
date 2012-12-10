@@ -34,7 +34,8 @@ angular.module('webPaige', ['webPaige.filters', 'webPaige.services', 'webPaige.d
 
 
 // App controller
-function app($scope)
+//function app($scope)
+var app = function($scope)
 {
 
 	//var user = {};
@@ -53,4 +54,16 @@ function app($scope)
 	//webpaige = new webpaige();
 		
 }
+
+app.prototype = {
+
+	constructor: app,
+	
+	testing: function()
+	{
+		console.log('here I am working from app');
+	}
+	
+}
+
 app.$inject = ['$scope'];

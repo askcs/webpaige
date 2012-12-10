@@ -3,12 +3,9 @@
 
 var preloader = function($scope)
 {	
-	// setup ranges 
 	this.setupRanges();
 	
 	async.waterfall([
-	
-	
     
     function(callback)
     {
@@ -21,35 +18,26 @@ var preloader = function($scope)
 			.success(
 			function(user)
 			{
-				// deploy resources in dom
 				window.app.resources = user;
 			
-				// cache resources in localStorage
 				localStorage.setItem('resources', JSON.stringify(user));
 				
-				// inform user
 				$('#preloader .progress .bar').css({ width : '20%'});	
 				
-				// keep track of resource call
 				window.app.calls = {};	
-				window.app.calls['resources'] = true;
+				window.app.calls.resources = true;
 				
     		callback(null, user);
 			})
 			.fail(function()
 			{
-				window.app.calls['resources'] = false;	
+				window.app.calls.resources = false;	
 			})
     },
-    
-    
-    
     
     function(user, callback)
     {
     	async.series({
-		    
-		    
     	
 		    network: function(callback)
 		    {
@@ -64,17 +52,14 @@ var preloader = function($scope)
 						.success(
 						function(data)
 						{	
-						
 							window.app.groups = data;			
 						
 							localStorage.setItem('groups', JSON.stringify(data));
 								
-							window.app.calls['network'] = true;	
+							window.app.calls.network = true;	
 							
 							$('#preloader .progress .bar').css({ width : '40%'});	
 							
-							
-							// map the divisions
 							var params = [];
 							if (divisions.length > 0)
 							{
@@ -86,9 +71,6 @@ var preloader = function($scope)
 							}
 							params.unshift(null);
 							
-							
-							// magic of loading group members
-							// by producing an array of functional objects
 							var groups = {},
 							tmp = {},
 							aggs = {},
@@ -96,11 +78,11 @@ var preloader = function($scope)
 							stateGroup,
 							ikey;
 						
-							// run the groups loop
 							$.each(window.app.groups, function (index, group)
 							{
 								aggs[group.uuid] = {};
-								// here run the loop for stateGroups
+								window.app.calls.aggs = {};
+								
 								$.each(params, function(index, param)
 								{
 									if (param)
@@ -139,13 +121,13 @@ var preloader = function($scope)
 												{		
 													aggs[group.uuid][key] = data;
 													
-													//window.app.calls[group.uuid][key] = true;	
+													window.app.calls.aggs[group.uuid] = true;	
 													
 									    		callback(null, true);
 												})
 												.fail(function()
 												{
-													//window.app.calls[group.uuid][key] = false;	
+													window.app.calls.aggs[group.uuid] = false;	
 												}) 
 								
 											}, (index * 100) + 100) 
@@ -171,27 +153,23 @@ var preloader = function($scope)
 						})
 						.fail(function()
 						{			
-							window.app.calls['network'] = true;	
+							window.app.calls.network = false;	
 						})
 	        }, 100);
 		    },
-		    
-		    
     	
 		    wishes: function(callback)
 		    {
 					$('#preloader span').text('Loading wishes..');
 					$('#preloader .progress .bar').css({ width : '50%'});
 							
-					// magic of loading group members
-					// by producing an array of functional objects
 					var wishes = {},
 					tmp = {},
 					key;
 					
-					// loop the groups	
 		    	$.each(window.app.groups, function (index, group)
-		    	{													
+		    	{
+		    		window.app.calls.wishes = {};													
 						(function(index)
 						{
 							tmp[group.uuid] = function(callback, index)
@@ -214,13 +192,13 @@ var preloader = function($scope)
 									{		
 										wishes[group.uuid] = data;
 										
-										//window.app.calls[group.uuid][key] = true;	
+										window.app.calls.wishes[group.uuid] = true;	
 										
 						    		callback(null, true);
 									})
 									.fail(function()
 									{
-										//window.app.calls[group.uuid][key] = false;	
+										window.app.calls.wishes[group.uuid] = false;	
 									}) 
 					
 								}, (index * 100) + 100) 
@@ -228,9 +206,8 @@ var preloader = function($scope)
 							$.extend(wishes, tmp)
 							
 						}) (index)
+						
 		    	})
-		    	
-		    	console.log('wishes:', wishes);
 							
 					async.series(wishes,
 					function(err, results)
@@ -244,8 +221,6 @@ var preloader = function($scope)
 	        
 		    },
 		    
-		    
-		    
 		    parent: function(callback)
 		    {
 	        setTimeout(function()
@@ -258,26 +233,24 @@ var preloader = function($scope)
 						})
 						.success(
 						function(data)
-						{			
-						
+						{		
 							window.app.parent = data;
 						
 							localStorage.setItem('parent', JSON.stringify(data));
 							
 							$('#preloader .progress .bar').css({ width : '60%'});	
 							
-							window.app.calls['parent'] = true;		
+							window.app.calls.parent = true;		
 							
 			    		callback(null, 'done');
 						})
 						.fail(function()
 						{
-							window.app.calls['parent'] = true;
+							window.app.calls.parent = false;
 						})
 	        }, 200);
+	        
 		    },
-    	
-    	
 		    
 		    messages: function(callback)
 		    {
@@ -292,25 +265,22 @@ var preloader = function($scope)
 						.success(
 						function(data)
 						{	
-						
 							window.app.messages = data;
 						
 							localStorage.setItem('messages', JSON.stringify(data));
 							
 							$('#preloader .progress .bar').css({ width : '80%'});		
 							
-							window.app.calls['messages'] = true;
+							window.app.calls.messages = true;
 									
 			    		callback(null, 'done');
 						})
 						.fail(function()
 						{
-							window.app.calls['messages'] = false;
+							window.app.calls.messages = false;
 						})
 	        }, 300);
 		    },
-		    
-		    
 		    
 		    members: function(callback)
 		    {
@@ -318,9 +288,6 @@ var preloader = function($scope)
 	        
 	        setTimeout(function()
 	        {
-		    		
-						// magic of loading group members
-						// by producing an array of functional objects
 						var members = {},
 						tmp = {};
 						
@@ -329,41 +296,44 @@ var preloader = function($scope)
 					
 						$.each(window.app.groups, function (index, group)
 						{
-							tmp[group.uuid] = function(callback, index)
+							window.app.calls.members = {};
+							(function(index)
 							{
-								setTimeout(function()
+								tmp[group.uuid] = function(callback, index)
 								{
-									
-									$('#preloader span').text('Loading members of \'' + group.name + '\'..');
-		    	
-								  $.ajax(
+									setTimeout(function()
 									{
-										url: host + '/network/' + group.uuid + '/members?fields=[role]',
-									})
-									.success(
-									function(data)
-									{			
-									
-										localStorage.setItem(group.uuid, JSON.stringify(data));
-										
-										window.app.calls[group.uuid] = true;	
-										
-						    		callback(null, true);
-									})
-									.fail(function()
-									{
-										window.app.calls[group.uuid] = false;	
-									}) 
-					
-								}, (index * 100) + 100) 
-							}					
-							$.extend(members, tmp)
+										$('#preloader span').text('Loading members.. (' + group.name + ')');
+			    	
+									  $.ajax(
+										{
+											url: host + '/network/' + group.uuid + '/members?fields=[role]',
+										})
+										.success(
+										function(data)
+										{			
+											localStorage.setItem(group.uuid, JSON.stringify(data));
+											
+											window.app.calls.members[group.uuid] = true;	
+											
+							    		callback(null, true);
+										})
+										.fail(function()
+										{
+											window.app.calls.members[group.uuid] = false;	
+										}) 
+						
+									}, (index * 100) + 100) 
+								}					
+								$.extend(members, tmp)
+								
+							}) (index)
+							
 						})
 						
 						async.series(members,
 						function(err, results)
 						{			
-							// process unique members
 							var members = {};
 							$.each(window.app.groups, function(index, group)
 							{
@@ -378,17 +348,14 @@ var preloader = function($scope)
 										members[member.uuid] = member;
 									})
 								}
-								
 							})
+							
 							window.app.members = members;		
 								
 							localStorage.setItem('members', JSON.stringify(members));								
 								
 							$('#preloader .progress .bar').css({ width : '90%'});	
 							
-							
-							// magic of loading group members
-							// by producing an array of functional objects
 							var members = {},
 							tmp = {},
 							slots = {},
@@ -399,11 +366,11 @@ var preloader = function($scope)
 							
 							params.unshift(null);
 							
-							// run members loop
 							$.each(window.app.members, function (index, member)
 							{
 								slots[member.uuid] = {};
-								// run row types heres
+								window.app.calls.slots = {};
+								
 								$.each(params, function(index, param)
 								{
 									if (param)
@@ -441,10 +408,13 @@ var preloader = function($scope)
 												{																
 													slots[member.uuid][key] = data;
 													
+													window.app.calls.slots[member.uuid] = true;	
+													
 									    		callback(null, true);
 												})
 												.fail(function()
 												{
+													window.app.calls.slots[member.uuid] = false;	
 												}) 
 							
 											}, (index * 100) + 100) 
@@ -462,18 +432,13 @@ var preloader = function($scope)
 							{			
 								window.app.slots = slots;
 								
-								// TODO: come back to here later
 								localStorage.setItem('slots', JSON.stringify(slots));				
 									
-								$('#preloader .progress .bar').css({ width : '100%'});	
-								
-								
-								// console.log('slots:', window.app.slots);
+								$('#preloader .progress .bar').css({ width : '100%'});
 							
 								document.location = "#/dashboard"; 
 								
 							})
-							
 							
 						})
 					
@@ -487,14 +452,11 @@ var preloader = function($scope)
 				// TODO: perform some checks
 			});	
 			
-			
-			
     }
 	], function (err, results)
 	{
 		// TODO: what to do here?
 	})
-	
 	
 }
 	
@@ -520,7 +482,7 @@ preloader.prototype = {
 			  reset: period
 		  }
 	  }
-	},
+	}
 	
 }
 preloader.$inject = ['$scope'];
