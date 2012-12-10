@@ -96,20 +96,17 @@ var preloader = function($scope)
 							stateGroup,
 							ikey;
 						
-							// here run the loop for stateGroups
-							
+							// run the groups loop
 							$.each(window.app.groups, function (index, group)
 							{
-							
 								aggs[group.uuid] = {};
-								
-								for (var i in params)
+								// here run the loop for stateGroups
+								$.each(params, function(index, param)
 								{
-									
-									if (params[i])
+									if (param)
 									{
-										var key = params[i].substr(12);
-										var stateGroup = params[i];
+										var key = param.substr(12);
+										var stateGroup = param;
 									}
 									else
 									{
@@ -117,64 +114,58 @@ var preloader = function($scope)
 										var stateGroup = '';
 									}
 									
-									//console.log('outside', 'param', params[i], 'key', key, 'stateGroup', stateGroup);
-									
 									ikey = group.uuid + "_" + key;
 									
-									tmp[ikey] = function(callback, index)
+									(function(ikey, stateGroup, key, index)
 									{
-										setTimeout(function()
+										tmp[ikey] = function(callback, index)
 										{
-										
-											$('#preloader span').text('Loading aggregrated timeline of \'' + group.name + '\'..');
-											
-											
-									
-											console.log('inside', 'param', params[i], 'key', key, 'stateGroup', stateGroup, eval(key));
-											
-										  $.ajax(
+											setTimeout(function()
 											{
-												url: host + '/calc_planning/' 
-																	+ group.uuid 
-																	+ '?start=' 
-																	+ window.app.settings.ranges.period.bstart 
-																	+ '&end=' 
-																	+ window.app.settings.ranges.period.bend
-																	+ stateGroup
-											})
-											.success(
-											function(data)
-											{			
+												$('#preloader span').text('Loading aggregrated timelines.. (' + group.name + ')');
 												
-												aggs[group.uuid][key] = data;
-												
-								    		callback(null, true);
-											})
-											.fail(function()
-											{
-												//window.app.calls[group.uuid] = false;	
-											}) 
-							
-										}, (index * 100) + 100) 
-									}													
-									$.extend(groups, tmp)
+											  $.ajax(
+												{
+													url: host + '/calc_planning/' 
+																		+ group.uuid 
+																		+ '?start=' 
+																		+ window.app.settings.ranges.period.bstart 
+																		+ '&end=' 
+																		+ window.app.settings.ranges.period.bend
+																		+ stateGroup
+												})
+												.success(
+												function(data)
+												{		
+													aggs[group.uuid][key] = data;
+													
+													//window.app.calls[group.uuid][key] = true;	
+													
+									    		callback(null, true);
+												})
+												.fail(function()
+												{
+													//window.app.calls[group.uuid][key] = false;	
+												}) 
 								
-								}
+											}, (index * 100) + 100) 
+										}													
+										$.extend(groups, tmp)
+										
+									}) (ikey, stateGroup, key, index)
+									
+								})
 								
 							})
-							
-							//console.log(groups);
 							
 							async.series(groups,
 							function(err, results)
 							{
-								
 								window.app.aggs = aggs;
 								
 								localStorage.setItem('aggs', JSON.stringify(aggs));			
 								
 								callback(null, 'done');
-													
 							});	
 					
 						})
@@ -340,16 +331,14 @@ var preloader = function($scope)
 							
 							params.unshift(null);
 							
-							//console.log('params: ', params);
-			
+							// run members loop
 							$.each(window.app.members, function (index, member)
 							{
-							
 								slots[member.uuid] = {};
-							
+								// run row types heres
 								$.each(params, function(index, param)
 								{
-									if (param != null)
+									if (param)
 									{
 										key = param.substr(6);
 										itype = param;
@@ -360,53 +349,49 @@ var preloader = function($scope)
 									}
 									
 									ikey = member.uuid + "_" + key;
-							
-									tmp[ikey] = function(callback, index)
+									
+									(function(ikey, itype, key, index)
 									{
-										setTimeout(function()
+										tmp[ikey] = function(callback, index)
 										{
-											
-											$('#preloader span').text('Loading timeslots of \'' + member.name + '\'..');
-											
-										  $.ajax(
+											setTimeout(function()
 											{
-												url: host + '/askatars/' 
-																	+ member.uuid 
-																	+ '/slots?start=' 
-																	+ window.app.settings.ranges.period.bstart 
-																	+ '&end=' 
-																	+ window.app.settings.ranges.period.bend
-																	+ itype
-											})
-											.success(
-											function(data)
-											{			
-												//console.log(member.uuid, data);
+												$('#preloader span').text('Loading timeslots.. (' + member.name + ')');
 												
-												slots[member.uuid][key] = data;
-												
-								    		callback(null, true);
-											})
-											.fail(function()
-											{
-											}) 
-						
-										}, (index * 100) + 100) 
-									}					
-									$.extend(members, tmp)
+											  $.ajax(
+												{
+													url: host + '/askatars/' 
+																		+ member.uuid 
+																		+ '/slots?start=' 
+																		+ window.app.settings.ranges.period.bstart 
+																		+ '&end=' 
+																		+ window.app.settings.ranges.period.bend
+																		+ itype
+												})
+												.success(
+												function(data)
+												{																
+													slots[member.uuid][key] = data;
+													
+									    		callback(null, true);
+												})
+												.fail(function()
+												{
+												}) 
+							
+											}, (index * 100) + 100) 
+										}					
+										$.extend(members, tmp)
+										
+									}) (ikey, itype, key, index)
 								
 								})
 		
 							})
 							
-							console.log(members);
-							
 							async.series(members,
 							function(err, results)
 							{			
-							
-								//console.log('slots', slots);
-								
 								window.app.slots = slots;
 								
 								// TODO: come back to here later
