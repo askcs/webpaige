@@ -151,7 +151,7 @@ function searchMembers(value)
     type: 'post',
     path: '/network/searchPaigeUser',
     json: body,
-    loading: 'Zoeken naar contacten in uw netwerk..',
+    loading: 'Zoeken naar gebruikers in uw netwerk..',
     label: 'searched',
     session: session.getSession()
   },
@@ -168,7 +168,7 @@ function loadMembers(name, uuid)
   webpaige.con(
   options = {
     path: '/network/' + uuid + '/members?fields=[role]',
-    loading: 'Contacten worden opgeladen..',
+    loading: 'Gebruikers worden opgeladen..',
     label: 'members',
     session: session.getSession()
   },
@@ -191,8 +191,8 @@ function addMembers()
       options = {
         type: 'post',
         path: '/network/' + uuid + '/members/' + this.value,
-        loading: 'Nieuwe contact(en) toegevoegd..',
-        label: 'Contact(en) is toegevoegd.',
+        loading: 'Nieuwe gebruiker(s) toegevoegd..',
+        label: 'Gebruiker(s) is toegevoegd.',
         session: session.getSession()
       },
 
@@ -253,8 +253,8 @@ function saveNewMember()
       path: '/node/' + uuid + '/role',
       //json: tags,
       json: role,
-      loading: 'Contact informatie wordt opgeslagen..',
-      message: 'Contact informatie is opgeslagen.',
+      loading: 'Gebruiker informatie wordt opgeslagen..',
+      message: 'Gebruiker informatie is opgeslagen.',
       label: 'member',
       session: session.getSession()
     },
@@ -270,8 +270,8 @@ function saveNewMember()
       options = {
         type: 'post',
         path: '/network/' + guuids[h] + '/members/' + uuid,
-        loading: 'Contact wordt toegevoegd in groep..',
-        label: 'Contact is toegevoegd in groep.',
+        loading: 'Gebruiker wordt toegevoegd in groep..',
+        label: 'Gebruiker is toegevoegd in groep.',
         session: session.getSession()
       },
 
@@ -290,8 +290,8 @@ function editMemberModalInit(guuid, uuid)
   webpaige.con(
   options = {
     path: '/node/' + uuid + '/resource',
-    loading: 'Contact informatie wordt opgehaald..',
-    message: 'Contact informatie is opgeladen.',
+    loading: 'Gebruiker informatie wordt opgehaald..',
+    message: 'Gebruiker informatie is opgeladen.',
     label: 'resource',
     session: session.getSession()
   },
@@ -382,7 +382,7 @@ function editMember(uuid)
         type: 'delete',
         path: '/network/' + data[e].uuid + '/members/' + uuid,
         loading: 'Gebruiker groepen aangepast..',
-        label: 'Contact is verwijderd.',
+        label: 'Gebruiker is verwijderd.',
         session: session.getSession()
       },
 
@@ -404,8 +404,8 @@ function editMember(uuid)
               options = {
                 type: 'post',
                 path: '/network/' + groups[i] + '/members/' + uuid,
-                loading: 'Contact wordt toegevoegd in groep..',
-                label: 'Contact is toegevoegd in groep.',
+                loading: 'Gebruiker wordt toegevoegd in groep..',
+                label: 'Gebruiker is toegevoegd in groep.',
                 session: session.getSession()
               },
 
@@ -434,8 +434,8 @@ function editMember(uuid)
     type: 'put',
     path: '/node/' + uuid + '/resource',
     json: tags,
-    loading: 'Contact informatie wordt opgeslagen..',
-    message: 'Contact informatie is gewijzigd.',
+    loading: 'Gebruiker informatie wordt opgeslagen..',
+    message: 'Gebruiker informatie is gewijzigd.',
     label: 'member',
     session: session.getSession()
   },
@@ -459,8 +459,8 @@ function editMember(uuid)
               options = {
                 type: 'post',
                 path: '/network/' + groups[i] + '/members/' + uuid,
-                loading: 'Contact wordt toegevoegd in groep..',
-                label: 'Contact is toegevoegd in groep.',
+                loading: 'Gebruiker wordt toegevoegd in groep..',
+                label: 'Gebruiker is toegevoegd in groep.',
                 session: session.getSession()
               },
 
@@ -477,8 +477,8 @@ function editMember(uuid)
       type: 'put',
       path: '/node/' + uuid + '/role',
       json: role,
-      loading: 'Contact role wordt opgeslagen..',
-      message: 'Contact role is gewijzigd.',
+      loading: 'Gebruiker role wordt opgeslagen..',
+      message: 'Gebruiker role is gewijzigd.',
       label: 'member',
       session: session.getSession()
     },
@@ -489,7 +489,7 @@ function editMember(uuid)
       webpaige.con(
       options = {
         path: '/network/' + guuid,
-        loading: 'Contacten worden opgeladen..',
+        loading: 'Gebruikers worden opgeladen..',
         label: 'members',
         session: session.getSession()
       },
@@ -521,8 +521,8 @@ function removeMember(name, uuid, memberUuid)
   options = {
     type: 'delete',
     path: '/network/' + uuid + '/members/' + memberUuid,
-    loading: 'Contact wordt verwijderd..',
-    label: 'Contact is verwijderd.',
+    loading: 'Gebruiker wordt verwijderd..',
+    label: 'Gebruiker is verwijderd.',
     session: session.getSession()
   },
 
@@ -586,7 +586,7 @@ function renderMembers(json, name, uuid)
   $(btnGroup).append('<a onClick="editGroupModalInit(\'' + name + '\', \'' + uuid + '\')" class="btn"><i class="icon-edit"></i> Bewerk groep</a>');
   $(btnGroup).append('<a onClick="deleteGroup(\'' + uuid + '\')" class="btn"><i class="icon-remove"></i> Verwijder groep</a>');
   $(live).append(btnGroup);
-  $(live).append('<div class="btn-group btn-hanging"><a data-toggle="modal" href="#newMember" onclick="addNewMember()" class="btn"><i class="icon-user"></i> Nieuwe contact</a></div>');
+  $(live).append('<div class="btn-group btn-hanging"><a data-toggle="modal" href="#newMember" onclick="addNewMember()" class="btn"><i class="icon-user"></i> Nieuwe gebruiker</a></div>');
   var title = $('<h2><span class="entypo eMedium">,</span> ' + name + '</h2><br>');
   $(live).append(title);
   if (data && data.length > 0)
@@ -631,13 +631,13 @@ function renderMembers(json, name, uuid)
       tbodytr.append('<td><a class="btn btn-mini" onclick="removeMember(\'' + name + '\', \'' + uuid + '\', \'' + data[n].uuid + '\');"><i class="icon-trash"></i> Verwijder</a></td>');
       tbody.append(tbodytr);
     }
-    tbody.append('<tr><td colspan="6"><a class="btn" onclick="removeMembers(\'' + name + '\', \'' + uuid + '\');"><i class="icon-trash"></i> Verwijder geselecteerde contacten</a></td></tr>');
+    tbody.append('<tr><td colspan="6"><a class="btn" onclick="removeMembers(\'' + name + '\', \'' + uuid + '\');"><i class="icon-trash"></i> Verwijder geselecteerde gebruikers</a></td></tr>');
     table.append(tbody);
     $(live).append(table);
   }
   else
   {
-    $(live).append('<p>Er zijn geen contacten.</p>');
+    $(live).append('<p>Er zijn geen gebruikers.</p>');
   }
   $('#content').html(live);
 }

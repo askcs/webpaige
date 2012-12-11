@@ -127,7 +127,7 @@ function addWish(from, till, wish, group)
     type: 'put',
     path: '/network/' + group + '/wish',
     json: body,
-    loading: 'Nieuwe beschiekbaarheid wordt toegevoegd..',
+    loading: 'Nieuwe beschikbaarheid wordt toegevoegd..',
     session: session.getSession()
   },
 
@@ -175,7 +175,7 @@ function getWishes()
       webpaige.con(
       options = {
         path: '/network/' + data[i].uuid + '/wish?' + range,
-        loading: data[i].name + ' beschiekbaarheid wordt opgeladen..',
+        loading: data[i].name + ' beschikbaarheid wordt opgeladen..',
         label: data[i].name,
         session: session.getSession()
       },
