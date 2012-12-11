@@ -46,12 +46,6 @@ var density = ['#294929', '#4f824f', '#477547', '#436f43', '#3d673d', '#396039',
 
 
 // determine divisions
-/*
-var divisions = [
-	'knrm.StateGroup.BeschikbaarNoord',
-	'knrm.StateGroup.BeschikbaarZuid',
-]
-*/
 var divisions = [
 	'knrm.StateGroup.BeschikbaarNoord',
 	'knrm.StateGroup.BeschikbaarZuid',
@@ -88,3 +82,16 @@ window.app = {
 	timeline: []
 }
 
+
+// general ajax sttings for ask back-end
+$.ajaxSetup(
+{
+  contentType: 'application/json',
+  xhrFields: { 
+  	withCredentials: true
+  },
+  beforeSend: function(xhr)
+  {
+  	xhr.setRequestHeader('X-SESSION_ID', session.getSession());
+  }		
+})

@@ -1,21 +1,6 @@
 'use strict';
 
 
-// general ajax sttings for ask back-end
-$.ajaxSetup(
-{
-  contentType: 'application/json',
-  xhrFields: { 
-  	withCredentials: true
-  },
-  beforeSend: function(xhr)
-  {
-  	xhr.setRequestHeader('X-SESSION_ID', session.getSession());
-  }		
-})
-
-
-
 // Declare app level module which depends on filters, and services
 angular.module('webPaige', ['webPaige.filters', 'webPaige.services', 'webPaige.directives']).
   config(['$routeProvider',function($routeProvider)
@@ -37,11 +22,8 @@ angular.module('webPaige', ['webPaige.filters', 'webPaige.services', 'webPaige.d
 //function app($scope)
 var app = function($scope)
 {
-
-	//var user = {};
 	
 	$scope.username = ' Cengiz ';
-	// $scope.username = window.app.resources.name;
 
 	var session = new ask.session(relogin);
 	
@@ -58,11 +40,6 @@ var app = function($scope)
 app.prototype = {
 
 	constructor: app,
-	
-	testing: function()
-	{
-		console.log('here I am working from app');
-	}
 	
 }
 

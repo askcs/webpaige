@@ -1,6 +1,7 @@
 'use strict';
 /* Controllers */
 
+/*
 function appCtrl($scope)
 {
 
@@ -15,3 +16,4 @@ function appCtrl($scope)
 		
 }
 appCtrl.$inject = ['$scope'];
+*/
