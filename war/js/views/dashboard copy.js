@@ -14,6 +14,9 @@ $(document).ready(function ()
   webpaige.config('gname', gname);
   
   
+  //preloader();
+  
+  
   renderGroupsList();
   
   var dtoptions = {
@@ -40,13 +43,10 @@ $(document).ready(function ()
   $('#eplanningTill').datetimepicker(dtoptions);
   
   
-  preloader();
-  
-/*
+
   timelineInit();
   groupTimelineInit(guuid, gname);
   membersTimelineInit(guuid);
-*/
   
   
   $('#groupAvBtn').addClass('active');
@@ -59,13 +59,9 @@ $(document).ready(function ()
     webpaige.config('guuid', guuid);
     webpaige.config('gname', gname);
     
-    preloader();
-    
-/*
     timelineInit();
     groupTimelineInit(guuid, gname);
     membersTimelineInit(guuid);
-*/
     
   });
   $('#newEventBtn').click(function ()
@@ -102,14 +98,10 @@ $(document).ready(function ()
   }
   webpaige.i18n(local);
   
-  
-  webpaige.config('division', 'default');
-  
   $("#divisions").change(function ()
   {
     var division = $(this).find(":selected").val();
-    webpaige.config('division', division);
-    //timeline2.draw(webpaige.config(division));
+    timeline2.draw(webpaige.config(division));
   });
   
   
@@ -125,13 +117,9 @@ function reRenderMembers(mid, mname)
   
   $('#mytimeline .timeline-frame').append('<span id="tmlabel" class="label label-info" style="position:absolute; top:10px; left:10px; z-index:2000;">' + mname + '</span>');
   
-  preloader(mid);
-  
-/*
   timelineInit(mid);
   groupTimelineInit(guuid, gname);
   membersTimelineInit(guuid, mid);	
-*/
   
 }
   
@@ -753,11 +741,6 @@ function editSlotModal(efrom, etill, ereoc, evalue, user)
 // Timeline slots
 function getSlots(uuid)
 {
-
-	$('#mytimeline').hide();
-	$('#groupTimelineHolder').hide();
-	$('#memberTimeline').hide();
-	
 	if (uuid == undefined)
 	{
   	var resources = JSON.parse(webpaige.get('resources'));
@@ -767,7 +750,6 @@ function getSlots(uuid)
 	{
   	var xid = uuid;		
 	}
-	
   webpaige.con(
   options = {
     path: '/askatars/' + xid + '/slots?' + window.range,
@@ -780,11 +762,13 @@ function getSlots(uuid)
   {
     var slots = data;
     
+/*
     timeline_data = new google.visualization.DataTable();
     timeline_data.addColumn('datetime', 'start');
     timeline_data.addColumn('datetime', 'end');
     timeline_data.addColumn('string', 'content');
     timeline_data.addColumn('string', 'group');
+*/
     
     
     for (var i in slots)
@@ -801,11 +785,45 @@ function getSlots(uuid)
 	      var xgroup = '<span style="display:none;">a</span>Planning<span style="display:none;">' + xid + ':false</span>';
       }
       
+			timeline_data.push({
+				start: new Date(slots[i].start * 1000),
+				end: new Date(slots[i].end * 1000),
+				group: xgroup,
+				content: content,
+				editable: true
+			})	
+      
+			timeline_data.push({
+				start: new Date(0),
+				end: new Date(0),
+				group: '<span style="display:none;">b</span>Wekelijkse terugkerend<span style="display:none;">' + xid + ':true</span>',
+				content: 'available',
+				editable: true
+			})	
+      
+			timeline_data.push({
+				start: new Date(0),
+				end: new Date(0),
+				group: '<span style="display:none;">a</span>Planning<span style="display:none;">' + xid + ':false</span>',
+				content: 'available',
+				editable: true
+			})	
+      
+			/*
       timeline_data.addRow([
       new Date(slots[i].start * 1000),
       new Date(slots[i].end * 1000),
       content,
       slots[i].recursive ? '<span style="display:none;">b</span>Wekelijkse terugkerend<span style="display:none;">' + xid + ':true</span>' : '<span style="display:none;">a</span>Planning<span style="display:none;">' + xid + ':false</span>']);
+      */
+   
+      /*
+      timeline_data.addRow([
+      new Date(slots[i].start * 1000),
+      new Date(slots[i].end * 1000),
+      content,
+      '<span style="display:none;">c</span>Combined<span style="display:none;">' + resources.uuid + ':false</span>']);
+      */
       
     }
     
@@ -828,6 +846,8 @@ function getSlots(uuid)
       'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2 // about three months in milliseconds,
     };
     timeline.draw(timeline_data, options);
+    
+/*
     timeline.addItem(
     {
       'start': new Date(0),
@@ -842,9 +862,18 @@ function getSlots(uuid)
       'content': 'available',
       'group': '<span style="display:none;">a</span>Planning<span style="display:none;">' + xid + ':false</span>'
     });
+*/
+    
+    /*
+    timeline.addItem(
+    {
+      'start': new Date(0),
+      'end': new Date(0),
+      'content': 'available',
+      'group': '<span style="display:none;">c</span>Combined<span style="display:none;">' + resources.uuid + ':false</span>'
+    });
+    */
 
-	
-    $('#mytimeline').show();
 
 
 
@@ -1153,7 +1182,6 @@ function getGroupSlots(guuid, gname)
     google.visualization.events.addListener(timeline2, 'rangechange', onRangeChanged2);
     timeline2.draw(ndata, options);
     
-	$('#groupTimelineHolder').show();
     
     
     
@@ -1199,31 +1227,123 @@ function getMemberSlots(uuid, mid)
     label: uuid,
     session: session.getSession()
   },
-
   function (data, label)
   {
   	if (data.length > 0)
   	{
 	  	$('#memberTimeline').show();
+	  	
+	  	/*
 	    timeline_data3 = new google.visualization.DataTable();
 	    timeline_data3.addColumn('datetime', 'start');
 	    timeline_data3.addColumn('datetime', 'end');
 	    timeline_data3.addColumn('string', 'content');
 	    timeline_data3.addColumn('string', 'group');
+	    */
+			
+			window.timeline_data3 = [];
+							
+							
+							
+	    
 	    var members = data;
 	    for (var i in members)
 	    {
-	    	renderMemberSlots(members[i], members[i].name, false);
-/*
-	    	if (mid == members[i].uuid)
-	    	{
-		    	renderMemberSlots(members[i], members[i].name, true);
-	    	}
-	    	else
-	    	{
-		    	renderMemberSlots(members[i], members[i].name, false)
-	    	}
-*/
+	    	//renderMemberSlots(members[i], members[i].name, false);
+	    	
+	    	var member = members[i];
+	    	var name = members[i].name;
+	    	var mid = false;
+	    	
+				if (mid != false)
+				{
+				  webpaige.con(
+				  options = {
+				    path: '/askatars/' + member.uuid + '/slots?' + window.range,
+				    loading: 'De beschiebaarheiden worden opgeladen..',
+				    label: member,
+				    session: session.getSession()
+				  },
+				  function (data, label)
+				  {
+				    var slots = data;
+			      
+						window.timeline_data3.push({
+							start: new Date(0),
+							end: new Date(0),
+							group: '<span style="display:none;">' + label.uuid + ':true:false</span>' + label.name + ' <div style="display:none;">b</div>(W)',
+							content: 'available'
+						})	
+			      
+						window.timeline_data3.push({
+							start: new Date(0),
+							end: new Date(0),
+							group: '<span style="display:none;">' + label.uuid + ':false:false</span>' + label.name + ' <div style="display:none;">a</div>(P)',
+							content: 'available'
+						})	
+				    
+				    for (var i in slots)
+				    {
+				      var content = colorState(slots[i].text);
+				      
+				      if (slots[i].recursive) {
+					      var group = '<span style="display:none;">' + label.uuid + ':true:false</span>' + label.name + ' <div style="display:none;">b</div>(W)';
+				      } else {
+				      	var group = '<span style="display:none;">' + label.uuid + ':false:false</span>' + label.name + ' <div style="display:none;">a</div>(P)';
+				      }
+				    
+							window.timeline_data3.push({
+								start: new Date(slots[i].start * 1000),
+								end: new Date(slots[i].end * 1000),
+								group: group,
+								content: content
+							})	
+				      
+				    }
+				  });
+				}
+				else
+				{
+				  webpaige.con(
+				  options = {
+				    path: '/askatars/' + member.uuid + '/slots?' + window.range + '&type=both',
+				    loading: 'De beschiebaarheiden worden opgeladen..',
+				    label: member,
+				    session: session.getSession()
+				  },
+				  function (data, label)
+				  {
+				  	if (webpaige.getRole() == 1)
+				  	{
+					  	var header = '<a onclick="reRenderMembers(\'' + label.uuid + '\', \'' + label.name + '\');">' + label.name + '</a>';
+				  	}
+				  	else
+				  	{
+					  	var header = label.name;
+				  	}
+				    var slots = data;
+				    
+						window.timeline_data3.push({
+							start: new Date(0),
+							end: new Date(0),
+							group: '<span style="display:none;">' + label.name + ':false:true</span>' + header + '<div style="display:none;">c</div>',
+							content: 'available'
+						})	
+				    
+				    for (var i in slots)
+				    {
+				      var content = colorState(slots[i].text);
+				    
+							window.timeline_data3.push({
+								start: new Date(slots[i].start * 1000),
+								end: new Date(slots[i].end * 1000),
+								group: '<span style="display:none;">' + label.name + ':false:true</span>' + header + '<div style="display:none;">c</div>',
+								content: content
+							})
+				      
+				    }
+				  });
+				}
 	    }
 	    var trange = webpaige.config('trange');
 	    if (webpaige.getRole() == 1)
@@ -1254,7 +1374,7 @@ function getMemberSlots(uuid, mid)
 	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2 // about three months in milliseconds,
 	      };
 	    }
-	    timeline3.draw(timeline_data3, options);
+	    timeline3.draw(window.timeline_data3, options);
 	    
 	    
 	    
@@ -1302,6 +1422,9 @@ function renderMemberSlots(member, name, mid)
 	  function (data, label)
 	  {
 	    var slots = data;
+	    
+	    
+/*
 	    timeline3.addItem(
 	    {
 	      'start': new Date(0),
@@ -1309,6 +1432,8 @@ function renderMemberSlots(member, name, mid)
 	      'content': 'available',
 	      'group': '<span style="display:none;">' + label.uuid + ':true:false</span>' + label.name + ' <div style="display:none;">b</div>(W)'
 	    });
+	    
+	    
 	    timeline3.addItem(
 	    {
 	      'start': new Date(0),
@@ -1316,16 +1441,50 @@ function renderMemberSlots(member, name, mid)
 	      'content': 'available',
 	      'group': '<span style="display:none;">' + label.uuid + ':false:false</span>' + label.name + ' <div style="display:none;">a</div>(P)'
 	    });
+*/
+      
+			window.timeline_data3.push({
+				start: new Date(0),
+				end: new Date(0),
+				group: '<span style="display:none;">' + label.uuid + ':true:false</span>' + label.name + ' <div style="display:none;">b</div>(W)',
+				content: 'available'
+			})	
+      
+			window.timeline_data3.push({
+				start: new Date(0),
+				end: new Date(0),
+				group: '<span style="display:none;">' + label.uuid + ':false:false</span>' + label.name + ' <div style="display:none;">a</div>(P)',
+				content: 'available'
+			})	
+	    
 	    for (var i in slots)
 	    {
 	      var content = colorState(slots[i].text);
+	      
+	      if (slots[i].recursive) {
+		      var group = '<span style="display:none;">' + label.uuid + ':true:false</span>' + label.name + ' <div style="display:none;">b</div>(W)';
+	      } else {
+	      	var group = '<span style="display:none;">' + label.uuid + ':false:false</span>' + label.name + ' <div style="display:none;">a</div>(P)';
+	      }
+	    
+				window.timeline_data3.push({
+					start: new Date(slots[i].start * 1000),
+					end: new Date(slots[i].end * 1000),
+					group: group,
+					content: content
+				})	
+	      
+/*
 	      timeline3.addItem(
 	      {
 	        'start': new Date(slots[i].start * 1000),
 	        'end': new Date(slots[i].end * 1000),
 	        'content': content,
-	        'group': slots[i].recursive ? '<span style="display:none;">' + label.uuid + ':true:false</span>' + label.name + ' <div style="display:none;">b</div>(W)' : '<span style="display:none;">' + label.uuid + ':false:false</span>' + label.name + ' <div style="display:none;">a</div>(P)'
+	        'group': 
 	      });
+*/
+	      
+	      
 	    }
 	  });
 	}
@@ -1349,6 +1508,8 @@ function renderMemberSlots(member, name, mid)
 		  	var header = label.name;
 	  	}
 	    var slots = data;
+	    
+/*
 	    timeline3.addItem(
 	    {
 	      'start': new Date(0),
@@ -1356,9 +1517,27 @@ function renderMemberSlots(member, name, mid)
 	      'content': 'available',
 	      'group': '<span style="display:none;">' + label.name + ':false:true</span>' + header + '<div style="display:none;">c</div>'
 	    });
+*/
+	    
+			window.timeline_data3.push({
+				start: new Date(0),
+				end: new Date(0),
+				group: '<span style="display:none;">' + label.name + ':false:true</span>' + header + '<div style="display:none;">c</div>',
+				content: 'available'
+			})	
+	    
 	    for (var i in slots)
 	    {
 	      var content = colorState(slots[i].text);
+	    
+				window.timeline_data3.push({
+					start: new Date(slots[i].start * 1000),
+					end: new Date(slots[i].end * 1000),
+					group: '<span style="display:none;">' + label.name + ':false:true</span>' + header + '<div style="display:none;">c</div>',
+					content: content
+				})
+	      
+/*
 	      timeline3.addItem(
 	      {
 	        'start': new Date(slots[i].start * 1000),
@@ -1366,6 +1545,8 @@ function renderMemberSlots(member, name, mid)
 	        'content': content,
 	        'group': '<span style="display:none;">' + label.name + ':false:true</span>' + header + '<div style="display:none;">c</div>'
 	      });
+*/
+	      
 	    }
 	  });
 	}
@@ -1613,14 +1794,9 @@ function timelineMoveRight()
 
 /* Preloader controller */
 
-var preloader = function(uuid)
+var preloader = function()
 {	
 
-	$('#loading span').show();
-	$('#mytimeline').hide();
-	
-	console.log('loading began');
-	
 	$.ajaxSetup(
 	{
 	  contentType: 'application/json',
@@ -1641,25 +1817,13 @@ var preloader = function(uuid)
 		timeline: []
 	}
 
-  //var now = parseInt((new Date()).getTime() / 1000);
+  var now = parseInt((new Date()).getTime() / 1000);
   
-  var trange = webpaige.config('trange');
-  //window.range = 'start=' + trange.bstart + '&end=' + trange.bend;
-  
-  /*
   var period = {
 	  bstart: (now - 86400 * 7 * 1),
 	  bend: (now + 86400 * 7 * 1),
 	  start: Date.today().add({ days: -5 }),
 	  end: Date.today().add({ days: 5 })
-  }
-  */
-  
-  var period = {
-	  bstart: trange.bstart,
-	  bend: trange.bend,
-	  start: trange.start,
-	  end: trange.end
   }
   
   window.app.settings = { 
@@ -1673,32 +1837,21 @@ var preloader = function(uuid)
 		'knrm.StateGroup.BeschikbaarNoord',
 		'knrm.StateGroup.BeschikbaarZuid',
 	]
-
-	if (uuid == undefined)
-	{
-  	var resources = JSON.parse(webpaige.get('resources'));
-  	var xid = resources.uuid;
-	}
-	else
-	{
-  	var xid = uuid;		
-	}
 	
-	var sequence1 = [
+	async.series({
     
-    function(callback)
+    userslots: function(callback)
     {
       setTimeout(function()
       {
-      
-      	$('#timeloading span').text('Loading user slots..');
-      	
-				//var resources = JSON.parse(webpaige.get('resources'));
+				var resources = JSON.parse(webpaige.get('resources'));
+				
 				var userslots = [];
+				
 			  $.ajax(
 				{
 					url: host + '/askatars/' 
-										+ xid 
+										+ resources.uuid 
 										+ '/slots?start=' 
 										+ window.app.settings.ranges.period.bstart 
 										+ '&end=' 
@@ -1708,19 +1861,18 @@ var preloader = function(uuid)
 				function(data)
 				{																
 					window.app.userslots = data;
-					var res = {'userslots': true}
-	    		callback(null, res);
+					
+	    		callback(null, 'done');
 				})
-      }, 100);	
+			
+      }, 100);				
+
     },
 	
-    function(res, callback)
+    aggs: function(callback)
     {
       setTimeout(function()
       {	
-      
-      	$('#timeloading').text('Loading group agg slots..');
-      	
 				var params = [];
 				if (divisions.length > 0)
 				{
@@ -1731,14 +1883,18 @@ var preloader = function(uuid)
 					})
 				}
 				params.unshift(null);
+				
 				var groups = {},
 				tmp = {},
 				aggs = {},
 				key,
 				stateGroup,
 				ikey;
+				
 				var group = webpaige.config('guuid');
+			
 				aggs[group] = {};
+				
 				$.each(params, function(index, param)
 				{
 					if (param)
@@ -1751,7 +1907,9 @@ var preloader = function(uuid)
 						var key = 'default';
 						var stateGroup = '';
 					}
+					
 					ikey = group + "_" + key;
+					
 					(function(ikey, stateGroup, key, index)
 					{
 						tmp[ikey] = function(callback, index)
@@ -1772,346 +1930,125 @@ var preloader = function(uuid)
 								function(data)
 								{		
 									aggs[group][key] = data;
+									
 					    		callback(null, 'done');
 								})
+				
 							}, (index * 100) + 100) 
 						}													
 						$.extend(groups, tmp)
+						
 					}) (ikey, stateGroup, key, index)
+					
 				})
 					
 				async.series(groups,
 				function(err, results)
 				{
 					window.app.aggs = aggs;	
-					res = {'aggs': true};
-					callback(null, res);
-				});			
+					
+					callback(null, 'done');
+				});	
+							
       }, 200);
-    }];
+    },
     
-    var sequence2 = [
-    function(res, callback)
+    members: function(callback)
     {
       setTimeout(function()
       {
-      
-      	$('#timeloading span').text('Loading members..');
-      	
+				
 				var group = webpaige.config('guuid');
+	    	
 			  $.ajax(
 				{
 					url: host + '/network/' + group + '/members?fields=[role]',
 				})
 				.success(
 				function(data)
-				{	
-					window.app.members = data;
-					res = {'members': true};
-	    		callback(null, res);
+				{		
+					var members = {},
+					tmp = {},
+					slots = {},
+					key,
+					itype,
+					ikey,
+					params = ['&type=both'];
+					
+					params.unshift(null);
+					
+					$.each(data, function (index, member)
+					{
+						slots[member.uuid] = {};
+						
+						$.each(params, function(index, param)
+						{
+							if (param)
+							{
+								key = param.substr(6);
+								itype = param;
+							}
+							else {
+								key = 'default';
+								itype = '';
+							}
+							
+							ikey = member.uuid + "_" + key;
+							
+							(function(ikey, itype, key, index)
+							{
+								tmp[ikey] = function(callback, index)
+								{
+									setTimeout(function()
+									{
+									  $.ajax(
+										{
+											url: host + '/askatars/' 
+																+ member.uuid 
+																+ '/slots?start=' 
+																+ window.app.settings.ranges.period.bstart 
+																+ '&end=' 
+																+ window.app.settings.ranges.period.bend
+																+ itype
+										})
+										.success(
+										function(data)
+										{																
+											slots[member.uuid][key] = data;
+											
+							    		callback(null, 'done');
+										})
+					
+									}, (index * 100) + 100) 
+								}					
+								$.extend(members, tmp)
+								
+							}) (ikey, itype, key, index)
+						
+						})
+
+					})
+					
+					async.series(members,
+					function(err, results)
+					{			
+						window.app.slots = slots;
+						
+						localStorage.setItem('slots', JSON.stringify(slots));	
+						
+					})
+					
+	    		callback(null, 'done');
 	    	})
-      }, 300);	
+			
+      }, 300);				
+
     },
     
-    function(res, callback)
-    {
-      setTimeout(function()
-      {	
-      
-      	$('#timeloading span').text('Loading group member slots..');
-      	
-				var members = {},
-				tmp = {},
-				slots = {},
-				key,
-				itype,
-				ikey,
-				//params = [];
-				params = ['&type=both'];
-				params.unshift(null);
-				
-				$.each(window.app.members, function (index, member)
-				{
-					slots[member.uuid] = {};
-					$.each(params, function(index, param)
-					{
-						if (param)
-						{
-							key = param.substr(6);
-							itype = param;
-						}
-						else {
-							key = 'default';
-							itype = '';
-						}
-						ikey = member.uuid + "_" + key;
-						(function(ikey, itype, key, index)
-						{
-							tmp[ikey] = function(callback, index)
-							{
-								setTimeout(function()
-								{
-								
-									//console.log(member.name);
-									
-								  $.ajax(
-									{
-										url: host + '/askatars/' 
-															+ member.uuid 
-															+ '/slots?start=' 
-															+ window.app.settings.ranges.period.bstart 
-															+ '&end=' 
-															+ window.app.settings.ranges.period.bend
-															+ itype
-									})
-									.success(
-									function(data)
-									{																
-										slots[member.uuid][key] = data;
-						    		callback(null, 'done');
-									})
-								}, (index * 100) + 100) 
-							}					
-							$.extend(members, tmp)
-						}) (ikey, itype, key, index)
-					})
-				})
-				
-				async.series(members,
-				function(err, results)
-				{			
-					window.app.slots = slots;
-					localStorage.setItem('slots', JSON.stringify(slots));	
-					res = {'memberslots': true};
-					callback(null, res);
-				})
-			
-      }, 400);				
-
-    }    
-    
-	];
-	
-	
-	var sequence = sequence1.concat(sequence2);
-	//var sequence = sequence1;
-	
-	
-	async.waterfall(sequence,
+	},
 	function(err, results)
 	{
-		console.log('it is done!');
-      
-    $('#timeloading').hide();
-    $('#mytimeline').show();
-		
-		renderTimeline(xid);
-		
-	})
+		console.log('it is done', results);
+	});	
 	
-}
-
-
-function renderTimeline(xid)
-{
-		
-		var timedata = [];
-		
-		
-		//userslots
-		var userslots = window.app.userslots;
-    for (var i in userslots)
-    {
-      var resources = JSON.parse(webpaige.get('resources'));
-      var content = colorState(userslots[i].text);
-      
-      if (userslots[i].recursive) {
-	      var xgroup = '<span style="display:none;">b</span>Wekelijkse terugkerend<span style="display:none;">' + xid + ':true</span>';
-      }
-      else
-      {
-	      var xgroup = '<span style="display:none;">a</span>Planning<span style="display:none;">' + xid + ':false</span>';
-      }
-			timedata.push({
-				start: new Date(userslots[i].start * 1000),
-				end: new Date(userslots[i].end * 1000),
-				group: xgroup,
-				content: content,
-				editable: true
-			})	
-    }
-      
-		timedata.push({
-			start: new Date(0),
-			end: new Date(0),
-			group: '<span style="display:none;">b</span>Wekelijkse terugkerend<span style="display:none;">' + xid + ':true</span>',
-			content: 'available',
-			editable: true
-		})	
-    
-		timedata.push({
-			start: new Date(0),
-			end: new Date(0),
-			group: '<span style="display:none;">a</span>Planning<span style="display:none;">' + xid + ':false</span>',
-			content: 'available',
-			editable: true
-		})	
-		
-		
-		// agg slots
-	  var guuid = webpaige.config('guuid');
-	  var gname = webpaige.config('gname');
-	  var division = webpaige.config('division');
-	  
-	  switch(division)
-	  {
-		  case 'default':
-		  	var divi = 'default';
-		  break;
-		  case 'north':
-		  	var divi = 'knrm.StateGroup.BeschikbaarNoord';
-		  break;
-		  case 'south':
-		  	var divi = 'knrm.StateGroup.BeschikbaarZuid';
-		  break;
-	  }
-	  
-	  
-	  var density = ['#294929', '#4f824f', '#477547', '#436f43', '#3d673d', '#396039', '#335833', '#305330'];
-	  
-	  
-	  var agg = window.app.aggs;
-		
-		var group = agg[guuid][divi];
-		
-		var maxh = 0;
-		
-		$.each(group, function(index, slot)
-		{
-			if (slot.wish > maxh) maxh = slot.wish;
-		})	
-	
-		$.each(group, function(index, slot)
-		{
-		  var maxNum = maxh;
-		  var num = slot.wish;
-		  var xwish = num;
-		  
-		  // a percentage, with a lower bound on 20%
-		  var height = Math.round(num / maxNum * 80 + 20);
-		  
-		  var minHeight = height;
-		  var style = 'height:' + height + 'px;';
-		  //'title="Minimum aantal benodigden: ' + num + ' personen"><span>' + num + '</span></div>';
-		  var requirement = '<div class="requirement" style="' + style + '" ' + 'title="Minimum aantal benodigden: ' + num + ' personen"></div>';
-		  num = slot.wish + slot.diff;
-		  var xcurrent = num;
-		  
-		  // a percentage, with a lower bound on 20%
-		  height = Math.round(num / maxNum * 80 + 20);
-		  
-		  if (xcurrent < xwish)
-		  {
-		    var color = '#a93232';
-		    //var span = '';
-		  }
-		  else if (xcurrent == xwish)
-		  {
-		    var color = '#e0c100';
-		    //var span = '';
-		  }
-		  else if (xcurrent > xwish)
-		  {
-		  	var color = (num < 0 || num > 7) ? density[0] : density[num];
-		    //var span = '<span class="badge badge-inverse">' + num + '</span>';
-		  }
-		  if (xcurrent > xwish)
-		  {
-		    height = minHeight;
-		  }
-		  style = 'height:' + height + 'px;' + 'background-color: ' + color + ';';
-		  var actual = '<div class="bar" style="' + style + '" ' + ' title="Huidig aantal beschikbaar: ' + num + ' personen"></div>';
-		  //var actual = '<div class="bar" style="' + style + '" ' + ' title="Huidig aantal beschikbaar: ' + num + ' personen">' + span + '</div>';
-		  
-		  timedata.push({
-		    group: gname,
-		    start: Math.round(slot.start * 1000),
-		    end: Math.round(slot.end * 1000),
-		    content: requirement + actual,
-		    className: 'group-aggs',
-				editable: false
-		  });     
-		})
-		
-		
-		// render users
-		var members = window.app.members;
-		
-		$.each(members, function(index, member)
-		{
-		
-			var slots = window.app.slots[member.uuid]['default'];
-			
-			$.each(slots, function(index, slot)
-			{
-			     
-				timedata.push({
-					start: new Date(0),
-					end: new Date(0),
-					group: '<span style="display:none;">' + member.uuid + ':true:false</span>' + member.name + ' <div style="display:none;">b</div>(W)',
-					content: 'available'
-				})	
-		    
-				timedata.push({
-					start: new Date(0),
-					end: new Date(0),
-					group: '<span style="display:none;">' + member.uuid + ':false:false</span>' + member.name + ' <div style="display:none;">a</div>(P)',
-					content: 'available'
-				})	
-		    
-		    for (var i in slots)
-		    {
-		      var content = colorState(slots[i].text);
-		      
-		      if (slots[i].recursive) {
-			      var group = '<span style="display:none;">' + member.uuid + ':true:false</span>' + member.name + ' <div style="display:none;">b</div>(W)';
-		      } else {
-		      	var group = '<span style="display:none;">' + member.uuid + ':false:false</span>' + member.name + ' <div style="display:none;">a</div>(P)';
-		      }
-		    
-					timedata.push({
-						start: new Date(slots[i].start * 1000),
-						end: new Date(slots[i].end * 1000),
-						group: group,
-						content: content
-					})	
-		      
-		    }
-			
-			})
-			
-		})
-		
-		
-		// render timeline
-		var trange = webpaige.config('trange');
-		
-	  var options = {
-	    'axisOnTop': true,
-	    'width': '100%',
-	    'height': 'auto',
-	    'selectable': true,
-	    'editable': true,
-	    'style': 'box',
-	    'groupsWidth': '150px',
-	    'eventMarginAxis': 0,
-      
-      'min': new Date(trange.start), // lower limit of visible range
-      'max': new Date(trange.end), // upper limit of visible range
-      
-	    'intervalMin': 1000 * 60 * 60 * 1,
-	    'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2
-	  };
-	  timeline = new links.Timeline(document.getElementById('mytimeline'));
-	  timeline.draw(timedata, options);  
 }
