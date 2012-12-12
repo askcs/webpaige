@@ -36,7 +36,7 @@
   
   <script src="js/init.js" type="text/javascript"></script>
   <script src="js/i18n/jquery.i18n.properties-min-1.0.9.js" type="text/javascript"></script>
-	<script type="text/javascript" src="js/views/dashboard.js"></script>
+	<script type="text/javascript" src="js/views/exp_dashboard.js"></script>
     
     
 </head>
@@ -219,13 +219,15 @@
 	        </div>
 	        
 	        
-	        <div id="timelines">
-		        <div id="mytimeline"></div>
-		        <div id="groupTimelineHolder">
-		        	<div id="groupTimeline"></div>
-		        </div>
-		        <div id="memberTimeline"></div>
+	        <div id="timeloading">
+	        	<img id="ajaxLoader" alt="Loading" src="img/ajax-loader.gif" style="margin-right:5px; height:20px;">
+	        	<span></span>
 	        </div>
+
+					
+	        
+
+	        <div id="mytimeline"></div>
 	        
 	        
 	        
