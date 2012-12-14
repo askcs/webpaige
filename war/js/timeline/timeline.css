@@ -1,6 +1,5 @@
 /*testing css*/
 
-
 div.timeline-frame {
   border: 1px solid #BEBEBE;
   overflow: hidden;
@@ -217,7 +216,7 @@ div.timeline-event-content {
   /* margin: 5px; */
   white-space: nowrap;
   overflow: hidden;
-  height: 18px;
+  height: 22px;
 }
 
 div.timeline-groups-axis {
@@ -294,24 +293,3 @@ div.timeline-navigation-move-left {
 div.timeline-navigation-move-right {
   /* background: url('img/16/moveright.png') no-repeat center; */
 }
-
-
-
-
-
-
-/*
-#planboard {
-	display: none;
-}
-*/
-
-.group-aggs {
-	height: 120px;
-}
-
-/*
-#loading {
-	
-}
-*/
