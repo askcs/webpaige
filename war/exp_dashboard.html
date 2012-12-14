@@ -20,6 +20,8 @@
   
   <script type="text/javascript" src="js/libs/json2.js"></script>
   <script type="text/javascript" src="js/libs/date.js"></script>
+  
+  <script src="js/libs/async.min.js" type="text/javascript"></script>
 
   <script type="text/javascript" src="http://www.google.com/jsapi"></script>
   <script>google.load("visualization", "1");</script>
@@ -34,7 +36,7 @@
   
   <script src="js/init.js" type="text/javascript"></script>
   <script src="js/i18n/jquery.i18n.properties-min-1.0.9.js" type="text/javascript"></script>
-	<script type="text/javascript" src="js/views/dashboard.js"></script>
+	<script type="text/javascript" src="js/views/exp_dashboard.js"></script>
     
     
 </head>
@@ -46,37 +48,8 @@
     
       <div class="span12 well">
       
-        <form class="form-inline btn-hanging" style="margin-bottom:0px;">
-        	<div class="control-group">
-        		<div class="controls docs-input-sizes">
-        			<select id="divisions">
-	        			<option value="both">Beide Stations</option>
-	        			<option value="north">Station Noord</option>
-	        			<option value="south">Station Zuid</option>
-        			</select>
-        		</div>
-        	</div>
-        </form>
       
-        <form class="form-inline btn-hanging" style="margin-bottom:0px;">
-        	<div class="control-group">
-        		<div class="controls docs-input-sizes">
-        			<select id="groupsList"></select>
-        		</div>
-        	</div>
-        </form>
       
-        <div class="btn-group btn-hanging">
-          <a id="tmlZoomInBtn" class="btn" onClick="timelineZoomIn();"><i class="icon-zoom-in"></i></a>
-          <a id="tmlZoomOutBtn" class="btn" onClick="timelineZoomOut();"><i class="icon-zoom-out"></i></a>
-          <a id="tmlMoveLeftBtn" class="btn" onClick="timelineMoveLeft();"><i class="icon-arrow-left"></i></a>
-          <a id="tmlMoveRightBtn" class="btn" onClick="timelineMoveRight();"><i class="icon-arrow-right"></i></a> 
-          <a id="tmlTodayBtn" class="btn" onClick="goToday();"><span class="dashboard_today"></span></a>  
-        </div>
-        
-        <div class="btn-group btn-hanging">
-          <a id="newEventBtn" class="btn" href="#"><i class="icon-plus-sign"></i> <span class="dashboard_new_availability"></span></a>
-        </div>      
         
         <div class="modal hide" id="newEvent">
           <div class="modal-header">
@@ -179,62 +152,89 @@
           </form>
         </div>
         
-        <h2><span class="entypo eMedium">P</span> <span class="dashboard_planboard"></span></h2>
         
-        <div id="legends">
-        	
-        	<ul>
-        		<li>Personen:</li>
-        		<li>
-        			<div class="square" style="background-color: #4f824f;"></div> Beschikbaar Beide
-        		</li>
-        		<li>
-        			<div class="square" style="border-top:7px solid black; background-color: #4f824f; height: 7px"></div> Beschikbaar Noord
-        		</li>
-        		<li>
-        			<div class="square" style="border-top:7px solid #e08a0c; background-color: #4f824f; height: 7px;"></div> Beschikbaar Zuid
-        		</li>
-        		<li>
-        			<div class="square" style="border-top:7px solid #e0c100; background-color: #4f824f; height: 7px;"></div> Schipper Van Dienst
-        		</li>
-        		<li>
-        			<div class="square" style="background-color: #a93232;"></div> Niet Beschikbaar
-        		</li>
-        		<li>
-        			<div class="square" style="background-color: #65619b;"></div> Niet Bereikt
-        		</li>
-        	</ul><br>
-        	
-        	<ul>
-        		<li>Groepen:</li>
-        		<li>
-        			<div class="square" style="background-color: #415e6b;"></div> Voldoende personen
-        		</li>
-        		<li>
-        			<div class="square" style="background-color: #ba6a24;"></div> Exact aantal personen
-        		</li>
-        		<li>
-        			<div class="square" style="background-color: #a0a0a0;"></div> Onvoldoende personen
-        		</li>
-        	</ul>
-        </div>
+           
         
-	        
-	      <!-- <div id="memberTimelineLoading">Loading member timeline</div> -->
+       
+        
+        
+        
+        <div id="planboard">
+      
+	        <form class="form-inline btn-hanging" style="margin-bottom:0px;">
+	        	<div class="control-group">
+	        		<div class="controls docs-input-sizes">
+	        			<select id="divisions">
+		        			<option value="both">Beide Stations</option>
+		        			<option value="north">Station Noord</option>
+		        			<option value="south">Station Zuid</option>
+	        			</select>
+	        		</div>
+	        	</div>
+	        </form>
 	      
-        <div id="timelines">
+	        <form class="form-inline btn-hanging" style="margin-bottom:0px;">
+	        	<div class="control-group">
+	        		<div class="controls docs-input-sizes">
+	        			<select id="groupsList"></select>
+	        		</div>
+	        	</div>
+	        </form>
+	      
+	        <div class="btn-group btn-hanging">
+	          <a id="tmlZoomInBtn" class="btn" onClick="timelineZoomIn();"><i class="icon-zoom-in"></i></a>
+	          <a id="tmlZoomOutBtn" class="btn" onClick="timelineZoomOut();"><i class="icon-zoom-out"></i></a>
+	          <a id="tmlMoveLeftBtn" class="btn" onClick="timelineMoveLeft();"><i class="icon-arrow-left"></i></a>
+	          <a id="tmlMoveRightBtn" class="btn" onClick="timelineMoveRight();"><i class="icon-arrow-right"></i></a> 
+	          <a id="tmlTodayBtn" class="btn" onClick="goToday();"><span class="dashboard_today"></span></a>  
+	        </div>
+	        
+	        <div class="btn-group btn-hanging">
+	          <a id="newEventBtn" class="btn" href="#"><i class="icon-plus-sign"></i> <span class="dashboard_new_availability"></span></a>
+	        </div>   
         
+	        <h2><span class="entypo eMedium">P</span> <span class="dashboard_planboard"></span></h2>
+	        
+	        <div id="legends">
+	        	<ul>
+	        		<li>
+	        			<div class="square" style="background-color: #4f824f;"></div> Beschikbaar Beide
+	        		</li>
+	        		<li>
+	        			<div class="square" style="background-color: black;"></div> Beschikbaar Noord
+	        		</li>
+	        		<li>
+	        			<div class="square" style="background-color: #e08a0c;"></div> Beschikbaar Zuid
+	        		</li>
+	        		<li>
+	        			<div class="square" style="background-color: #e0c100;"></div> Schipper Van Dienst
+	        		</li>
+	        		<li>
+	        			<div class="square" style="background-color: #a93232;"></div> Niet Beschikbaar
+	        		</li>
+	        		<li>
+	        			<div class="square" style="background-color: #65619b;"></div> Niet Bereikt
+	        		</li>
+	        	</ul>
+	        </div>
+	        
+	        
+	        <div id="timeloading">
+	        	<img id="ajaxLoader" alt="Loading" src="img/ajax-loader.gif" style="margin-right:5px; height:20px;">
+	        	<span></span>
+	        </div>
+
+					
+	        
+
 	        <div id="mytimeline"></div>
 	        
-	        <br><br>
-	        
-	        <div id="groupTimelineHolder">
-	        	<div id="groupTimeline"></div>
-	        </div>
-	        <div id="memberTimeline"></div>
 	        
 	        
         </div>
+        
+        
+        
         
       </div><!--/span-->
       

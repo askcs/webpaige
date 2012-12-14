@@ -405,9 +405,23 @@ function renderMessages(data, type)
       }
       var subject = (data[n].subject == null) ? 'No subject' : data[n].subject;
       tbodytr.append('<td><a onclick="displayMessage(\'' + data[n].uuid + '\', \'' + type + '\');" rel="tooltip" title="' + data[n].question_text + '">' + subject + '</a></td>');
-      var datetime = new Date(data[n].creationTime);
-      datetime = datetime.toString("ddd dd MMM yyyy HH:mm");
-      tbodytr.append('<td>' + datetime + '</td>');
+      
+      
+      
+  	//console.log('1', selDate);
+		  ndate = Math.round(data[n].creationTime);
+		  	//console.log('2', selDate);
+		  ndate = new Date(ndate).toString("dd-M-yyyy HH:mm");
+  
+      //console.log('date: ', data[n].creationTime, ndate);
+      
+      //var datetime = new Date(data[n].creationTime);
+      //datetime = datetime.toString("ddd dd MMM yyyy HH:mm");
+      //datetime = datetime.toString("d-M-yyyy HH:mm");
+      
+      
+      
+      tbodytr.append('<td>' + ndate + '</td>');
       tdbtns = $('<td></td>');
       btngroup = $('<div class="btn-group"></div>');
       if (type == 'inbox')

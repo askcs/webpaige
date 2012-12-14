@@ -9,6 +9,9 @@ div.timeline-frame {
 } 
                                              
 div.timeline-axis {
+	background-color: #676153;
+	color: #fff;
+	
   border-color: #BEBEBE;
   border-width: 1px;
   border-top-style: solid;
@@ -24,7 +27,8 @@ div.timeline-axis-grid-major {
   border-color: #bfbfbf;
 }  
 div.timeline-axis-text {
-  color: #4D4D4D;
+  /* color: #4D4D4D; */
+  color: #fff;
   padding: 3px;
   white-space: nowrap;
 }  
@@ -128,14 +132,14 @@ div.timeline-event {
 	/* background-color: #69b369; */
 	background-color: #4f824f;
 	text-indent: -9999px;
-	border-bottom: 10px solid #e08a0c;
+	border-top: 10px solid #e08a0c;
 }
 
 .availableN {
 	margin:0;
 	/* background-color: #3e673e; */
 	background-color: #4f824f;
-	border-bottom: 10px solid black;
+	border-top: 10px solid black;
 	text-indent: -9999px;
 }
 
@@ -143,7 +147,7 @@ div.timeline-event {
 	margin:0;
 	/* background-color: #3e673e; */
 	background-color: #4f824f;
-	border-bottom: 10px solid #e0c100;
+	border-top: 10px solid #e0c100;
 	text-indent: -9999px;
 }
 
@@ -151,14 +155,14 @@ div.timeline-event {
 	margin:0;
 	/* background-color: #3e673e; */
 	background-color: #65619b;
-	border-bottom: 10px solid #65619b;
+	border-top: 10px solid #65619b;
 	text-indent: -9999px;
 }
 
 .unavailable {
 	margin: 0;
 	background-color: #a93232;	
-	border-bottom: 10px solid #a93232;
+	border-top: 10px solid #a93232;
 	text-indent: -9999px;
 }
 
@@ -172,6 +176,7 @@ div.timeline-event-selected {
 
 div.timeline-event-box {
   text-align: center;   
+  /* font-size: 8px; */
 /*
   border-style: solid;
   border-width: 1px;  
@@ -216,7 +221,7 @@ div.timeline-event-content {
   /* margin: 5px; */
   white-space: nowrap;
   overflow: hidden;
-  height: 22px;
+  height: 20px;
 }
 
 div.timeline-groups-axis {
