@@ -1273,7 +1273,9 @@ function getGroupSlots(guuid, gname)
 
 function getMemberSlots(uuid, mid)
 {
-	//$('#memberTimelineLoading').show();
+	$('#memberLoadingPercentage').text('0');
+	$('#memberTimeline').hide();
+	$('#memberTimelineLoading').show();
 	
 	console.log('loading members');
 
@@ -1298,7 +1300,9 @@ function getMemberSlots(uuid, mid)
 	    var members = data;
 	    
 	    window.totalMembers = members.length;
-	    console.log('total members: ', window.totalMembers);
+	    window.currentMembers = members.length;
+	    
+	    //console.log('total members: ', window.totalMembers);
 	    
 	    for (var i in members)
 	    {
@@ -1480,17 +1484,21 @@ function renderMemberSlots(member, name, mid, flag)
 	    
 	    
 	    	
-	    	window.totalMembers --;
+	    	window.currentMembers --;
 	    	
-	    	if (window.totalMembers == 0)
+	    	if (window.currentMembers == 0)
 	    	{
 	    		console.log('finally the last one');
+	    		$('#memberTimeline').show();
 	    		$('#memberTimelineLoading').hide();
+	    		fixMemberTimeline();
 	    		window.flag = true;
 	    	}
 	    	else
 	    	{
-	    		console.log('current members: ', window.totalMembers);
+	    		var per = 100 - Math.round((window.currentMembers * 100) / window.totalMembers);
+	    		$('#memberLoadingPercentage').text(per);
+	    		//console.log('current members: ', window.currentMembers, per);
 	    		window.flag = false;
 	    	}
 	    	
