@@ -109,6 +109,7 @@ $(document).ready(function ()
     timeline2.redraw();
     timeline3.redraw();
   });
+  
   var local = {
     title: 'dashboard_title',
     statics: ['dashboard_today', 'dashboard_new_availability', 'dashboard_status', 'dashboard_available', 'dashboard_available_noord', 'dashboard_available_zuid', 'dashboard_unavailable', 'dashboard_from', 'dashboard_till', 'dashboard_weekly', 'dashboard_cancel', 'dashboard_save_planning', 'dashboard_edit_availability', 'dashboard_delete_planning', 'dashboard_save_planning', 'dashboard_planboard']
@@ -144,6 +145,7 @@ var timeline;
 var timeline2;
 var timeline3;
 var timeline_selected = null;
+
 // Submitters
 function planSubmit()
 {
@@ -248,6 +250,7 @@ function deletePlanSubmit()
   deleteSlotModal(oldslot.from, oldslot.till, oldslot.reoc, oldslot.type);
   $('#editEventForm')[0].reset();
 }
+
 // Timeline initators
 function timelineInit(uuid)
 {
@@ -326,7 +329,6 @@ function timelineOnAdd()
 {
   timeline.cancelAdd();  
   
-  
   //var resources = JSON.parse(webpaige.get('resources'));
   //$('#userWho').val(resources.uuid);
   
@@ -369,12 +371,9 @@ function timelineOnAdd()
   
   //console.log('user', real);
   
-  
   $('#userWho').val(real.uuid);
   
   $('#newEvent input#planningReoccuring')[0].checked = eval(real.reoc);
-  
-  
   
   $('#newEvent').modal('show');
   $('#tmlabel').hide();
@@ -597,7 +596,7 @@ function addSlot(from, till, reoc, value, user)
 
     function (data, label)
     {
-    	console.log('slot added');
+    	//console.log('slot added');
     	
       getSlots();
       getGroupSlots(label.guuid, label.gname);
@@ -632,7 +631,7 @@ function deleteSlot(from, till, reoc, value, user)
     },
     function (data, label)
     {
-    	console.log('slot deleted');
+    	//console.log('slot deleted');
     	
       getSlots();
       getGroupSlots(label.guuid, label.gname);
@@ -673,7 +672,7 @@ function deleteSlotModal(from, till, reoc, value)
 
     function (data, label)
     {
-    	console.log('slot deleted from modal');
+    	//console.log('slot deleted from modal');
     	
       getSlots();
       getGroupSlots(label.guuid, label.gname);
@@ -719,7 +718,7 @@ function updateSlotModal()
         webpaige.message("De beschikbaarheid is gewijzigd!");
       }
       
-    	console.log('slot updated from modal');
+    	//console.log('slot updated from modal');
     	
       getSlots();
       getGroupSlots(label.guuid, label.gname);
@@ -761,7 +760,7 @@ function updateSlot(oldSlot, newSlot, user)
 
     function (data, label)
     {
-    	console.log('slot updated');
+    	//console.log('slot updated');
     	
       getSlots();
       getGroupSlots(label.guuid, label.gname);
@@ -1277,7 +1276,7 @@ function getMemberSlots(uuid, mid)
 	$('#memberTimeline').hide();
 	$('#memberTimelineLoading').show();
 	
-	console.log('loading members');
+	//console.log('loading members');
 
   webpaige.con(
   options = {
@@ -1481,26 +1480,24 @@ function renderMemberSlots(member, name, mid, flag)
 	      });
 	    }
 	    
-	    
-	    
 	    	
-	    	window.currentMembers --;
-	    	
-	    	if (window.currentMembers == 0)
-	    	{
-	    		console.log('finally the last one');
-	    		$('#memberTimeline').show();
-	    		$('#memberTimelineLoading').hide();
-	    		fixMemberTimeline();
-	    		window.flag = true;
-	    	}
-	    	else
-	    	{
-	    		var per = 100 - Math.round((window.currentMembers * 100) / window.totalMembers);
-	    		$('#memberLoadingPercentage').text(per);
-	    		//console.log('current members: ', window.currentMembers, per);
-	    		window.flag = false;
-	    	}
+    	window.currentMembers --;
+    	
+    	if (window.currentMembers == 0)
+    	{
+    		//console.log('finally the last one');
+    		$('#memberTimeline').show();
+    		$('#memberTimelineLoading').hide();
+    		fixMemberTimeline();
+    		window.flag = true;
+    	}
+    	else
+    	{
+    		var per = 100 - Math.round((window.currentMembers * 100) / window.totalMembers);
+    		$('#memberLoadingPercentage').text(per);
+    		//console.log('current members: ', window.currentMembers, per);
+    		window.flag = false;
+    	}
 	    	
 	    	
 	  });
@@ -1675,11 +1672,11 @@ function timelineMoveLeft()
   
   var now = Date.today().getTime() / 1000;
   
-  console.log(trange, now);
+  //console.log(trange, now);
   
   if (now > trange.bstart && now < trange.bend)
   {
-	  console.log('you are in the right week');
+	  //console.log('you are in the right week');
 	  webpaige.config('inited', false);
   }
   else
@@ -1712,11 +1709,11 @@ function timelineMoveRight()
   
   var now = Date.today().getTime() / 1000;
   
-  console.log(trange, now);
+  //console.log(trange, now);
   
   if (now > trange.bstart && now < trange.bend)
   {
-	  console.log('you are in the right week');
+	  //console.log('you are in the right week');
 	  webpaige.config('inited', false);
   }
   else
