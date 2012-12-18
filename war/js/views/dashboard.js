@@ -547,18 +547,13 @@ function timelineOnChange2()
   
   if (real.lock === "false")
   {
-  
   	//console.log('action is allowed');
-  
 		//console.log(timeline_selected, newItem, real); 
-  
 		updateSlot(timeline_selected, newItem, real); 
   }
   else
   {
-  
   	//console.log('not allowed');
-  
 	  timeline3.cancelChange();
   }
 }
@@ -597,7 +592,6 @@ function addSlot(from, till, reoc, value, user)
     function (data, label)
     {
     	//console.log('slot added');
-    	
       getSlots();
       getGroupSlots(label.guuid, label.gname);
       //getMemberSlots(label.guuid);
@@ -926,29 +920,13 @@ function getSlots(uuid)
     });
     */
 
-
-
-
-
-
-
-
-
-
 		if (webpaige.config('inited') == true) {
     timeline.setVisibleChartRange(trange.start, trange.end);
     } else {
     timeline.setVisibleChartRange((new Date).add({days: -1}), (new Date).add({days: +13}));
     }
     
-    
-    
-    
     fixMemberTimeline();
-    
-    
-    
-    
     
   });
 }
@@ -1234,37 +1212,11 @@ function getGroupSlots(guuid, gname)
     google.visualization.events.addListener(timeline2, 'rangechange', onRangeChanged2);
     timeline2.draw(ndata, options);
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     if (webpaige.config('inited') == true) {
     timeline2.setVisibleChartRange(trange.start, trange.end);
     } else {
     timeline2.setVisibleChartRange((new Date).add({days: -1}), (new Date).add({days: +13}));
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
   });
@@ -1365,12 +1317,7 @@ function getMemberSlots(uuid, mid)
 	    
 	    // if (timeline3.draw(timeline_data3, options)) console.log('yes man');
 	    timeline3.draw(timeline_data3, options);
-	    
-	    
-	    
-	    
-	    
-	    
+
 	    
 	    if (webpaige.config('inited') == true) {
 	    timeline3.setVisibleChartRange(trange.start, trange.end);
@@ -1379,14 +1326,7 @@ function getMemberSlots(uuid, mid)
 	    timeline3.setVisibleChartRange((new Date).add({days: -1}), (new Date).add({days: +13}));
 	    //webpaige.config('inited', true);
 	    }
-	    
-	    
-	    //
-	    
-	    
-	    
-	    
-	    
+
 	    
   	}
   	else
