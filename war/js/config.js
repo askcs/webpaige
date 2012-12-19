@@ -95,3 +95,9 @@ $.ajaxSetup(
   	xhr.setRequestHeader('X-SESSION_ID', session.getSession());
   }		
 })
+
+// TODO
+// Some application general settings
+
+// TODO
+// Language settings
