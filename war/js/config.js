@@ -1,6 +1,4 @@
 'use strict';
-
-
 // where is my host
 //var host = 'http://localhost:9000/ns_knrm';
 var host = 'http://3rc2.ask-services.appspot.com/ns_knrm';
@@ -61,43 +59,68 @@ window.app = {};
 // let's define thenstructure of it
 //var app = {};
 
-window.app = {
-	calls: {},
+// window.app = {
+// 	calls: {},
 	
-	resources: {},
-	messages: [],
-	groups: [],
-	parent: [],
-	contacts: [],
-	slots: {},
-	wishes: {},
-	aggs: {},
+// 	resources: {},
+// 	messages: [],
+// 	groups: [],
+// 	parent: [],
+// 	contacts: [],
+// 	slots: {},
+// 	wishes: {},
+// 	aggs: {},
 	
-	networks: {},
+// 	networks: {},
 	
-	members: [],
+// 	members: [],
 	
-	settings: {},
+// 	settings: {},
 	
-	timeline: []
-}
-
-
-// general ajax sttings for ask back-end
-$.ajaxSetup(
-{
-  contentType: 'application/json',
-  xhrFields: { 
-  	withCredentials: true
-  },
-  beforeSend: function(xhr)
-  {
-  	xhr.setRequestHeader('X-SESSION_ID', session.getSession());
-  }		
-})
+// 	timeline: []
+// }
 
 // TODO
 // Some application general settings
 
+app.settings = {
+  lang: 'nl'
+}
+
 // TODO
 // Language settings
+
+var ui = {
+    en: {
+      login: {
+        title: "Login",
+        header: "Login",
+        label_username: "Please enter your username",
+        placeholder_username: "Username",
+        label_password: "Your password",
+        placeholder_password: "Password",
+        label_rememberMe: "Remember Me",
+        button_login: "Login",
+        button_loggingIn: "Logging.."
+      }    
+    },
+    nl: {
+      login: {
+        title: "Login",
+        header: "Login",
+        label_username: "Vul uw gebruikersnaam in",
+        placeholder_username: "Gebruikersnaam",
+        label_password: "Vul uw wachtwoord in",
+        placeholder_password: "Wachtwoord",
+        label_rememberMe: "Onthoud mij",
+        button_login: "Login",
+        button_loggingIn: "Inloggen.."
+      }         
+    }
+}
+
+
+
+
+
+

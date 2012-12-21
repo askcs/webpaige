@@ -1,0 +1,47 @@
+<section ng-controller="login">
+<!-- <section id="login"> -->
+    
+  <div id="loginForm" class="span3">
+  
+    <form ng-submit="login()" class="well">
+
+      <div id="alertDiv" class="alert alert-error">
+        <button id="alertClose" class="close" type="button">×</button><span id="alertMessage">{Alert Message}</span>
+      </div>
+
+      <h2><span class="entypo eMedium">+</span> {{ ui.login.header }}</h2>
+
+      <hr>
+
+      <div class="control-group">
+        <label class="control-label">{{ ui.login.label_username }}</label>
+        <div class="controls docs-input-sizes">
+          <input id="username" class="span12" type="text" ng-model="login.user" placeholder="{{ ui.login.placeholder_username }}">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label">{{ ui.login.label_password }}</label>
+        <div class="controls docs-input-sizes">
+          <input id="password" class="span12" placeholder="{{ ui.login.placeholder_password }}" type="password" ng-model="login.pass">
+        </div>
+      </div>
+
+      <label class="checkbox"><input id="remember" type="checkbox" ng-model="login.remember"> {{ ui.login.label_rememberMe }}</label><br>
+      
+      <!-- <a class="btn" href="#" id="loginBtn">Login</a> -->
+
+      <!-- <input class="btn btn-inverse" type="submit" value="{{ ui.login.button_logging }}"> -->
+
+      <button class="btn btn-inverse" type="submit">{{ ui.login.button_login }}</button>
+      
+      <img id="ajaxLoader" alt="Loading" src="img/ajax-loader.gif" style="margin-left:5px; height:20px;">
+
+    </form>
+
+    <a href="#" ng-click="setLang('nl')">Nederlands</a> | 
+    <a href="#" ng-click="setLang('en')">English</a>
+    
+  </div><!--/span-->
+	      
+</section>

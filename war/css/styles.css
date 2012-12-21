@@ -638,3 +638,11 @@ table thead {
 	-o-transition: all .1s ease-out;
 	transition: all .1s ease-out;
 }
+
+
+
+
+
+#menu {
+	display: none;
+}

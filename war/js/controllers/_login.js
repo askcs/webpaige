@@ -1,123 +1,193 @@
-'use strict';
-/* Login controller */
-
-var login = function($scope)
-{
-	$.ajaxSetup(
+$(document).ready(function()
+{ 	
+ 	var login = JSON.parse(webpaige.get('login'));
+ 	
+ 	if (login != null)
+ 	{
+		$('#username').val(login.user);
+		$('#password').val(login.pass);
+		$('#remember').attr('checked', login.remember);
+ 	}
+ 	
+	$("#alertClose").click(function()
 	{
-	  contentType: 'application/json',
-	  xhrFields: { 
-	    withCredentials: true
-	  } 
+		$("#alertDiv").hide();
 	})
 
-  $scope.login = function()
-  {
-    $('#loginForm button[type=submit]')
-      .text($scope.ui.login.button_loggingIn)
-      .attr('disabled', 'disabled');
+	$("#loginBtn").click(function()
+	{
+		$("#ajaxLoader").show();
 
-    $.ajax(
-    {
-      url: host   + '/login' 
-                  + '?uuid='
-                  + $scope.login.user 
-                  + '&pass=' 
-                  + $scope.md5($scope.login.pass)
-    })
-    .success(function(data)
-    {
-      $scope.setSession(data["X-SESSION_ID"]);
+		var userDef 	= "Username";
+		var passDef 	= "password";
+		var user 		= $('#username').val();
+		var pass 		= $('#password').val();
+		var r 			= $('#remember:checked').val();
 
-			$.ajaxSetup(
-			{
-		    beforeSend: function (xhr)
-		    {
-		    	xhr.setRequestHeader('X-SESSION_ID', $scope.getSession())
-		    } 
-			})
-      
-      document.location = "index.html#/preloader";
-    })
-    .fail(function()
-    {
-      // TODO
-      //console.log('login failed')
-    })
+		// TODO: check this part later
+		if (user == '' || user == userDef)
+		{
+			$("#alertDiv").show();
+			$("#alertMessage").html('<strong>Login mislukt!</strong><br>Geen gebruikersnaam opgegeven.');
+			$("#ajaxLoader").hide();
+			return false;
+		}
 
-  }
+		// TODO: same here as well
+		if (pass == '' || pass == passDef)
+		{
+			$("#alertDiv").show();
+			$("#alertMessage").html('<strong>Login mislukt!</strong><br>Geen wachtwoord opgegeven.');
+			$("#ajaxLoader").hide();
+			return false;
+		}
+
+		loginAsk(user.toLowerCase(), pass, r);
+	})
+	
+})
+
+function loginAsk(user, pass, r)
+{		
+  $.ajax(
+	{
+		url: host 	+ '/login?uuid=' 
+					+ user 
+					+ '&pass=' 
+					+ MD5(pass),
+		contentType: 'application/json',
+		xhrFields: { 
+			withCredentials: true
+		}	
+	})
+	.success(
+	function(data)
+	{
+		saveUser(user, pass, r);
+
+		saveCookie(data);
+		
+		document.location = "index.html#/preloader";
+	})
+}
+
+function saveCookie(data)
+{
+	session.setSession(data["X-SESSION_ID"]);
+	document.cookie = "sessionId=" + session;
+}
+
+function saveUser(user, pass, r)
+{
+	if (r != null)
+	{
+		webpaige.set('login', 
+		JSON.stringify({
+		  	user: user,
+		  	pass: pass,
+		  	remember: r
+		}))
+	}
+	else
+	{
+		webpaige.remove('login')
+	}
+}
 
 
-  $scope.md5 = function(string)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  $scope.md5 = function (string)
   {
      
-    function RotateLeft(lValue, iShiftBits)
-    {
+    function RotateLeft(lValue, iShiftBits) {
       return (lValue<<iShiftBits) | (lValue>>>(32-iShiftBits));
     }
    
-    function AddUnsigned(lX,lY)
-    {
+    function AddUnsigned(lX,lY) {
       var lX4,lY4,lX8,lY8,lResult;
       lX8 = (lX & 0x80000000);
       lY8 = (lY & 0x80000000);
       lX4 = (lX & 0x40000000);
       lY4 = (lY & 0x40000000);
       lResult = (lX & 0x3FFFFFFF)+(lY & 0x3FFFFFFF);
-
-      if (lX4 & lY4)
-      {
+      if (lX4 & lY4) {
         return (lResult ^ 0x80000000 ^ lX8 ^ lY8);
       }
-
-      if (lX4 | lY4)
-      {
-        if (lResult & 0x40000000)
-        {
+      if (lX4 | lY4) {
+        if (lResult & 0x40000000) {
           return (lResult ^ 0xC0000000 ^ lX8 ^ lY8);
-        }
-        else
-        {
+        } else {
           return (lResult ^ 0x40000000 ^ lX8 ^ lY8);
         }
-      }
-      else
-      {
+      } else {
         return (lResult ^ lX8 ^ lY8);
       }
     }
    
-    function F(x,y,z) { return (x & y) | ((~x) & z) }
-    function G(x,y,z) { return (x & z) | (y & (~z)) }
-    function H(x,y,z) { return (x ^ y ^ z) }
-    function I(x,y,z) { return (y ^ (x | (~z))) }
+    function F(x,y,z) { return (x & y) | ((~x) & z); }
+    function G(x,y,z) { return (x & z) | (y & (~z)); }
+    function H(x,y,z) { return (x ^ y ^ z); }
+    function I(x,y,z) { return (y ^ (x | (~z))); }
    
-    function FF(a,b,c,d,x,s,ac)
-    {
+    function FF(a,b,c,d,x,s,ac) {
       a = AddUnsigned(a, AddUnsigned(AddUnsigned(F(b, c, d), x), ac));
       return AddUnsigned(RotateLeft(a, s), b);
-    }
+    };
    
-    function GG(a,b,c,d,x,s,ac)
-    {
+    function GG(a,b,c,d,x,s,ac) {
       a = AddUnsigned(a, AddUnsigned(AddUnsigned(G(b, c, d), x), ac));
       return AddUnsigned(RotateLeft(a, s), b);
-    }
+    };
    
-    function HH(a,b,c,d,x,s,ac)
-    {
+    function HH(a,b,c,d,x,s,ac) {
       a = AddUnsigned(a, AddUnsigned(AddUnsigned(H(b, c, d), x), ac));
       return AddUnsigned(RotateLeft(a, s), b);
-    }
+    };
    
-    function II(a,b,c,d,x,s,ac)
-    {
+    function II(a,b,c,d,x,s,ac) {
       a = AddUnsigned(a, AddUnsigned(AddUnsigned(I(b, c, d), x), ac));
       return AddUnsigned(RotateLeft(a, s), b);
-    }
+    };
    
-    function ConvertToWordArray(string)
-    {
+    function ConvertToWordArray(string) {
       var lWordCount;
       var lMessageLength = string.length;
       var lNumberOfWords_temp1=lMessageLength + 8;
@@ -126,57 +196,46 @@ var login = function($scope)
       var lWordArray=Array(lNumberOfWords-1);
       var lBytePosition = 0;
       var lByteCount = 0;
-
-      while ( lByteCount < lMessageLength )
-      {
+      while ( lByteCount < lMessageLength ) {
         lWordCount = (lByteCount-(lByteCount % 4))/4;
         lBytePosition = (lByteCount % 4)*8;
         lWordArray[lWordCount] = (lWordArray[lWordCount] | (string.charCodeAt(lByteCount)<<lBytePosition));
         lByteCount++;
       }
-
       lWordCount = (lByteCount-(lByteCount % 4))/4;
       lBytePosition = (lByteCount % 4)*8;
       lWordArray[lWordCount] = lWordArray[lWordCount] | (0x80<<lBytePosition);
       lWordArray[lNumberOfWords-2] = lMessageLength<<3;
       lWordArray[lNumberOfWords-1] = lMessageLength>>>29;
       return lWordArray;
-    }
+    };
    
-    function WordToHex(lValue)
-    {
+    function WordToHex(lValue) {
       var WordToHexValue="",WordToHexValue_temp="",lByte,lCount;
-
-      for (lCount = 0;lCount<=3;lCount++)
-      {
+      for (lCount = 0;lCount<=3;lCount++) {
         lByte = (lValue>>>(lCount*8)) & 255;
         WordToHexValue_temp = "0" + lByte.toString(16);
         WordToHexValue = WordToHexValue + WordToHexValue_temp.substr(WordToHexValue_temp.length-2,2);
       }
-
       return WordToHexValue;
     };
    
-    function Utf8Encode(string)
-    {
+    function Utf8Encode(string) {
       string = string.replace(/\r\n/g,"\n");
       var utftext = "";
    
-      for (var n = 0; n < string.length; n++)
-      {
+      for (var n = 0; n < string.length; n++) {
+   
         var c = string.charCodeAt(n);
    
-        if (c < 128)
-        {
+        if (c < 128) {
           utftext += String.fromCharCode(c);
         }
-        else if((c > 127) && (c < 2048))
-        {
+        else if((c > 127) && (c < 2048)) {
           utftext += String.fromCharCode((c >> 6) | 192);
           utftext += String.fromCharCode((c & 63) | 128);
         }
-        else
-        {
+        else {
           utftext += String.fromCharCode((c >> 12) | 224);
           utftext += String.fromCharCode(((c >> 6) & 63) | 128);
           utftext += String.fromCharCode((c & 63) | 128);
@@ -200,8 +259,7 @@ var login = function($scope)
    
     a = 0x67452301; b = 0xEFCDAB89; c = 0x98BADCFE; d = 0x10325476;
    
-    for (k=0;k<x.length;k+=16)
-    {
+    for (k=0;k<x.length;k+=16) {
       AA=a; BB=b; CC=c; DD=d;
       a=FF(a,b,c,d,x[k+0], S11,0xD76AA478);
       d=FF(d,a,b,c,x[k+1], S12,0xE8C7B756);
@@ -277,8 +335,3 @@ var login = function($scope)
    
     return temp.toLowerCase();
   }
-
-
-}
-
-login.$inject = ['$scope'];

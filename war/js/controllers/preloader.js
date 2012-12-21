@@ -1,6 +1,9 @@
 'use strict'; /* Preloader controller */
 var preloader = function($scope)
   {
+
+  	//console.log($scope.getSession());
+
     this.setupRanges();
 
 	  window.app.calls = {};
@@ -24,7 +27,7 @@ var preloader = function($scope)
 	        localStorage.setItem('resources', JSON.stringify(user));
 	        $('#preloader .progress .bar')
 	        	.css({
-	          width: '20%'
+	          	width: '20%'
 	        });
 	        window.app.calls.resources = true;
 	        callback(null, user);
@@ -40,163 +43,163 @@ var preloader = function($scope)
 	      async.series(
 	      {
 
-	        network: function(callback)
-	        {
-	          setTimeout(function()
-	          {
-	            $('#preloader span')
-	            	.text('Loading groups..');
+	        // network: function(callback)
+	        // {
+	        //   setTimeout(function()
+	        //   {
+	        //     $('#preloader span')
+	        //     	.text('Loading groups..');
 
-	            $.ajax(
-	            {
-	              url: host + '/network',
-	            }).success(
-	            function(data)
-	            {
+	        //     $.ajax(
+	        //     {
+	        //       url: host + '/network',
+	        //     }).success(
+	        //     function(data)
+	        //     {
 
-	              window.app.groups = data;
+	        //       window.app.groups = data;
 
-	              localStorage.setItem('groups', JSON.stringify(data));
+	        //       localStorage.setItem('groups', JSON.stringify(data));
 
-	              window.app.calls.network = true;
+	        //       window.app.calls.network = true;
 
-	              $('#preloader .progress .bar').css(
-	              {
-	                width: '40%'
-	              });
+	        //       $('#preloader .progress .bar').css(
+	        //       {
+	        //         width: '40%'
+	        //       });
 
-	              var params = [];
+	        //       var params = [];
 
-	              if (divisions.length > 0)
-	              {
-	                $.each(divisions, function(index, value)
-	                {
-	                  var param = '&stateGroup=' + value;
-	                  params.push(param);
-	                })
-	              }
+	        //       if (divisions.length > 0)
+	        //       {
+	        //         $.each(divisions, function(index, value)
+	        //         {
+	        //           var param = '&stateGroup=' + value;
+	        //           params.push(param);
+	        //         })
+	        //       }
 
-	              params.unshift(null);
+	        //       params.unshift(null);
 
-	              var groups = {},
-	                tmp = {},
-	                aggs = {},
-	                key, stateGroup, ikey;
+	        //       var groups = {},
+	        //         tmp = {},
+	        //         aggs = {},
+	        //         key, stateGroup, ikey;
 
-	              $.each(window.app.groups, function(index, group)
-	              {
-	                aggs[group.uuid] = {};
-	                window.app.calls.aggs = {};
-	                $.each(params, function(index, param)
-	                {
-	                  if (param)
-	                  {
-	                    var key = param.substr(12);
-	                    var stateGroup = param;
-	                  }
-	                  else
-	                  {
-	                    var key = 'default';
-	                    var stateGroup = '';
-	                  }
-	                  ikey = group.uuid + "_" + key;
-	                  (function(ikey, stateGroup, key, index)
-	                  {
-	                    tmp[ikey] = function(callback, index)
-	                    {
-	                      setTimeout(function()
-	                      {
-	                        $('#preloader span').text('Loading aggregrated timelines.. (' + group.name + ')');
-	                        $.ajax(
-	                        {
-	                          url: host 	+ '/calc_planning/' 
-	                          						+ group.uuid 
-	                          						+ '?start=' 
-	                          						+ window.app.settings.ranges.period.bstart 
-	                          						+ '&end=' 
-	                          						+ window.app.settings.ranges.period.bend 
-	                          						+ stateGroup
-	                        }).success(
-	                        function(data)
-	                        {
-	                          aggs[group.uuid][key] = data;
-	                          window.app.calls.aggs[group.uuid] = true;
-	                          callback(null, true);
-	                        }).fail(function()
-	                        {
-	                          window.app.calls.aggs[group.uuid] = false;
-	                        })
-	                      }, (index * 100) + 100)
-	                    }
-	                    $.extend(groups, tmp)
-	                  })(ikey, stateGroup, key, index)
-	                })
-	              })
+	        //       $.each(window.app.groups, function(index, group)
+	        //       {
+	        //         aggs[group.uuid] = {};
+	        //         window.app.calls.aggs = {};
+	        //         $.each(params, function(index, param)
+	        //         {
+	        //           if (param)
+	        //           {
+	        //             var key = param.substr(12);
+	        //             var stateGroup = param;
+	        //           }
+	        //           else
+	        //           {
+	        //             var key = 'default';
+	        //             var stateGroup = '';
+	        //           }
+	        //           ikey = group.uuid + "_" + key;
+	        //           (function(ikey, stateGroup, key, index)
+	        //           {
+	        //             tmp[ikey] = function(callback, index)
+	        //             {
+	        //               setTimeout(function()
+	        //               {
+	        //                 $('#preloader span').text('Loading aggregrated timelines.. (' + group.name + ')');
+	        //                 $.ajax(
+	        //                 {
+	        //                   url: host 	+ '/calc_planning/' 
+	        //                   						+ group.uuid 
+	        //                   						+ '?start=' 
+	        //                   						+ window.app.settings.ranges.period.bstart 
+	        //                   						+ '&end=' 
+	        //                   						+ window.app.settings.ranges.period.bend 
+	        //                   						+ stateGroup
+	        //                 }).success(
+	        //                 function(data)
+	        //                 {
+	        //                   aggs[group.uuid][key] = data;
+	        //                   window.app.calls.aggs[group.uuid] = true;
+	        //                   callback(null, true);
+	        //                 }).fail(function()
+	        //                 {
+	        //                   window.app.calls.aggs[group.uuid] = false;
+	        //                 })
+	        //               }, (index * 100) + 100)
+	        //             }
+	        //             $.extend(groups, tmp)
+	        //           })(ikey, stateGroup, key, index)
+	        //         })
+	        //       })
 
-	              async.series(groups, function(err, results)
-	              {
-	                window.app.aggs = aggs;
-	                localStorage.setItem('aggs', JSON.stringify(aggs));
-	                callback(null, 'done');
-	              });
+	        //       async.series(groups, function(err, results)
+	        //       {
+	        //         window.app.aggs = aggs;
+	        //         localStorage.setItem('aggs', JSON.stringify(aggs));
+	        //         callback(null, 'done');
+	        //       });
 	              
-	            }).fail(function()
-	            {
-	              window.app.calls.network = false;
-	            })
-	          }, 100)
-	        },
+	        //     }).fail(function()
+	        //     {
+	        //       window.app.calls.network = false;
+	        //     })
+	        //   }, 100)
+	        // },
 
-	        wishes: function(callback)
-	        {
-	          $('#preloader span').text('Loading wishes..');
-	          $('#preloader .progress .bar').css(
-	          {
-	            width: '50%'
-	          });
-	          var wishes = {},
-	            tmp = {},
-	            key;
-	          $.each(window.app.groups, function(index, group)
-	          {
-	            window.app.calls.wishes = {};
-	            (function(index)
-	            {
-	              tmp[group.uuid] = function(callback, index)
-	              {
-	                setTimeout(function()
-	                {
-	                  $('#preloader span').text('Loading wishes.. (' + group.name + ')');
-	                  $.ajax(
-	                  {
-	                    url: host 	+ '/network/' 
-	                    						+ group.uuid 
-	                    						+ '/wish?start=' 
-	                    						+ window.app.settings.ranges.period.bstart 
-	                    						+ '&end=' 
-	                    						+ window.app.settings.ranges.period.bend
-	                  }).success(
-	                  function(data)
-	                  {
-	                    wishes[group.uuid] = data;
-	                    window.app.calls.wishes[group.uuid] = true;
-	                    callback(null, true);
-	                  }).fail(function()
-	                  {
-	                    window.app.calls.wishes[group.uuid] = false;
-	                  })
-	                }, (index * 100) + 100)
-	              }
-	              $.extend(wishes, tmp)
-	            })(index)
-	          })
-	          async.series(wishes, function(err, results)
-	          {
-	            window.app.wishes = wishes;
-	            localStorage.setItem('wishes', JSON.stringify(wishes));
-	            callback(null, 'done');
-	          })
-	        },
+	        // wishes: function(callback)
+	        // {
+	        //   $('#preloader span').text('Loading wishes..');
+	        //   $('#preloader .progress .bar').css(
+	        //   {
+	        //     width: '50%'
+	        //   });
+	        //   var wishes = {},
+	        //     tmp = {},
+	        //     key;
+	        //   $.each(window.app.groups, function(index, group)
+	        //   {
+	        //     window.app.calls.wishes = {};
+	        //     (function(index)
+	        //     {
+	        //       tmp[group.uuid] = function(callback, index)
+	        //       {
+	        //         setTimeout(function()
+	        //         {
+	        //           $('#preloader span').text('Loading wishes.. (' + group.name + ')');
+	        //           $.ajax(
+	        //           {
+	        //             url: host 	+ '/network/' 
+	        //             						+ group.uuid 
+	        //             						+ '/wish?start=' 
+	        //             						+ window.app.settings.ranges.period.bstart 
+	        //             						+ '&end=' 
+	        //             						+ window.app.settings.ranges.period.bend
+	        //           }).success(
+	        //           function(data)
+	        //           {
+	        //             wishes[group.uuid] = data;
+	        //             window.app.calls.wishes[group.uuid] = true;
+	        //             callback(null, true);
+	        //           }).fail(function()
+	        //           {
+	        //             window.app.calls.wishes[group.uuid] = false;
+	        //           })
+	        //         }, (index * 100) + 100)
+	        //       }
+	        //       $.extend(wishes, tmp)
+	        //     })(index)
+	        //   })
+	        //   async.series(wishes, function(err, results)
+	        //   {
+	        //     window.app.wishes = wishes;
+	        //     localStorage.setItem('wishes', JSON.stringify(wishes));
+	        //     callback(null, 'done');
+	        //   })
+	        // },
 
 	        parent: function(callback)
 	        {
@@ -250,131 +253,131 @@ var preloader = function($scope)
 	          }, 300)
 	        },
 
-	        members: function(callback)
-	        {
-	          $('#preloader span').text('Loading members..');
-	          setTimeout(function()
-	          {
-	            var members = {},
-	              tmp = {};
-	            // TODO: here or later should be checked
-	            // if the user already in the list ?
-	            $.each(window.app.groups, function(index, group)
-	            {
-	              window.app.calls.members = {};
-	              (function(index)
-	              {
-	                tmp[group.uuid] = function(callback, index)
-	                {
-	                  setTimeout(function()
-	                  {
-	                    $('#preloader span').text('Loading members.. (' + group.name + ')');
-	                    $.ajax(
-	                    {
-	                      url: host + '/network/' + group.uuid + '/members?fields=[role]',
-	                    }).success(
+	        // members: function(callback)
+	        // {
+	        //   $('#preloader span').text('Loading members..');
+	        //   setTimeout(function()
+	        //   {
+	        //     var members = {},
+	        //       tmp = {};
+	        //     // TODO: here or later should be checked
+	        //     // if the user already in the list ?
+	        //     $.each(window.app.groups, function(index, group)
+	        //     {
+	        //       window.app.calls.members = {};
+	        //       (function(index)
+	        //       {
+	        //         tmp[group.uuid] = function(callback, index)
+	        //         {
+	        //           setTimeout(function()
+	        //           {
+	        //             $('#preloader span').text('Loading members.. (' + group.name + ')');
+	        //             $.ajax(
+	        //             {
+	        //               url: host + '/network/' + group.uuid + '/members?fields=[role]',
+	        //             }).success(
 
-	                    function(data)
-	                    {
-	                      localStorage.setItem(group.uuid, JSON.stringify(data));
-	                      window.app.calls.members[group.uuid] = true;
-	                      callback(null, true);
-	                    }).fail(function()
-	                    {
-	                      window.app.calls.members[group.uuid] = false;
-	                    })
-	                  }, (index * 100) + 100)
-	                }
-	                $.extend(members, tmp)
-	              })(index)
-	            })
-	            async.series(members, function(err, results)
-	            {
-	              var members = {};
-	              $.each(window.app.groups, function(index, group)
-	              {
-	                var groupList = JSON.parse(localStorage.getItem(group.uuid));
-	                if (groupList.length > 0 || groupList != null || groupList != undefined)
-	                {
-	                  $.each(groupList, function(index, member)
-	                  {
-	                    members[member.uuid] = member;
-	                  })
-	                }
-	              })
-	              window.app.members = members;
-	              localStorage.setItem('members', JSON.stringify(members));
-	              $('#preloader .progress .bar').css(
-	              {
-	                width: '90%'
-	              });
-	              var members = {},
-	                tmp = {},
-	                slots = {},
-	                key, itype, ikey, params = ['&type=both'];
-	              params.unshift(null);
-	              $.each(window.app.members, function(index, member)
-	              {
-	                slots[member.uuid] = {};
-	                window.app.calls.slots = {};
-	                $.each(params, function(index, param)
-	                {
-	                  if (param)
-	                  {
-	                    key = param.substr(6);
-	                    itype = param;
-	                  }
-	                  else
-	                  {
-	                    key = 'default';
-	                    itype = '';
-	                  }
-	                  ikey = member.uuid + "_" + key;
-	                  (function(ikey, itype, key, index)
-	                  {
-	                    tmp[ikey] = function(callback, index)
-	                    {
-	                      setTimeout(function()
-	                      {
-	                        $('#preloader span').text('Loading timeslots.. (' + member.name + ')');
-	                        $.ajax(
-	                        {
-	                          url: host 	+ '/askatars/' 
-	                          						+ member.uuid 
-	                          						+ '/slots?start=' 
-	                          						+ window.app.settings.ranges.period.bstart 
-	                          						+ '&end=' 
-	                          						+ window.app.settings.ranges.period.bend 
-	                          						+ itype
-	                        }).success(
-	                        function(data)
-	                        {
-	                          slots[member.uuid][key] = data;
-	                          window.app.calls.slots[member.uuid] = true;
-	                          callback(null, true);
-	                        }).fail(function()
-	                        {
-	                          window.app.calls.slots[member.uuid] = false;
-	                        })
-	                      }, (index * 100) + 100)
-	                    }
-	                    $.extend(members, tmp)
-	                  })(ikey, itype, key, index)
-	                })
-	              })
-	              async.series(members, function(err, results)
-	              {
-	                window.app.slots = slots;
-	                localStorage.setItem('slots', JSON.stringify(slots));
-	                $('#preloader .progress .bar').css(
-	                {
-	                  width: '100%'
-	                });
-	                document.location = "#/dashboard";
-	              })
-	            })
-	          }, 400);
-	        }
+	        //             function(data)
+	        //             {
+	        //               localStorage.setItem(group.uuid, JSON.stringify(data));
+	        //               window.app.calls.members[group.uuid] = true;
+	        //               callback(null, true);
+	        //             }).fail(function()
+	        //             {
+	        //               window.app.calls.members[group.uuid] = false;
+	        //             })
+	        //           }, (index * 100) + 100)
+	        //         }
+	        //         $.extend(members, tmp)
+	        //       })(index)
+	        //     })
+	        //     async.series(members, function(err, results)
+	        //     {
+	        //       var members = {};
+	        //       $.each(window.app.groups, function(index, group)
+	        //       {
+	        //         var groupList = JSON.parse(localStorage.getItem(group.uuid));
+	        //         if (groupList.length > 0 || groupList != null || groupList != undefined)
+	        //         {
+	        //           $.each(groupList, function(index, member)
+	        //           {
+	        //             members[member.uuid] = member;
+	        //           })
+	        //         }
+	        //       })
+	        //       window.app.members = members;
+	        //       localStorage.setItem('members', JSON.stringify(members));
+	        //       $('#preloader .progress .bar').css(
+	        //       {
+	        //         width: '90%'
+	        //       });
+	        //       var members = {},
+	        //         tmp = {},
+	        //         slots = {},
+	        //         key, itype, ikey, params = ['&type=both'];
+	        //       params.unshift(null);
+	        //       $.each(window.app.members, function(index, member)
+	        //       {
+	        //         slots[member.uuid] = {};
+	        //         window.app.calls.slots = {};
+	        //         $.each(params, function(index, param)
+	        //         {
+	        //           if (param)
+	        //           {
+	        //             key = param.substr(6);
+	        //             itype = param;
+	        //           }
+	        //           else
+	        //           {
+	        //             key = 'default';
+	        //             itype = '';
+	        //           }
+	        //           ikey = member.uuid + "_" + key;
+	        //           (function(ikey, itype, key, index)
+	        //           {
+	        //             tmp[ikey] = function(callback, index)
+	        //             {
+	        //               setTimeout(function()
+	        //               {
+	        //                 $('#preloader span').text('Loading timeslots.. (' + member.name + ')');
+	        //                 $.ajax(
+	        //                 {
+	        //                   url: host 	+ '/askatars/' 
+	        //                   						+ member.uuid 
+	        //                   						+ '/slots?start=' 
+	        //                   						+ window.app.settings.ranges.period.bstart 
+	        //                   						+ '&end=' 
+	        //                   						+ window.app.settings.ranges.period.bend 
+	        //                   						+ itype
+	        //                 }).success(
+	        //                 function(data)
+	        //                 {
+	        //                   slots[member.uuid][key] = data;
+	        //                   window.app.calls.slots[member.uuid] = true;
+	        //                   callback(null, true);
+	        //                 }).fail(function()
+	        //                 {
+	        //                   window.app.calls.slots[member.uuid] = false;
+	        //                 })
+	        //               }, (index * 100) + 100)
+	        //             }
+	        //             $.extend(members, tmp)
+	        //           })(ikey, itype, key, index)
+	        //         })
+	        //       })
+	        //       async.series(members, function(err, results)
+	        //       {
+	        //         window.app.slots = slots;
+	        //         localStorage.setItem('slots', JSON.stringify(slots));
+	        //         $('#preloader .progress .bar').css(
+	        //         {
+	        //           width: '100%'
+	        //         });
+	        //         document.location = "#/dashboard";
+	        //       })
+	        //     })
+	        //   }, 400);
+	        // }
 
 	      }, function(err, results)
 	      {

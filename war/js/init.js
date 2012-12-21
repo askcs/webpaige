@@ -1,7 +1,8 @@
-var session = new ask.session(relogin);
-function relogin() {
-	window.location = "login.html";
-}
+//var session = new ask.session();
+
+// function relogin() {
+// 	window.location = "login.html";
+// }
 
 
 function pageInit(active, logged)
