@@ -3,19 +3,43 @@
 
 var login = function($scope)
 {
+  //if (localStorage.getItem('logindata'))
+  //{
+    //console.log(localStorage.getItem('login'))
+    //var logindata = JSON.parse('logindata');
+    console.log(localStorage.getItem('logindata'));
+    //$scope.login.username = logindata.username;
+    //$scope.login.password = logindata.password;
+    //$scope.login.remember = logindata.remember;
+  //}
+
 	$.ajaxSetup(
 	{
 	  contentType: 'application/json',
 	  xhrFields: { 
 	    withCredentials: true
-	  } 
-	})
+	  },
+    beforeSend: function (xhr)
+    {
+      xhr.setRequestHeader('X-SESSION_ID', $scope.getSession())
+    } 
+  })
 
   $scope.login = function()
   {
     $('#loginForm button[type=submit]')
       .text($scope.ui.login.button_loggingIn)
       .attr('disabled', 'disabled');
+
+    if ($scope.login.remember)
+    {
+      var logindata = {
+        username: $scope.login.username,
+        password: $scope.login.password,
+        remember: $scope.login.remember
+      }
+      localStorage.setItem(JSON.stringify('logindata', logindata))
+    }
 
     $.ajax(
     {
@@ -28,14 +52,6 @@ var login = function($scope)
     .success(function(data)
     {
       $scope.setSession(data["X-SESSION_ID"]);
-
-			$.ajaxSetup(
-			{
-		    beforeSend: function (xhr)
-		    {
-		    	xhr.setRequestHeader('X-SESSION_ID', $scope.getSession())
-		    } 
-			})
       
       document.location = "index.html#/preloader";
     })

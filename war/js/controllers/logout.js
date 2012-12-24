@@ -3,13 +3,6 @@
 
 var logout = function($scope)
 {
-  // clear session
-  $scope.clearSession();
-
-  // TODO
-  // clear localStorage
-
-  // logout from back-end
   $.ajax(
   {
     url: host + '/logout',
@@ -17,20 +10,15 @@ var logout = function($scope)
   .success(
   function(data)
   {
-    console.log('goodbye');
-    window.location = "index.html#/login";
+    // TODO
+    console.log('goodbye!');
   })
   .fail(function()
   {
     // TODO
     console.log('logout failed')
   })
+  window.location = "logout.html";
 }
-
-// logout.prototype = $.extend({}, app.prototype, {
-
-// 	constructor: logout,
-
-// })
 
 logout.$inject = ['$scope'];

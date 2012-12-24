@@ -53,7 +53,7 @@ var divisions_ = []
 
 
 // application window variable container for processed data
-window.app = {};
+//window.app = {};
 
 
 // let's define thenstructure of it
@@ -83,8 +83,8 @@ window.app = {};
 // TODO
 // Some application general settings
 
-app.settings = {
-  lang: 'nl'
+var config = {
+  lang: 'en'
 }
 
 // TODO

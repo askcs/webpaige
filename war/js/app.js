@@ -1,7 +1,8 @@
 'use strict';
 
 // Declare app level module which depends on filters, and services
-angular.module('webPaige', ['webPaige.filters', 'webPaige.services', 'webPaige.directives']).
+angular.module('webPaige', 
+  ['webPaige.filters', 'webPaige.services', 'webPaige.directives']).
   config(['$routeProvider',function($routeProvider)
   {
     $routeProvider.when( '/login',        {templateUrl: 'views/login.html',       Ctrl: login} );
@@ -22,14 +23,11 @@ var app = function($scope)
 {
   // TODO
   // display only after logging in
-	$scope.username = ' Cengiz ';
+  $scope.username = ' Cengiz ';
+  //
 
-  //$scope.app.settings = window.app.settings;
-  //$scope.ui = ui[$scope.app.settings.lang];
-
-  $scope.ui = ui.nl;
-
-  console.log('print me', app.settings)
+  $scope.config = config;
+  $scope.ui = ui[$scope.config.lang];
 
   $scope.setLang = function(language)
   {
@@ -39,7 +37,7 @@ var app = function($scope)
 
   $scope.checkSession = function()
   {
-    if(this.sessionId == null)
+    if($scope.sessionId == null)
     {
       var values;
       var pairs = document.cookie.split(";");
@@ -48,23 +46,23 @@ var app = function($scope)
       {
         values = pairs[i].split("=");
 
-        if(values[0].trim() == "ask-session")
+        if(values[0].trim() == "ask")
         {
-          var session       = JSON.parse(values[1]);
-          this.sessionId    = session.id;
-          this.sessionTime  = session.time;
+          var session         = JSON.parse(values[1]);
+          $scope.sessionId    = session.id;
+          $scope.sessionTime  = session.time;
           break;
         }
       }
     }
 
-    if(this.sessionId == null)
+    if($scope.sessionId == null)
       return false;
 
     var time  = new Date();
     var now   = time.getTime();
 
-    if( (now-this.sessionTime) > (60 * 60 * 1000) )
+    if( (now - $scope.sessionTime) > (60 * 60 * 1000) )
     {   
       return false;
     }
@@ -74,28 +72,28 @@ var app = function($scope)
   $scope.getSession = function()
   {
     $scope.checkSession();
-    $scope.setSession(this.sessionId);
-    return this.sessionId;
+    $scope.setSession($scope.sessionId);
+    return $scope.sessionId;
   }
 
   $scope.setSession = function(sessionId)
   {      
-    var time          = new Date();
-    this.sessionId    = sessionId;
-    this.sessionTime  = time.getTime();
-    var session       = new Object();
-    session.id        = this.sessionId;
-    session.time      = this.sessionTime;
-    document.cookie   = "ask-session=" + JSON.stringify(session);
+    var time            = new Date();
+    $scope.sessionId    = sessionId;
+    $scope.sessionTime  = time.getTime();
+    var session         = new Object();
+    session.id          = $scope.sessionId;
+    session.time        = $scope.sessionTime;
+    document.cookie     = "ask=" + JSON.stringify(session);
   }
 
-  $scope.clearSession = function()
+  $scope.preventDeepLink = function()
   {
-    this.sessionId    = null;
-    this.sessionTime  = null;
-    document.cookie   = "ask-session=''; expires=Thu, 01-Jan-1970 00:00:01 GMT";
+    if (!$scope.checkSession())
+      window.location = "index.html";
   }
 
 
 }
+
 app.$inject = ['$scope'];
