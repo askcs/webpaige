@@ -3,15 +3,16 @@
 
 var login = function($scope)
 {
-  //if (localStorage.getItem('logindata'))
-  //{
-    //console.log(localStorage.getItem('login'))
-    //var logindata = JSON.parse('logindata');
-    console.log(localStorage.getItem('logindata'));
-    //$scope.login.username = logindata.username;
-    //$scope.login.password = logindata.password;
-    //$scope.login.remember = logindata.remember;
-  //}
+
+  var logindata = localStorage.getItem('logindata');
+  if (logindata)
+  {
+    if ((JSON.parse(logindata)).remember)
+    {
+      $scope.logindata = JSON.parse(logindata)
+    }
+  }
+
 
 	$.ajaxSetup(
 	{
@@ -25,29 +26,36 @@ var login = function($scope)
     } 
   })
 
+
+
+
   $scope.login = function()
   {
+
+    if (!$scope.logindata ||
+        !$scope.logindata.username || 
+        !$scope.logindata.password)
+    {
+      return false      
+    }
+
     $('#loginForm button[type=submit]')
       .text($scope.ui.login.button_loggingIn)
-      .attr('disabled', 'disabled');
+      .attr('disabled', 'disabled')
 
-    if ($scope.login.remember)
-    {
-      var logindata = {
-        username: $scope.login.username,
-        password: $scope.login.password,
-        remember: $scope.login.remember
-      }
-      localStorage.setItem(JSON.stringify('logindata', logindata))
-    }
+    localStorage.setItem('logindata', JSON.stringify({
+      username: $scope.logindata.username,
+      password: $scope.logindata.password,
+      remember: $scope.logindata.remember
+    }))
 
     $.ajax(
     {
       url: host   + '/login' 
                   + '?uuid='
-                  + $scope.login.user 
+                  + $scope.logindata.username
                   + '&pass=' 
-                  + $scope.md5($scope.login.pass)
+                  + $scope.md5($scope.logindata.password)
     })
     .success(function(data)
     {
@@ -55,10 +63,17 @@ var login = function($scope)
       
       document.location = "index.html#/preloader";
     })
-    .fail(function()
+    .fail(function(jqXHR, exception, options)
     {
-      // TODO
-      //console.log('login failed')
+      if (jqXHR.status == 400)
+      {
+        if (jqXHR.responseText.split('<title>')[1].split('</title>')[0] === '400 bad credentials')
+        {
+          $("#alertDiv").show();
+          $("#alertMessage").html($scope.ui.error.login);
+        }
+      }
+      $scope.ajaxErrorHandler(jqXHR, exception, options);
     })
 
   }

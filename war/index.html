@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en" ng-app="webPaige">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   
   <title>KNRM :: Angular</title>
@@ -32,6 +32,7 @@
       'js/lib/date.js',
       'js/lib/json2.js',
       'js/lib/chosen/chosen.jquery.js',
+      'js/lib/validation/jquery.validate.js',
       'js/lib/timeline/timeline.js',
       'js/app.js',
       'js/services.js',
@@ -48,8 +49,19 @@
       'js/lib/bootstrap/bootstrap.js',
     ], function() 
     {
-      angular.bootstrap(document, ['webPaige']);
-    });
+      angular.bootstrap(document, ['webPaige'])
+
+      $('body').ready(function()
+      {
+        // TODO
+        //improve this !!
+        $("#alertClose").click(function()
+        {
+          $("#alertDiv").hide();
+        })
+        //
+      })
+    })
   </script>
   
 </head>

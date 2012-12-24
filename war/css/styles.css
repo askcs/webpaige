@@ -221,7 +221,12 @@ hr {
 
 #alertBye { display:none;}
 
-#alertDiv, #successDiv, #goToLoginBtn, #profileChanged, #passwordChangedButton, #displayMessageModal { display:none;}
+#alertDiv, 
+#successDiv, 
+#goToLoginBtn, 
+#profileChanged, 
+#passwordChangedButton, 
+#displayMessageModal { display:none;}
 
 iframe {
 	border: none;
@@ -253,7 +258,8 @@ span.add-on {
 }
 
 
-#ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
+#ui-datepicker-div, 
+.ui-datepicker{ font-size: 80%; }
 
 #messages {
 }
@@ -283,7 +289,8 @@ dd {
 	margin-top: -1px;
 }
 
-#groupsList li a:hover, #groupsList li a:focus {
+#groupsList li a:hover, 
+#groupsList li a:focus {
 	cursor: pointer;
 }
 
