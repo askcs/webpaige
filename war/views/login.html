@@ -1,19 +1,32 @@
 <section ng-controller="login">
     
   <div class="span3">
+
+  <script type="text/javascript">
+    $('#loginForm').validate(
+    {
+      // rules: {
+      //   loginUsername: {
+      //     required: true,
+      //     email: true
+      //   },
+      //   loginPassword: {
+      //     required: true,
+      //     minlength: 5
+      //   }
+      // },
+      // messages: {
+      //   loginUsername: "Please enter your username",
+      //   loginPassword: "Please enter your password"
+      // }
+    })
+  </script>
   
-    <script type="text/javascript">
-        $('#loginForm').validate(
-        {
-          errorClass: "label label-important",
-          errorElement: "span"
-        })
-    </script>
   
-    <form id="loginForm" ng-submit="login()" class="well">
+    <form id="loginForm" ng-submit="login()" class="well" action="" method="post">
 
       <div id="alertDiv" class="alert alert-error">
-        <button id="alertClose" class="close" type="button">×</button><span id="alertMessage"></span>
+        <button id="alertClose" class="close" type="button" onclick="$('#alertDiv').hide()">×</button><span id="alertMessage"></span>
       </div>
 
       <h2><span class="entypo eMedium">+</span> {{ ui.login.header }}</h2>

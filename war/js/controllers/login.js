@@ -3,7 +3,6 @@
 
 var login = function($scope)
 {
-
   var logindata = localStorage.getItem('logindata');
   if (logindata)
   {
@@ -31,7 +30,6 @@ var login = function($scope)
 
   $scope.login = function()
   {
-
     if (!$scope.logindata ||
         !$scope.logindata.username || 
         !$scope.logindata.password)
@@ -51,7 +49,7 @@ var login = function($scope)
 
     $.ajax(
     {
-      url: host   + '/login' 
+      url: host   + '/loginasddsf' 
                   + '?uuid='
                   + $scope.logindata.username
                   + '&pass=' 
@@ -65,14 +63,17 @@ var login = function($scope)
     })
     .fail(function(jqXHR, exception, options)
     {
-      if (jqXHR.status == 400)
-      {
-        if (jqXHR.responseText.split('<title>')[1].split('</title>')[0] === '400 bad credentials')
-        {
-          $("#alertDiv").show();
-          $("#alertMessage").html($scope.ui.error.login);
-        }
-      }
+      // if (jqXHR.status == 400 && 
+      //     jqXHR.responseText.split('<title>')[1].split('</title>')[0] === '400 bad credentials')
+      // {
+      //     $("#alertDiv").show();
+      //     $("#alertMessage").html( $scope.ui.error.messages.login );
+
+      //     $('#loginForm button[type=submit]')
+      //       .text($scope.ui.login.button_login)
+      //       .removeAttr('disabled')
+
+      // }
       $scope.ajaxErrorHandler(jqXHR, exception, options);
     })
 

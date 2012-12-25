@@ -47,20 +47,10 @@
       'js/filters.js',
       'js/directives.js',
       'js/lib/bootstrap/bootstrap.js',
+      'js/lib/bootstrap/bootstrap-notify.js',
     ], function() 
     {
       angular.bootstrap(document, ['webPaige'])
-
-      $('body').ready(function()
-      {
-        // TODO
-        //improve this !!
-        $("#alertClose").click(function()
-        {
-          $("#alertDiv").hide();
-        })
-        //
-      })
     })
   </script>
   
@@ -100,6 +90,8 @@
 	  	<div ng-view></div>
     </div>
   </div>
+
+  <div id="notification" class='notifications bottom-right'></div>
   
 </body>
 </html>

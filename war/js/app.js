@@ -27,9 +27,38 @@ var app = function($scope)
   // display only after logging in
   $scope.username = ' Cengiz '; 
   
+  jQuery.validator.setDefaults(
+  {
+    errorClass: config.validator.errorClass,
+    validClass: config.validator.validClass,
+    errorElement: config.validator.errorElement,
+    focusInvalid: config.validator.focusInvalid,
+    errorContainer: $( config.validator.errorContainer ),
+    errorLabelContainer: $( config.validator.errorLabelContainer ),
+    onsubmit: config.validator.onsubmit,
+    ignore: config.validator.ignore,
+    ignoreTitle: config.validator.ignoreTitle,
+  })
 
-  $scope.config = config;
-  $scope.ui = ui[$scope.config.lang];
+  jQuery.fn.notify.defaults = {
+    type: config.notifier.type,
+    closable: config.notifier.closable,
+    transition: config.notifier.transition,
+    fadeOut: {
+      enabled: config.notifier.fadeOut.enabled,
+      delay: config.notifier.fadeOut.delay
+    },
+    message: config.notifier.message,
+    onClose: function () 
+    {
+    },
+    onClosed: function () 
+    {      
+    }
+  }
+
+  //$scope.config = config;
+  $scope.ui = ui[config.lang];
 
   $scope.setLang = function(language)
   {
@@ -72,33 +101,42 @@ var app = function($scope)
     switch (jqXHR.status)
     {
       case 0:
-        console.log($scope.ui.error.ajax.noConnection)
+        $scope.notify( { message: $scope.ui.error.ajax.noConnection } )
       break;
       case 400:
-        console.log('Bad request!')
+        $scope.notify( { message: $scope.ui.error.ajax.badRequest } )
       break;
       case 404:
-        console.log('Requested page not found!')
+        $scope.notify( { message: $scope.ui.error.ajax.notFound } )
       break;
       case 500:
-        console.log('Internal server error')
+        $scope.notify( { message: $scope.ui.error.ajax.serverError } )
       break;
       default:
         switch (exception)
         {
           case 'parser error':
-            console.log('Requested JSON parse failed')
+            $scope.notify( { message: $scope.ui.error.ajax.parserError } )
           break;
           case 'timeout':
-            console.log('Timeout error!')
+            $scope.notify( { message: $scope.ui.error.ajax.timeout } )
           break;
           case 'abort':
-            console.log('Ajax request aborted.')
+            $scope.notify( { message: $scope.ui.error.ajax.abort } )
           break;
           default:
-            console.log('Uncaught Error. ' + jqXHR.responseText)
+            $scope.notify( { message: $scope.ui.error.ajax.uncaughtError + jqXHR.responseText } )
         }
     }
+  }
+
+
+
+
+
+  $scope.notify = function(options)
+  {
+    $('#notification').notify(options).show()
   }
 
 

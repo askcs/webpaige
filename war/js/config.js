@@ -49,14 +49,48 @@ var divisions = [
 	'knrm.StateGroup.BeschikbaarZuid',
 ]
 // for testing
-var divisions_ = []
+//var divisions_ = []
 
 // TODO
 // Some application general settings
 
 var config = {
-  lang: 'nl'
+  lang: 'nl',
+
+  validator: {
+    errorClass: "label label-important", // "error"
+    validClass: "valid",
+    errorElement: "label", // "span"
+    focusInvalid: true,
+    errorContainer: [],
+    errorLabelContainer: [],
+    onsubmit: true,
+    ignore: ":hidden",
+    ignoreTitle: false,
+  },
+
+  notifier: {
+    type: 'bangTidy',
+    closable: true,
+    transition: 'fade',
+    fadeOut: {
+      enabled: true,
+      delay: 6000
+    },
+    message: null,    
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
 
 // TODO
 // Language settings
@@ -90,13 +124,21 @@ var ui = {
         rangelength: "Please enter a value between {0} and {1} characters long.",
         range: "Please enter a value between {0} and {1}.",
         max: "Please enter a value less than or equal to {0}.",
-        min: "Please enter a value greater than or equal to {0}." ,
+        min: "Please enter a value greater than or equal to {0}.",
+
         messages: {
           login: "<strong>Login failed!</strong><br>Wrong username or password."
         },
-        ajax: {
-          noConnection: 'Not connected! Verify your network.',
 
+        ajax: {
+          noConnection: "Not connected! Verify your network.",
+          badRequest: "Bad request!",
+          notFound: "Requested page not found!",
+          serverError: "Internal server error",
+          parserError: "Requested JSON parse failed",
+          timeout: "Timeout error!",
+          abort: "Ajax request aborted.",
+          uncaughtError: "Uncaught Error. "
         }
       }
     },
@@ -130,15 +172,30 @@ var ui = {
         range: "Vul hier een waarde in van minimaal {0} en maximaal {1}.",
         max: "Vul hier een waarde in kleiner dan of gelijk aan {0}.",
         min: "Vul hier een waarde in groter dan of gelijk aan {0}.",
+
         messages: {
           login: "<strong>Inloggen is mislukt!</strong><br>Onjuiste gebruikersnaam of wachtwoord."
         },
+
         ajax: {
-          
+          noConnection: "Niet verbonden met Internet! Controleer uw netwerk instellingen.",
+          badRequest: "Ongeldig verzoek!",
+          notFound: "De verzochte pagina wordt niet gevonden!",
+          serverError: "Interne server foutmelding!",
+          parserError: "Het is niet lukt om de verzochte JSON te ontleden!",
+          timeout: "Timeout foutmelding!",
+          abort: "Ajax verzoek is afgebroken!",
+          uncaughtError: "De oorzak van de foutmelding is onbekend. "
         }
       }         
     }
 }
+
+
+
+
+
+
 
 
 // application window variable container for processed data
