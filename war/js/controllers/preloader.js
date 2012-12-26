@@ -397,6 +397,7 @@ var preloader = function($scope)
       // 1. resources
       // 2. dependent calls
     })
+    
   }
 preloader.prototype = {
   constructor: preloader,

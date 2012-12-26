@@ -30,6 +30,8 @@ var login = function($scope)
 
   $scope.login = function()
   {
+    $('#alertDiv').hide()
+
     if (!$scope.logindata ||
         !$scope.logindata.username || 
         !$scope.logindata.password)
@@ -49,7 +51,7 @@ var login = function($scope)
 
     $.ajax(
     {
-      url: host   + '/loginasddsf' 
+      url: host   + '/loginsddf' 
                   + '?uuid='
                   + $scope.logindata.username
                   + '&pass=' 
@@ -59,22 +61,27 @@ var login = function($scope)
     {
       $scope.setSession(data["X-SESSION_ID"]);
       
-      document.location = "index.html#/preloader";
+      //document.location = "index.html#/preloader";
+
+      $scope.fetchDependencies();
+
     })
     .fail(function(jqXHR, exception, options)
     {
-      // if (jqXHR.status == 400 && 
-      //     jqXHR.responseText.split('<title>')[1].split('</title>')[0] === '400 bad credentials')
-      // {
-      //     $("#alertDiv").show();
-      //     $("#alertMessage").html( $scope.ui.error.messages.login );
+      if (jqXHR.status == 400 && 
+          jqXHR.responseText.split('<title>')[1].split('</title>')[0] === '400 bad credentials')
+      {
+        $("#alertDiv").show();
+        $("#alertMessage").html( $scope.ui.error.messages.login );
+      }
+      else
+      {
+        $scope.ajaxErrorHandler(jqXHR, exception, options)
+      }
 
-      //     $('#loginForm button[type=submit]')
-      //       .text($scope.ui.login.button_login)
-      //       .removeAttr('disabled')
-
-      // }
-      $scope.ajaxErrorHandler(jqXHR, exception, options);
+      $('#loginForm button[type=submit]')
+        .text($scope.ui.login.button_login)
+        .removeAttr('disabled')
     })
 
   }

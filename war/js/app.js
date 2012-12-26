@@ -26,7 +26,14 @@ var app = function($scope)
   // TODO
   // display only after logging in
   $scope.username = ' Cengiz '; 
+
   
+
+  window.app.calls = {};
+  
+  
+
+  $('.notifications').addClass( config.notifier.position );
   jQuery.validator.setDefaults(
   {
     errorClass: config.validator.errorClass,
@@ -96,8 +103,6 @@ var app = function($scope)
 
   $scope.ajaxErrorHandler = function(jqXHR, exception, options)
   {
-    // TODO
-    // expand error handling
     switch (jqXHR.status)
     {
       case 0:
@@ -134,9 +139,10 @@ var app = function($scope)
 
 
 
+
   $scope.notify = function(options)
   {
-    $('#notification').notify(options).show()
+    $('.notifications').notify(options).show()
   }
 
 
@@ -201,6 +207,83 @@ var app = function($scope)
     if (!$scope.checkSession())
       window.location = "index.html";
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  $scope.fetchDependencies = function()
+  {
+
+    $('#preloader span')
+      .text('Loading user information..');
+
+    $.ajax(
+    {
+      url: host + '/resources',
+    })
+    .success(
+    function(user)
+    {
+      window.app.resources = user;
+
+      localStorage.setItem('resources', JSON.stringify(user));
+
+      $('#preloader .progress .bar')
+        .css({
+          width: '20%'
+      })
+
+      window.app.calls.resources = true;
+
+    }).fail(function()
+    {
+      window.app.calls.resources = false;
+    })
+    
+  }
+
+
+
+  $scope.fetchGroups = function()
+  {
+    
+  }
+
+
+
+
+  $scope.fetchTimelines = function()
+  {
+    
+  }
+
+
+
+  $scope.fetchMessages = function()
+  {
+    
+  }
+
+
+
+
 
 
 }

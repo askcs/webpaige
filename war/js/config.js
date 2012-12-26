@@ -70,6 +70,7 @@ var config = {
   },
 
   notifier: {
+    position: 'bottom-right',
     type: 'bangTidy',
     closable: true,
     transition: 'fade',
