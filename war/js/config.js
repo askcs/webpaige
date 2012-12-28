@@ -69,6 +69,8 @@ var config = {
 
   knrmAccounts: true,
 
+  blacklisted: ['msie'],
+
   validator: {
     errorClass: "label label-important", // "error"
     validClass: "valid",

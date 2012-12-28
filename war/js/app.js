@@ -208,7 +208,7 @@ var app = function($scope)
   // check browser
   // TODO
   // remove jQuery togglers
-  $scope.checkBrowser = function(blacklist)
+  $scope.checkBrowser = function()
   {
     var N = navigator.appName,
         ua = navigator.userAgent,
@@ -223,7 +223,7 @@ var app = function($scope)
 
     browser = browser[0].toLowerCase();
 
-    $.each(blacklist, function(index, banned)
+    $.each($scope.config.blacklisted, function(index, banned)
     {
       if (browser === banned)
       {

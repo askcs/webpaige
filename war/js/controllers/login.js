@@ -4,7 +4,7 @@
 var login = function($scope)
 {
   // check browser
-  $scope.checkBrowser(['msie']);
+  $scope.checkBrowser();
 
   var logindata = localStorage.getItem('logindata');
   if (logindata)
