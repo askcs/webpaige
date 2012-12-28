@@ -85,7 +85,7 @@
   </div>
 
 
-  <div class="span3 well">
+  <div id="knrmAccounts" class="span3 well" ng-show="config.knrmAccounts">
     <form>
       <h2><span class="entypo eMedium">-</span> KNRM Accounts</h2>
       <hr>
@@ -100,5 +100,40 @@
       <p><i>This part will be removed later!</i></p>
     </form>
   </div>
+
+
+  <div id="browseHappy" class="span9">
+    <h1>Helaas bieden wij geen ondersteuning voor deze browser.</h1>
+    <h3>Waarom niet? </h3>
+    <br />
+    <p>KNRM Paige is gebaseerd op de nieuwste technologie. 
+    Daardoor werkt KNRM Paige nog niet op alle browser optimaal. 
+    Wij proberen ondersteuning te bieden voor alle moderne browsers. 
+    Op dit moment kunt u KNRM Paige gebruiken met een van de onderstaande browsers.</p>
+    <br /><br />
+    <ul id="browserlist" class="wrap">
+      <li id="chrome">
+        <a href="http://www.google.com/chrome" title="Google Chrome">
+          <div class="icon"></div>
+          <h2>Google Chrome</h2>
+          <p class="website">Bezoek de website voor meer info</p>
+        </a>
+      </li>
+      <li id="firefox">
+        <a href="http://www.firefox.com/" title="Mozilla Firefox">
+          <div class="icon"></div>
+          <h2>Mozilla Firefox</h2>
+          <p class="website">Bezoek de website voor meer info</p>
+        </a>
+      </li>
+      <li id="safari">
+        <a href="http://www.apple.com/safari/" title="Apple Safari">
+          <div class="icon"></div>
+          <h2>Safari</h2>
+          <p class="website">Bezoek de website voor meer info</p>
+        </a>
+      </li>
+    </ul>
+  </div><!--/span-->
   
 </section>

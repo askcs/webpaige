@@ -457,18 +457,17 @@ table thead {
   margin-top: -50px;
 }
 
+
+
+
+
+
+
 #browseHappy {
 	display: none;
+	margin-left: 10px;
+	margin-top: 10px;
 }
-
-
-
-
-
-
-
-
-
 
 #browserlist:before, #browserlist:after {
 	content: "\0020";
@@ -746,3 +745,5 @@ table thead {
   text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.2);
   -webkit-font-smoothing: antialiased;
 }
+
+

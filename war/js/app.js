@@ -28,6 +28,8 @@ var app = function($scope)
 {
   window.app.calls = {};
 
+  $scope.config = config;
+
   // position notifications
   $('.notifications').addClass( config.notifier.position );
   
@@ -95,13 +97,6 @@ var app = function($scope)
         }
       }
     )
-  }
-  
-  // init app
-  $scope.initApp = function()
-  {
-    $('#menu').show();
-    document.location = "#/dashboard";
   }
 
   // ajax error handler
@@ -207,6 +202,37 @@ var app = function($scope)
       window.location = "index.html";
   }
 
+
+
+
+  // check browser
+  // TODO
+  // remove jQuery togglers
+  $scope.checkBrowser = function(blacklist)
+  {
+    var N = navigator.appName,
+        ua = navigator.userAgent,
+        tem;
+
+    var browser = ua.match(/(opera|chrome|safari|firefox|msie)\/?\s*(\.?\d+(\.\d+)*)/i);
+
+    if (browser && (tem = ua.match(/version\/([\.\d]+)/i)) != null) 
+      browser[2] = tem[1];
+
+    browser = browser ? [browser[1], browser[2]] : [N, navigator.appVersion, '-?'];
+
+    browser = browser[0].toLowerCase();
+
+    $.each(blacklist, function(index, banned)
+    {
+      if (browser === banned)
+      {
+        $('#loginForm').hide();
+        $scope.config.knrmAccounts = false;
+        $('#browseHappy').show();
+      }
+    })
+  }
 
 
   // fetch user resources
@@ -377,8 +403,11 @@ var app = function($scope)
       window.app.members = members;
       // save
       localStorage.setItem('members', JSON.stringify(members));
+
+      // TODO
       // redirect
-      $scope.initApp();
+      $('#menu').show();
+      document.location = "#/dashboard";
     })
     
   }

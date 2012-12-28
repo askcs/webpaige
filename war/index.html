@@ -61,7 +61,7 @@
   <div class="navbar navbar-inner container-fluid">
 	  <a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse"></a> <a class="brand" href="#dashboard">KNRM</a>
     
-    <div id="menu">
+    <div id="menu" ng-show="validLogin">
       <div class="btn-group pull-right">
         <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-user"></i> {{ user.name }} <span class="caret"></span></a>
         <ul class="dropdown-menu">

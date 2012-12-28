@@ -67,6 +67,8 @@ var now = parseInt((new Date()).getTime() / 1000);
 var config = {
   lang: 'nl',
 
+  knrmAccounts: true,
+
   validator: {
     errorClass: "label label-important", // "error"
     validClass: "valid",

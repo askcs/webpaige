@@ -3,6 +3,9 @@
 
 var login = function($scope)
 {
+  // check browser
+  $scope.checkBrowser(['msie']);
+
   var logindata = localStorage.getItem('logindata');
   if (logindata)
   {
@@ -28,7 +31,7 @@ var login = function($scope)
 
   // real knrm users for testing
   $scope.knrms = knrm_users;
-
+  // knrm users login
   $scope.loginAsKNRM = function(uuid, pass)
   {
     // button state
@@ -39,7 +42,7 @@ var login = function($scope)
     $scope.auth(uuid, pass)
   }
 
-
+  // login trigger
   $scope.login = function()
   {
     // reset alerts
@@ -65,7 +68,7 @@ var login = function($scope)
     $scope.auth($scope.logindata.username, $scope.md5($scope.logindata.password))
   }
 
-
+  // authorize login
   $scope.auth = function(uuid, pass)
   {
     $.ajax(
@@ -106,7 +109,7 @@ var login = function($scope)
     })    
   }
 
-
+  // md5 engine
   $scope.md5 = function(string)
   {
     function RotateLeft(lValue, iShiftBits)
