@@ -25,49 +25,64 @@ var login = function($scope)
     } 
   })
 
+  $scope.knrms = knrm_users;
 
+
+  $scope.loginAsKNRM = function(uuid, pass)
+  {
+    $scope.auth(uuid, pass)
+  }
 
 
   $scope.login = function()
   {
+    // reset alerts
     $('#alertDiv').hide()
-
+    // checks
     if (!$scope.logindata ||
         !$scope.logindata.username || 
         !$scope.logindata.password)
     {
       return false      
     }
-
+    // button state
     $('#loginForm button[type=submit]')
       .text($scope.ui.login.button_loggingIn)
       .attr('disabled', 'disabled')
-
+    // save login
     localStorage.setItem('logindata', JSON.stringify({
       username: $scope.logindata.username,
       password: $scope.logindata.password,
       remember: $scope.logindata.remember
     }))
+    // auth
+    $scope.auth($scope.logindata.username, $scope.md5($scope.logindata.password))
+  }
 
+
+  $scope.auth = function(uuid, pass)
+  {
     $.ajax(
     {
-      url: host   + '/loginsddf' 
+      url: host   + '/login' 
                   + '?uuid='
-                  + $scope.logindata.username
+                  + uuid
                   + '&pass=' 
-                  + $scope.md5($scope.logindata.password)
+                  + pass
     })
     .success(function(data)
     {
+      // save cookie
       $scope.setSession(data["X-SESSION_ID"]);
-      
-      //document.location = "index.html#/preloader";
-
+      // presentation
+      $('#loginForm').hide();
+      $('#preloader').show();
+      // start preloading
       $scope.fetchDependencies();
-
     })
     .fail(function(jqXHR, exception, options)
     {
+      // check whether wrong credentials
       if (jqXHR.status == 400 && 
           jqXHR.responseText.split('<title>')[1].split('</title>')[0] === '400 bad credentials')
       {
@@ -78,18 +93,16 @@ var login = function($scope)
       {
         $scope.ajaxErrorHandler(jqXHR, exception, options)
       }
-
+      // reset button state
       $('#loginForm button[type=submit]')
         .text($scope.ui.login.button_login)
         .removeAttr('disabled')
-    })
-
+    })    
   }
 
 
   $scope.md5 = function(string)
   {
-     
     function RotateLeft(lValue, iShiftBits)
     {
       return (lValue<<iShiftBits) | (lValue>>>(32-iShiftBits));

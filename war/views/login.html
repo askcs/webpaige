@@ -1,9 +1,20 @@
 <section ng-controller="login">
+
+
+  <div id="preloader" class="span3 well">
+    <h2>Setting up the application</h2>
+    <br>
+    <div class="progress">
+      <div class="bar"></div>
+    </div>
+    <span></span>
+  </div>
+
     
-  <div class="span3">
+  <div id="loginForm" class="span3 well">
 
     <script type="text/javascript">
-      $('#loginForm').validate(
+      $('#loginForm form').validate(
       {
         // rules: {
         //   loginUsername: {
@@ -20,10 +31,9 @@
         //   loginPassword: "Please enter your password"
         // }
       })
-    </script>
+    </script>  
   
-  
-    <form id="loginForm" ng-submit="login()" class="well" action="" method="post">
+    <form ng-submit="login()">
 
       <div id="alertDiv" class="alert alert-error">
         <button id="alertClose" class="close" type="button" onclick="$('#alertDiv').hide()">×</button><span id="alertMessage"></span>
@@ -41,7 +51,8 @@
             class="span12 required" 
             type="text" 
             ng-model="logindata.username"
-            placeholder="{{ ui.login.placeholder_username }}" >
+            placeholder="{{ ui.login.placeholder_username }}" 
+            autofocus>
         </div>
       </div>
 
@@ -71,21 +82,23 @@
     <a href="#" ng-click="setLang('nl')">Nederlands</a> | 
     <a href="#" ng-click="setLang('en')">English</a>
     
-  </div><!--/span-->
-
-  <div class="span5 well">
-
-    <h2>Setting up the application</h2>
-
-    <br>
-    
-    <div id="preloader">
-      <div class="progress">
-        <div class="bar"></div>
-      </div>
-      <span></span>
-    </div>
-    
   </div>
-	      
+
+
+  <div class="span3 well">
+    <form>
+      <h2><span class="entypo eMedium">-</span> KNRM Accounts</h2>
+      <hr>
+      <p>Login as;
+        <ul id="knrmusers_">
+          <li ng-repeat="knrm in knrms">
+            <a ng-click="loginAsKNRM(knrm.uuid, knrm.resources.askPass)">{{ knrm.name }} ({{ knrm.resources.role }})</a>
+          </li>
+        </ul>
+      </p>
+      
+      <p><i>This part will be removed later!</i></p>
+    </form>
+  </div>
+  
 </section>

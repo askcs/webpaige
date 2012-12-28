@@ -3,6 +3,11 @@
 
 var messages = function($scope)
 {
+
+
+	$('a[href=#dashboard]').parent().removeClass('active');
+	$('a[href=#messages]').parent().addClass('active');
+	$('a[href=#groups]').parent().removeClass('active');
 	
 	this.render();  
 	
@@ -15,7 +20,8 @@ var messages = function($scope)
 	
 }
 
-messages.prototype = $.extend({}, app.prototype, {
+//messages.prototype = $.extend({}, app.prototype, {
+messages.prototype = {
 
 	constructor: messages,
 	
@@ -79,6 +85,7 @@ messages.prototype = $.extend({}, app.prototype, {
 	
 	
 
-})
+}
+//)
 
 messages.$inject = ['$scope'];

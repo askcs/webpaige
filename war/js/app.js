@@ -2,38 +2,35 @@
 
 // Declare app level module which depends on filters, and services
 angular.module('webPaige', 
-  ['webPaige.filters', 'webPaige.services', 'webPaige.directives']).
-  config(['$routeProvider',function($routeProvider)
+  [ 'webPaige.filters', 
+    'webPaige.services', 
+    'webPaige.directives' ]).
+  config(['$routeProvider',
+  function($routeProvider)
   {
-    $routeProvider.when( '/login',        {templateUrl: 'views/login.html',       Ctrl: login} );
-    $routeProvider.when( '/logout',       {templateUrl: 'views/logout.html',      Ctrl: logout} );
-    $routeProvider.when( '/preloader',    {templateUrl: 'views/preloader.html',   Ctrl: preloader} );
-    $routeProvider.when( '/dashboard', 	  {templateUrl: 'views/dashboard.html', 	Ctrl: dashboard} );
-    $routeProvider.when( '/messages',     {templateUrl: 'views/messages.html', 	  Ctrl: messages} );
-    $routeProvider.when( '/groups',       {templateUrl: 'views/groups.html',      Ctrl: groups} );
-    $routeProvider.when( '/profile',      {templateUrl: 'views/profile.html',     Ctrl: profile} );
-    $routeProvider.when( '/settings',     {templateUrl: 'views/settings.html',    Ctrl: settings} );
+    $routeProvider.when( '/login',      {templateUrl: 'views/login.html',     Ctrl: login} );
+    $routeProvider.when( '/logout',     {templateUrl: 'views/logout.html',    Ctrl: logout} );
+    $routeProvider.when( '/preloader',  {templateUrl: 'views/preloader.html', Ctrl: preloader} );
+    $routeProvider.when( '/dashboard', 	{templateUrl: 'views/dashboard.html', Ctrl: dashboard} );
+    $routeProvider.when( '/messages',   {templateUrl: 'views/messages.html', 	Ctrl: messages} );
+    $routeProvider.when( '/groups',     {templateUrl: 'views/groups.html',    Ctrl: groups} );
+    $routeProvider.when( '/profile',    {templateUrl: 'views/profile.html',   Ctrl: profile} );
+    $routeProvider.when( '/settings',   {templateUrl: 'views/settings.html',  Ctrl: settings} );
     
     $routeProvider.otherwise( {redirectTo: '/login'} );
-  }]);
+  }]
+)
 
-  //
 
 
 // App controller
 var app = function($scope)
 {
-  // TODO
-  // display only after logging in
-  $scope.username = ' Cengiz '; 
-
-  
-
   window.app.calls = {};
-  
-  
 
   $('.notifications').addClass( config.notifier.position );
+  
+
   jQuery.validator.setDefaults(
   {
     errorClass: config.validator.errorClass,
@@ -96,6 +93,14 @@ var app = function($scope)
       }
     )
   }
+  
+
+
+  $scope.initApp = function()
+  {
+    $('#menu').show();
+    document.location = "#/dashboard";
+  }
 
 
 
@@ -136,17 +141,10 @@ var app = function($scope)
   }
 
 
-
-
-
-
   $scope.notify = function(options)
   {
     $('.notifications').notify(options).show()
   }
-
-
-
 
 
 
@@ -211,49 +209,39 @@ var app = function($scope)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   $scope.fetchDependencies = function()
   {
-
+    // TODO
+    //
     $('#preloader span')
       .text('Loading user information..');
-
+    // call
     $.ajax(
     {
       url: host + '/resources',
     })
     .success(
-    function(user)
+    function(data)
     {
-      window.app.resources = user;
-
-      localStorage.setItem('resources', JSON.stringify(user));
-
+      // init
+      window.app.resources = $scope.user = data;
+      // save
+      localStorage.setItem('resources', JSON.stringify(data));
+      // TODO
+      //
       $('#preloader .progress .bar')
         .css({
-          width: '20%'
+          width: '35%'
       })
-
+      // TODO
+      //
       window.app.calls.resources = true;
-
+      // groups
+      $scope.fetchGroups();
     }).fail(function()
     {
+      // TODO
+      //
       window.app.calls.resources = false;
     })
     
@@ -261,24 +249,394 @@ var app = function($scope)
 
 
 
+
+
+
+
+
+
+
+
+
   $scope.fetchGroups = function()
   {
-    
+    // TODO
+    // what if user has no groups under network?
+    // switch to parent call
+    // TODO
+    //
+    $('#preloader span')
+     .text('Loading groups..');
+    // call
+    $.ajax(
+    {
+      url: host + '/network',
+    }).success(
+    function(data)
+    {
+      // init
+      window.app.groups = data;
+      // save
+      localStorage.setItem('groups', JSON.stringify(data));
+      // TODO
+      //
+      window.app.calls.network = true;
+      // TODO
+      //
+      $('#preloader .progress .bar').css(
+      {
+        width: '70%'
+      })
+      // members
+      $scope.fetchMembers();
+    }).fail(function()
+    {
+      // TODO
+      //
+      window.app.calls.network = false;
+    })
   }
 
-
-
-
-  $scope.fetchTimelines = function()
+  $scope.fetchMembers = function()
   {
+    // TODO
+    //
+    $('#preloader span').text('Loading members..');
+    // variables
+    var members = {},
+        tmp = {};
+    // TODO
+    // here or later should be checked
+    // if the user already in the list ?
+    // loop
+    $.each(window.app.groups, function(index, group)
+    {
+      // TODO
+      //
+      window.app.calls.members = {};
+      // array objects
+      (function(index)
+      {
+        tmp[group.uuid] = function(callback, index)
+        {
+          setTimeout(function()
+          {
+            // TODO
+            //
+            $('#preloader span').text('Loading members.. (' + group.name + ')');
+            // call
+            $.ajax(
+            {
+              url: host + '/network/' + group.uuid + '/members?fields=[role]',
+            }).success(
+            function(data)
+            {
+              // save
+              localStorage.setItem(group.uuid, JSON.stringify(data));
+              // TODO
+              //
+              window.app.calls.members[group.uuid] = true;
+              // callbacks
+              callback(null, true);
+            }).fail(function()
+            {
+              // TODO
+              // 
+              window.app.calls.members[group.uuid] = false;
+            })
+          }, (index * 100) + 100)
+        }
+        $.extend(members, tmp)
+      })(index)
+    })
+
+    async.series(members, function(err, results)
+    {
+      var members = {};
+      // loop
+      $.each(window.app.groups, function(index, group)
+      {
+        var groupList = JSON.parse(localStorage.getItem(group.uuid));
+        // not empty
+        if (groupList.length > 0 || 
+            groupList != null || 
+            groupList != undefined)
+        {
+          $.each(groupList, function(index, member)
+          {
+            // init
+            members[member.uuid] = member;
+          })
+        }
+      })
+      // init
+      window.app.members = members;
+      // save
+      localStorage.setItem('members', JSON.stringify(members));
+      // redirect
+      $scope.initApp();
+    })
     
   }
+
+
+
+
+
+
+
+
+
+  $scope.fetchGroupTimelines = function()
+  {
+
+    var params = [];
+
+    if (divisions.length > 0)
+    {
+      $.each(divisions, function(index, value)
+      {
+        var param = '&stateGroup=' + value;
+        params.push(param);
+      })
+    }
+
+    params.unshift(null);
+
+    var groups = {},
+      tmp = {},
+      aggs = {},
+      key, stateGroup, ikey;
+
+    $.each(window.app.groups, function(index, group)
+    {
+      aggs[group.uuid] = {};
+
+      // TODO
+      //
+      window.app.calls.aggs = {};
+      
+      $.each(params, function(index, param)
+      {
+        if (param)
+        {
+          var key = param.substr(12);
+          var stateGroup = param;
+        }
+        else
+        {
+          var key = 'default';
+          var stateGroup = '';
+        }
+        ikey = group.uuid + "_" + key;
+        (function(ikey, stateGroup, key, index)
+        {
+          tmp[ikey] = function(callback, index)
+          {
+            setTimeout(function()
+            {
+              // TODO
+              //
+              $('#preloader span').text('Loading aggregrated timelines.. (' + group.name + ')');
+              
+              $.ajax(
+              {
+                url: host  + '/calc_planning/' 
+                           + group.uuid 
+                           + '?start=' 
+                           + config.timeline.settings.ranges.period.bstart 
+                           + '&end=' 
+                           + config.timeline.settings.ranges.period.bend 
+                           + stateGroup
+              }).success(
+              function(data)
+              {
+                aggs[group.uuid][key] = data;
+
+                // TODO
+                //
+                window.app.calls.aggs[group.uuid] = true;
+
+                callback(null, true);
+              }).fail(function()
+              {
+                // TODO
+                //
+                window.app.calls.aggs[group.uuid] = false;
+
+              })
+            }, (index * 100) + 100)
+          }
+          $.extend(groups, tmp)
+        })(ikey, stateGroup, key, index)
+      })
+    })
+
+    async.series(groups, function(err, results)
+    {
+      window.app.aggs = aggs;
+      localStorage.setItem('aggs', JSON.stringify(aggs));
+      callback(null, 'done');
+    });
+    
+  }
+
+
+
+  $scope.fetchMemberTimelines = function()
+  {
+    // TODO
+    //
+    $('#preloader .progress .bar').css(
+    {
+      width: '90%'
+    });
+
+    var members = {},
+        tmp = {},
+        slots = {},
+        key, 
+        itype, 
+        ikey, 
+        params = ['&type=both'];
+
+    params.unshift(null);
+
+    $.each(window.app.members, function(index, member)
+    {
+      slots[member.uuid] = {};
+
+      // TODO
+      //
+      window.app.calls.slots = {};
+
+      $.each(params, function(index, param)
+      {
+        if (param)
+        {
+          key = param.substr(6);
+          itype = param;
+        }
+        else
+        {
+          key = 'default';
+          itype = '';
+        }
+
+        ikey = member.uuid + "_" + key;
+
+        (function(ikey, itype, key, index)
+        {
+          tmp[ikey] = function(callback, index)
+          {
+            setTimeout(function()
+            {
+              // TODO
+              //
+              $('#preloader span').text('Loading timeslots.. (' + member.name + ')');
+
+              $.ajax(
+              {
+                url: host  + '/askatars/' 
+                           + member.uuid 
+                           + '/slots?start=' 
+                           + window.app.settings.ranges.period.bstart 
+                           + '&end=' 
+                           + window.app.settings.ranges.period.bend 
+                           + itype
+              }).success(
+              function(data)
+              {
+                slots[member.uuid][key] = data;
+
+                // TODO
+                //
+                window.app.calls.slots[member.uuid] = true;
+
+                callback(null, true);
+
+              }).fail(function()
+              {
+                // TODO
+                //
+                window.app.calls.slots[member.uuid] = false;
+              })
+            }, (index * 100) + 100)
+          }
+
+          $.extend(members, tmp)
+
+        })(ikey, itype, key, index)
+
+      })
+
+    })
+
+    async.series(members, function(err, results)
+    {
+      window.app.slots = slots;
+
+      localStorage.setItem('slots', JSON.stringify(slots));
+
+      // TODO
+      //
+      $('#preloader .progress .bar').css(
+      {
+        width: '100%'
+      })
+
+      // document.location = "#/dashboard";
+    })
+    
+  }
+
+
+
+
+
+
+
+
+
+
 
 
 
   $scope.fetchMessages = function()
   {
-    
+    $.ajax(
+    {
+      url: host + '/question?0=dm',
+    }).success(
+    function(data)
+    {
+      // init
+      window.app.messages = data;
+      // save
+      localStorage.setItem('messages', JSON.stringify(data));
+      // TODO
+      //
+      window.app.calls.messages = true;
+      // count
+      $scope.countUnreadMessages(data)
+    }).fail(function()
+    {
+      // TODO
+      window.app.calls.messages = false;
+    })    
+  }
+
+  $scope.countUnreadMessages = function(messages)
+  {
+    var count = 0;
+    for (var i in messages)
+    {
+      if (messages[i].state === "NEW")
+      {
+        count++;
+      }
+    }
+    $scope.unreadMessages = count    
   }
 
 

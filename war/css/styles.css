@@ -651,13 +651,21 @@ table thead {
 
 
 #menu {
-	display: none;
+	/*display: none;*/
 }
 
 
 
 
+#preloader {
+	display: none;
+	
+}
 
+
+#loginForm {
+	margin: 0;
+}
 
 
 

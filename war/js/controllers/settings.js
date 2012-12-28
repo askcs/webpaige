@@ -35,7 +35,8 @@ var settings = function($scope)
 		
 }
 
-settings.prototype = $.extend({}, app.prototype, {
+//settings.prototype = $.extend({}, app.prototype, {
+settings.prototype = {
 
 	constructor: settings,
 	
@@ -312,6 +313,7 @@ settings.prototype = $.extend({}, app.prototype, {
 	}
 
 
-})
+}
+//)
 
 settings.$inject = ['$scope'];
