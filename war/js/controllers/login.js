@@ -25,11 +25,17 @@ var login = function($scope)
     } 
   })
 
-  $scope.knrms = knrm_users;
 
+  // real knrm users for testing
+  $scope.knrms = knrm_users;
 
   $scope.loginAsKNRM = function(uuid, pass)
   {
+    // button state
+    $('#loginForm button[type=submit]')
+      .text($scope.ui.login.button_loggingIn)
+      .attr('disabled', 'disabled')
+    // login
     $scope.auth(uuid, pass)
   }
 

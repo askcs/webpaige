@@ -655,6 +655,23 @@ table thead {
 }
 
 
+/*#menu ul {
+	margin-top: 8px;
+}
+
+#menu li a {
+	display: inline;
+}
+#menu li span.label {
+	display: inline;
+	margin-left: 5px;
+	padding-top: 3px;
+}*/
+
+#menu li a span.badge {
+	padding-top: 3px;
+	margin-left: 3px;
+}
 
 
 #preloader {

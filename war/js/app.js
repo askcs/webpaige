@@ -28,9 +28,10 @@ var app = function($scope)
 {
   window.app.calls = {};
 
+  // position notifications
   $('.notifications').addClass( config.notifier.position );
   
-
+  // defaults for validator
   jQuery.validator.setDefaults(
   {
     errorClass: config.validator.errorClass,
@@ -44,6 +45,7 @@ var app = function($scope)
     ignoreTitle: config.validator.ignoreTitle,
   })
 
+  // defaults for notifier
   jQuery.fn.notify.defaults = {
     type: config.notifier.type,
     closable: config.notifier.closable,
@@ -64,6 +66,7 @@ var app = function($scope)
   //$scope.config = config;
   $scope.ui = ui[config.lang];
 
+  // set language
   $scope.setLang = function(language)
   {
     $scope.ui = ui[language];
@@ -94,18 +97,14 @@ var app = function($scope)
     )
   }
   
-
-
+  // init app
   $scope.initApp = function()
   {
     $('#menu').show();
     document.location = "#/dashboard";
   }
 
-
-
-
-
+  // ajax error handler
   $scope.ajaxErrorHandler = function(jqXHR, exception, options)
   {
     switch (jqXHR.status)
@@ -140,14 +139,13 @@ var app = function($scope)
     }
   }
 
-
+  // notifier
   $scope.notify = function(options)
   {
     $('.notifications').notify(options).show()
   }
 
-
-
+  // check session
   $scope.checkSession = function()
   {
     if($scope.sessionId == null)
@@ -182,6 +180,7 @@ var app = function($scope)
     return true;
   }
   
+  // get session
   $scope.getSession = function()
   {
     $scope.checkSession();
@@ -189,6 +188,7 @@ var app = function($scope)
     return $scope.sessionId;
   }
 
+  // set session
   $scope.setSession = function(sessionId)
   {      
     var time            = new Date();
@@ -200,6 +200,7 @@ var app = function($scope)
     document.cookie     = "ask=" + JSON.stringify(session);
   }
 
+  // deeep link preventer
   $scope.preventDeepLink = function()
   {
     if (!$scope.checkSession())
@@ -208,7 +209,7 @@ var app = function($scope)
 
 
 
-
+  // fetch user resources
   $scope.fetchDependencies = function()
   {
     // TODO
@@ -238,6 +239,7 @@ var app = function($scope)
       window.app.calls.resources = true;
       // groups
       $scope.fetchGroups();
+      $scope.fetchMessages();
     }).fail(function()
     {
       // TODO
@@ -257,7 +259,7 @@ var app = function($scope)
 
 
 
-
+  // fetch user groups
   $scope.fetchGroups = function()
   {
     // TODO
@@ -297,6 +299,8 @@ var app = function($scope)
     })
   }
 
+  // fetch members data
+  // and process an unique list
   $scope.fetchMembers = function()
   {
     // TODO
@@ -386,7 +390,7 @@ var app = function($scope)
 
 
 
-
+  // fetch group calc timeline
   $scope.fetchGroupTimelines = function()
   {
 
@@ -482,7 +486,7 @@ var app = function($scope)
   }
 
 
-
+  // fetch indv. timeline data
   $scope.fetchMemberTimelines = function()
   {
     // TODO
@@ -601,7 +605,7 @@ var app = function($scope)
 
 
 
-
+  // fetch messages
   $scope.fetchMessages = function()
   {
     $.ajax(
@@ -626,6 +630,9 @@ var app = function($scope)
     })    
   }
 
+  // count unread messages
+  // TODO
+  // needs to be filtered and optimized
   $scope.countUnreadMessages = function(messages)
   {
     var count = 0;
