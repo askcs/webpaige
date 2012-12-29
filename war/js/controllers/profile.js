@@ -1,7 +1,7 @@
 'use strict';
 /* Profile controller */
 
-var profile = function($scope)
+var profileCtrl = function($scope)
 {
   document.getElementById('alertClose').addEventListener('click', this.closeAlerts, false);
   document.getElementById('updateProfileTrigger').addEventListener('click', this.updateProfile, false);
@@ -10,9 +10,9 @@ var profile = function($scope)
 }
 
 //profile.prototype = $.extend({}, app.prototype, {
-profile.prototype = {
+profileCtrl.prototype = {
 
-	constructor: profile,
+	constructor: profileCtrl,
 	
 	closeAlerts: function()
 	{
@@ -199,4 +199,4 @@ profile.prototype = {
 }
 //)
 
-profile.$inject = ['$scope'];
+profileCtrl.$inject = ['$scope'];

@@ -1,7 +1,7 @@
 'use strict';
 /* Logout controller */
 
-var logout = function($scope)
+var logoutCtrl = function($scope)
 {
   $.ajax(
   {
@@ -24,9 +24,9 @@ var logout = function($scope)
   window.location = "logout.html";
 }
 
-logout.prototype = {
+logoutCtrl.prototype = {
 
-  constructor: logout,
+  constructor: logoutCtrl,
 
   // TODO
   // make a config item to check
@@ -42,4 +42,4 @@ logout.prototype = {
 
 }
 
-logout.$inject = ['$scope'];
+logoutCtrl.$inject = ['$scope'];

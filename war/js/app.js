@@ -1,21 +1,21 @@
 'use strict';
 
 // Declare app level module which depends on filters, and services
-angular.module('webPaige', 
-  [ 'webPaige.filters', 
-    'webPaige.services', 
-    'webPaige.directives' ]).
+angular.module('App', 
+  [ 'App.filters', 
+    'App.services', 
+    'App.directives' ]).
   config(['$routeProvider',
   function($routeProvider)
   {
-    $routeProvider.when( '/login',      {templateUrl: 'views/login.html',     Ctrl: login} );
-    $routeProvider.when( '/logout',     {templateUrl: 'views/logout.html',    Ctrl: logout} );
-    $routeProvider.when( '/preloader',  {templateUrl: 'views/preloader.html', Ctrl: preloader} );
-    $routeProvider.when( '/dashboard', 	{templateUrl: 'views/dashboard.html', Ctrl: dashboard} );
-    $routeProvider.when( '/messages',   {templateUrl: 'views/messages.html', 	Ctrl: messages} );
-    $routeProvider.when( '/groups',     {templateUrl: 'views/groups.html',    Ctrl: groups} );
-    $routeProvider.when( '/profile',    {templateUrl: 'views/profile.html',   Ctrl: profile} );
-    $routeProvider.when( '/settings',   {templateUrl: 'views/settings.html',  Ctrl: settings} );
+    $routeProvider.when( '/login',      {templateUrl: 'views/login.html',     Ctrl: loginCtrl} );
+    $routeProvider.when( '/logout',     {templateUrl: 'views/logout.html',    Ctrl: logoutCtrl} );
+    //$routeProvider.when( '/preloader',  {templateUrl: 'views/preloader.html', Ctrl: preloaderCtrl} );
+    $routeProvider.when( '/dashboard', 	{templateUrl: 'views/dashboard.html', Ctrl: dashboardCtrl} );
+    $routeProvider.when( '/messages',   {templateUrl: 'views/messages.html', 	Ctrl: messagesCtrl} );
+    $routeProvider.when( '/groups',     {templateUrl: 'views/groups.html',    Ctrl: groupsCtrl} );
+    $routeProvider.when( '/profile',    {templateUrl: 'views/profile.html',   Ctrl: profileCtrl} );
+    $routeProvider.when( '/settings',   {templateUrl: 'views/settings.html',  Ctrl: settingsCtrl} );
     
     $routeProvider.otherwise( {redirectTo: '/login'} );
   }]
@@ -408,6 +408,7 @@ var app = function($scope)
 
 
   // fetch plaboards
+  /*
   $scope.fetchPlanboards = function()
   {
     async.waterfall([
@@ -593,7 +594,7 @@ var app = function($scope)
        console.log('result', result)   
     });
   }
-
+  */
 
 
 

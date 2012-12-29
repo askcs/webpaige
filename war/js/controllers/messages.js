@@ -1,7 +1,7 @@
 'use strict';
 /* Messages controller */
 
-var messages = function($scope)
+var messagesCtrl = function($scope)
 {
 
 
@@ -21,9 +21,9 @@ var messages = function($scope)
 }
 
 //messages.prototype = $.extend({}, app.prototype, {
-messages.prototype = {
+messagesCtrl.prototype = {
 
-	constructor: messages,
+	constructor: messagesCtrl,
 	
 	callbacks: {},
 	
@@ -88,4 +88,4 @@ messages.prototype = {
 }
 //)
 
-messages.$inject = ['$scope'];
+messagesCtrl.$inject = ['$scope'];

@@ -1,7 +1,7 @@
 'use strict';
 /* Settings controller */
 
-var settings = function($scope)
+var settingsCtrl = function($scope)
 {
   this.renderGroupsList();
   
@@ -36,9 +36,9 @@ var settings = function($scope)
 }
 
 //settings.prototype = $.extend({}, app.prototype, {
-settings.prototype = {
+settingsCtrl.prototype = {
 
-	constructor: settings,
+	constructor: settingsCtrl,
 	
 /*
 	wishSubmit: function()
@@ -316,4 +316,4 @@ settings.prototype = {
 }
 //)
 
-settings.$inject = ['$scope'];
+settingsCtrl.$inject = ['$scope'];

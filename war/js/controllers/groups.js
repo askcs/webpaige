@@ -1,7 +1,7 @@
 'use strict';
 /* Groups controller */
 
-var groups = function($scope)
+var groupsCtrl = function($scope)
 {
 
 
@@ -12,16 +12,14 @@ var groups = function($scope)
 	//$scope.fetchGroups();
 	//$scope.fetchMembers();
 
-	console.log('groups')
-
 }
 
 //groups.prototype = $.extend({}, app.prototype, {
-groups.prototype = {
+groupsCtrl.prototype = {
 
-	constructor: groups,
+	constructor: groupsCtrl,
 
 }
 //)
 
-groups.$inject = ['$scope'];
+groupsCtrl.$inject = ['$scope'];

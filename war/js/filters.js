@@ -1,7 +1,7 @@
 'use strict';
 
 /* Filters */
-angular.module('webPaige.filters', []).
+angular.module('App.filters', []).
   filter('interpolate', ['version', function(version)
   {
     return function(text)

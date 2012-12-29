@@ -1,5 +1,5 @@
 'use strict'; /* Preloader controller */
-var preloader = function($scope)
+var preloaderCtrl = function($scope)
   {
 
   	//console.log($scope.getSession());
@@ -399,8 +399,8 @@ var preloader = function($scope)
     })
     
   }
-preloader.prototype = {
-  constructor: preloader,
+preloaderCtrl.prototype = {
+  constructor: preloaderCtrl,
   // TODO: make this one efficient working
   setupRanges: function()
   {
@@ -425,4 +425,4 @@ preloader.prototype = {
     }
   }
 }
-preloader.$inject = ['$scope'];
+preloaderCtrl.$inject = ['$scope'];

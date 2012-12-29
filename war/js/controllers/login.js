@@ -1,7 +1,7 @@
 'use strict';
 /* Login controller */
 
-var login = function($scope)
+var loginCtrl = function($scope)
 {
   // check browser
   $scope.checkBrowser();
@@ -342,4 +342,4 @@ var login = function($scope)
 
 }
 
-login.$inject = ['$scope'];
+loginCtrl.$inject = ['$scope'];
