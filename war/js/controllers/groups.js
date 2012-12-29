@@ -12,6 +12,8 @@ var groups = function($scope)
 	//$scope.fetchGroups();
 	//$scope.fetchMembers();
 
+	console.log('groups')
+
 }
 
 //groups.prototype = $.extend({}, app.prototype, {

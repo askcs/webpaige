@@ -21,8 +21,6 @@ angular.module('webPaige',
   }]
 )
 
-
-
 // App controller
 var app = function($scope)
 {
@@ -33,6 +31,7 @@ var app = function($scope)
   // position notifications
   $('.notifications').addClass( config.notifier.position );
   
+  // DEFAULTS -------------------------------------------------------------------
   // defaults for validator
   jQuery.validator.setDefaults(
   {
@@ -68,11 +67,12 @@ var app = function($scope)
   //$scope.config = config;
   $scope.ui = ui[config.lang];
 
+  // APP ------------------------------------------------------------------------
   // set language
   $scope.setLang = function(language)
   {
     $scope.ui = ui[language];
-
+    // re-set validation messages
     jQuery.extend(
       jQuery.validator, 
       {
@@ -140,6 +140,43 @@ var app = function($scope)
     $('.notifications').notify(options).show()
   }
 
+  // deeep link preventer
+  $scope.preventDeepLink = function()
+  {
+    if (!$scope.checkSession())
+      window.location = "index.html";
+  }
+
+  // check browser
+  // TODO
+  // remove jQuery togglers
+  $scope.checkBrowser = function()
+  {
+    var N = navigator.appName,
+        ua = navigator.userAgent,
+        tem;
+
+    var browser = ua.match(/(opera|chrome|safari|firefox|msie)\/?\s*(\.?\d+(\.\d+)*)/i);
+
+    if (browser && (tem = ua.match(/version\/([\.\d]+)/i)) != null) 
+      browser[2] = tem[1];
+
+    browser = browser ? [browser[1], browser[2]] : [N, navigator.appVersion, '-?'];
+
+    browser = browser[0].toLowerCase();
+
+    $.each($scope.config.blacklisted, function(index, banned)
+    {
+      if (browser === banned)
+      {
+        $('#loginForm').hide();
+        $scope.config.knrmAccounts = false;
+        $('#browseHappy').show();
+      }
+    })
+  }
+
+  // SESSIONS ---------------------------------------------------------------------
   // check session
   $scope.checkSession = function()
   {
@@ -195,46 +232,7 @@ var app = function($scope)
     document.cookie     = "ask=" + JSON.stringify(session);
   }
 
-  // deeep link preventer
-  $scope.preventDeepLink = function()
-  {
-    if (!$scope.checkSession())
-      window.location = "index.html";
-  }
-
-
-
-
-  // check browser
-  // TODO
-  // remove jQuery togglers
-  $scope.checkBrowser = function()
-  {
-    var N = navigator.appName,
-        ua = navigator.userAgent,
-        tem;
-
-    var browser = ua.match(/(opera|chrome|safari|firefox|msie)\/?\s*(\.?\d+(\.\d+)*)/i);
-
-    if (browser && (tem = ua.match(/version\/([\.\d]+)/i)) != null) 
-      browser[2] = tem[1];
-
-    browser = browser ? [browser[1], browser[2]] : [N, navigator.appVersion, '-?'];
-
-    browser = browser[0].toLowerCase();
-
-    $.each($scope.config.blacklisted, function(index, banned)
-    {
-      if (browser === banned)
-      {
-        $('#loginForm').hide();
-        $scope.config.knrmAccounts = false;
-        $('#browseHappy').show();
-      }
-    })
-  }
-
-
+  // PRELOAD DEPENDENCIES ---------------------------------------------------------
   // fetch user resources
   $scope.fetchDependencies = function()
   {
@@ -275,16 +273,7 @@ var app = function($scope)
     
   }
 
-
-
-
-
-
-
-
-
-
-
+  // GROUPS & USERS ----------------------------------------------------------------
   // fetch user groups
   $scope.fetchGroups = function()
   {
@@ -412,7 +401,198 @@ var app = function($scope)
     
   }
 
+  // TIMELINES --------------------------------------------------------------------
 
+
+
+
+
+  // fetch plaboards
+  $scope.fetchPlanboards = function()
+  {
+    async.waterfall([
+
+      function(callback)
+      {
+        callback(null, 'user');
+      },
+
+      // fetch group slots
+      function(user, callback)
+      {
+        // reset en init params
+        var params = [];
+        // process divisions
+        if (divisions.length > 0)
+        {
+          $.each(divisions, function(index, value)
+          {
+            var param = '&stateGroup=' + value;
+            params.push(param);
+          })
+        }
+        params.unshift(null);
+        // init vars
+        var groups = {},
+          tmp = {},
+          aggs = {},
+          key, stateGroup, ikey;
+        // loop through the groups
+        $.each(window.app.groups, function(index, group)
+        {
+          aggs[group.uuid] = {};
+          // TODO
+          //
+          window.app.calls.aggs = {};
+          //
+          // loop through params
+          $.each(params, function(index, param)
+          {
+            if (param)
+            {
+              var key = param.substr(12);
+              var stateGroup = param;
+            }
+            else
+            {
+              var key = 'default';
+              var stateGroup = '';
+            }
+            ikey = group.uuid + "_" + key;
+            (function(ikey, stateGroup, key, index)
+            {
+              tmp[ikey] = function(callback, index)
+              {
+                setTimeout(function()
+                {
+                  // call
+                  $.ajax(
+                  {
+                    url: host  + '/calc_planning/' 
+                               + group.uuid 
+                               + '?start=' 
+                               + config.timeline.settings.ranges.period.bstart 
+                               + '&end=' 
+                               + config.timeline.settings.ranges.period.bend 
+                               + stateGroup
+                  }).success(
+                  function(data)
+                  {
+                    aggs[group.uuid][key] = data;
+                    // TODO
+                    //
+                    window.app.calls.aggs[group.uuid] = true;
+                    // callback
+                    callback(null, true);
+                  }).fail(function()
+                  {
+                    // TODO
+                    //
+                    window.app.calls.aggs[group.uuid] = false;
+                  })
+                }, (index * 100) + 100)
+              }
+              $.extend(groups, tmp)
+            })(ikey, stateGroup, key, index)
+          })
+        })
+        async.series(groups, function(err, results)
+        {
+          window.app.aggs = aggs;
+          // save
+          localStorage.setItem('aggs', JSON.stringify(aggs));
+          // callback
+          callback(null, 'group');
+        })
+      },
+
+      // fetch members slots
+      function(group, callback)
+      {
+        // init vars
+        var members = {},
+            tmp = {},
+            slots = {},
+            key, 
+            itype, 
+            ikey, 
+            params = ['&type=both'];
+        params.unshift(null);
+        //
+        // loop through members
+        $.each(window.app.members, function(index, member)
+        {
+          slots[member.uuid] = {};
+          // TODO
+          //
+          window.app.calls.slots = {};
+          // loop through params
+          $.each(params, function(index, param)
+          {
+            if (param)
+            {
+              key = param.substr(6);
+              itype = param;
+            }
+            else
+            {
+              key = 'default';
+              itype = '';
+            }
+            ikey = member.uuid + "_" + key;
+            (function(ikey, itype, key, index)
+            {
+              tmp[ikey] = function(callback, index)
+              {
+                setTimeout(function()
+                {
+                  // call
+                  $.ajax(
+                  {
+                    url: host  + '/askatars/' 
+                               + member.uuid 
+                               + '/slots?start=' 
+                               + config.timeline.settings.ranges.period.bstart 
+                               + '&end=' 
+                               + config.timeline.settings.ranges.period.bend 
+                               + itype
+                  }).success(
+                  function(data)
+                  {
+                    slots[member.uuid][key] = data;
+                    // TODO
+                    //
+                    window.app.calls.slots[member.uuid] = true;
+                    // callback
+                    callback(null, true);
+                  }).fail(function()
+                  {
+                    // TODO
+                    //
+                    window.app.calls.slots[member.uuid] = false;
+                  })
+                }, (index * 100) + 100)
+              }
+              $.extend(members, tmp)
+            })(ikey, itype, key, index)
+          })
+        })
+
+        async.series(members, function(err, results)
+        {
+          window.app.slots = slots;
+          // save
+          localStorage.setItem('slots', JSON.stringify(slots));
+          // callback
+          callback(null, 'members');
+        })
+      }
+
+    ], function (err, result)
+    {
+       console.log('result', result)   
+    });
+  }
 
 
 
@@ -422,9 +602,9 @@ var app = function($scope)
   // fetch group calc timeline
   $scope.fetchGroupTimelines = function()
   {
-
+    // reset en init params
     var params = [];
-
+    // process divisions
     if (divisions.length > 0)
     {
       $.each(divisions, function(index, value)
@@ -433,22 +613,21 @@ var app = function($scope)
         params.push(param);
       })
     }
-
     params.unshift(null);
-
+    // init vars
     var groups = {},
       tmp = {},
       aggs = {},
       key, stateGroup, ikey;
-
+    // loop through the groups
     $.each(window.app.groups, function(index, group)
     {
       aggs[group.uuid] = {};
-
       // TODO
       //
       window.app.calls.aggs = {};
-      
+      //
+      // loop through params
       $.each(params, function(index, param)
       {
         if (param)
@@ -471,7 +650,7 @@ var app = function($scope)
               // TODO
               //
               $('#preloader span').text('Loading aggregrated timelines.. (' + group.name + ')');
-              
+              // call
               $.ajax(
               {
                 url: host  + '/calc_planning/' 
@@ -485,18 +664,16 @@ var app = function($scope)
               function(data)
               {
                 aggs[group.uuid][key] = data;
-
                 // TODO
                 //
                 window.app.calls.aggs[group.uuid] = true;
-
+                // callback
                 callback(null, true);
               }).fail(function()
               {
                 // TODO
                 //
                 window.app.calls.aggs[group.uuid] = false;
-
               })
             }, (index * 100) + 100)
           }
@@ -504,27 +681,26 @@ var app = function($scope)
         })(ikey, stateGroup, key, index)
       })
     })
-
     async.series(groups, function(err, results)
     {
       window.app.aggs = aggs;
       localStorage.setItem('aggs', JSON.stringify(aggs));
       callback(null, 'done');
-    });
-    
+    })
   }
-
 
   // fetch indv. timeline data
   $scope.fetchMemberTimelines = function()
   {
     // TODO
     //
+    /*
     $('#preloader .progress .bar').css(
     {
       width: '90%'
     });
-
+    */
+    // init vars
     var members = {},
         tmp = {},
         slots = {},
@@ -532,17 +708,16 @@ var app = function($scope)
         itype, 
         ikey, 
         params = ['&type=both'];
-
     params.unshift(null);
-
+    //
+    // loop through members
     $.each(window.app.members, function(index, member)
     {
       slots[member.uuid] = {};
-
       // TODO
       //
       window.app.calls.slots = {};
-
+      // loop through params
       $.each(params, function(index, param)
       {
         if (param)
@@ -555,9 +730,7 @@ var app = function($scope)
           key = 'default';
           itype = '';
         }
-
         ikey = member.uuid + "_" + key;
-
         (function(ikey, itype, key, index)
         {
           tmp[ikey] = function(callback, index)
@@ -581,13 +754,11 @@ var app = function($scope)
               function(data)
               {
                 slots[member.uuid][key] = data;
-
                 // TODO
                 //
                 window.app.calls.slots[member.uuid] = true;
-
+                // callback
                 callback(null, true);
-
               }).fail(function()
               {
                 // TODO
@@ -596,44 +767,30 @@ var app = function($scope)
               })
             }, (index * 100) + 100)
           }
-
           $.extend(members, tmp)
-
         })(ikey, itype, key, index)
-
       })
-
     })
 
     async.series(members, function(err, results)
     {
       window.app.slots = slots;
-
+      // save
       localStorage.setItem('slots', JSON.stringify(slots));
-
       // TODO
       //
+      /*
       $('#preloader .progress .bar').css(
       {
         width: '100%'
       })
-
+      */
       // document.location = "#/dashboard";
     })
     
   }
 
-
-
-
-
-
-
-
-
-
-
-
+  // MESSAGES ----------------------------------------------------------------------
   // fetch messages
   $scope.fetchMessages = function()
   {
@@ -674,11 +831,6 @@ var app = function($scope)
     }
     $scope.unreadMessages = count    
   }
-
-
-
-
-
 
 }
 
