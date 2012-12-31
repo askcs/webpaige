@@ -90,15 +90,14 @@ var config = {
     transition: 'fade',
     fadeOut: {
       enabled: false,
-      delay: 6000
+      delay: 60000
     },
     message: null,    
   },
 
   data: {
     planboard: {
-      syncInterval: 6000,
-      autoStart: true
+      syncInterval: 60000 * 2
     }
   },
 

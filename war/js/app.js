@@ -64,7 +64,7 @@ angular.module('App',
 var app = function($scope)
 {
 
-  console.log('scope', $scope);
+  //console.log('scope', $scope);
 
   window.app.calls = {};
 
