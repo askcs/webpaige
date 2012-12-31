@@ -95,13 +95,38 @@ var config = {
     message: null,    
   },
 
+  data: {
+    planboard: {
+      syncInterval: 6000,
+      autoStart: true
+    }
+  },
+
   timeline: {
     period: {
       bstart: (now - 86400 * 7 * 1),
       bend: (now + 86400 * 7 * 1),
       start: Date.today().add({ days: -5 }),
       end: Date.today().add({ days: 5 })
-    }    
+    },
+    // TODO
+    // combine options with settings
+    options: {
+      axisOnTop: true,
+      width: '100%',
+      height: 'auto',
+      selectable: true,
+      editable: true,
+      style: 'box',
+      groupsWidth: '150px',
+      eventMarginAxis: 0,
+      /*
+      min: new Date(trange.start), 
+      max: new Date(trange.end),
+      */
+      intervalMin: 1000 * 60 * 60 * 1,
+      intervalMax: 1000 * 60 * 60 * 24 * 7 * 2
+    }     
   }
 }
 

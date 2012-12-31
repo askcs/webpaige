@@ -8,22 +8,64 @@ angular.module('App',
   config(['$routeProvider',
   function($routeProvider)
   {
-    $routeProvider.when( '/login',      {templateUrl: 'views/login.html',     Ctrl: loginCtrl} );
-    $routeProvider.when( '/logout',     {templateUrl: 'views/logout.html',    Ctrl: logoutCtrl} );
-    //$routeProvider.when( '/preloader',  {templateUrl: 'views/preloader.html', Ctrl: preloaderCtrl} );
-    $routeProvider.when( '/dashboard', 	{templateUrl: 'views/dashboard.html', Ctrl: dashboardCtrl} );
-    $routeProvider.when( '/messages',   {templateUrl: 'views/messages.html', 	Ctrl: messagesCtrl} );
-    $routeProvider.when( '/groups',     {templateUrl: 'views/groups.html',    Ctrl: groupsCtrl} );
-    $routeProvider.when( '/profile',    {templateUrl: 'views/profile.html',   Ctrl: profileCtrl} );
-    $routeProvider.when( '/settings',   {templateUrl: 'views/settings.html',  Ctrl: settingsCtrl} );
+
+    $routeProvider.when('/login',
+    {
+      templateUrl: 'views/login.html',
+      Ctrl: loginCtrl
+    })
+
+    $routeProvider.when('/logout',
+    {
+      templateUrl: 'views/logout.html',
+      Ctrl: logoutCtrl
+    })
+
+    $routeProvider.when('/dashboard',
+    {
+      templateUrl: 'views/dashboard.html',
+      Ctrl: dashboardCtrl
+    })
+
+    $routeProvider.when('/messages',
+    {
+      templateUrl: 'views/messages.html',
+      Ctrl: messagesCtrl
+    })
+
+    $routeProvider.when('/groups',
+    {
+      templateUrl: 'views/groups.html',
+      Ctrl: groupsCtrl
+    })
+
+    $routeProvider.when('/profile',
+    {
+      templateUrl: 'views/profile.html',
+      Ctrl: profileCtrl
+    })
+
+    $routeProvider.when('/settings',
+    {
+      templateUrl: 'views/settings.html',
+      Ctrl: settingsCtrl
+    })
     
-    $routeProvider.otherwise( {redirectTo: '/login'} );
+    $routeProvider.otherwise(
+    {
+      redirectTo: '/login'
+    })
   }]
 )
+
+
 
 // App controller
 var app = function($scope)
 {
+
+  console.log('scope', $scope);
+
   window.app.calls = {};
 
   $scope.config = config;
@@ -263,7 +305,11 @@ var app = function($scope)
       window.app.calls.resources = true;
       // groups
       $scope.fetchGroups();
-      $scope.fetchMessages();
+
+
+      // $scope.fetchMessages();
+
+
     }).fail(function()
     {
       // TODO
@@ -401,8 +447,564 @@ var app = function($scope)
     
   }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // TIMELINES --------------------------------------------------------------------
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  $scope.fetchPlanboards = function()
+  {
+    $scope.planboardLoading = true;
+    var results = {};
+
+
+    // TODO
+    //window.app.results = {};
+    //window.app.results.slots = {};
+    //
+
+    async.parallel(
+    {
+
+      user: function(callbackUserSlots)
+      {
+        setTimeout(function()
+        {
+          //var userSlotsResult = $scope.fetchUserTimeline();
+
+          //console.log('-> 4. fetchPlanboards:user', JSON.stringify(userSlotsResult));
+
+          // init vars
+          var user,
+              members = {},
+              tmp = {},
+              slots = {},
+              key, 
+              itype, 
+              ikey, 
+              params = [];
+              //params = ['&type=both'];
+          params.unshift(null);
+
+          // REMOVE
+          /*
+          window.app.resources = {};
+          window.app.resources.uuid = "4780aldewereld";
+          //var sessie = '1335b29a48a378c24a571e796d1a5ff9f54b76e0035b4d4baded22352cb0dfcc';
+            $.ajaxSetup(
+            {
+              contentType: 'application/json',
+              xhrFields: { 
+                withCredentials: true
+              },
+              beforeSend: function (xhr)
+              {
+                xhr.setRequestHeader('X-SESSION_ID', $scope.getSession())
+              } 
+            })
+          */
+          // REMOVE
+
+          slots[window.app.resources.uuid] = {};
+
+          // TODO
+          //
+          // register call
+          window.app.calls.slots = {};
+
+          // loop through params
+          $.each(params, function(index, param)
+          {
+            if (param)
+            {
+              key = param.substr(6);
+              itype = param;
+            }
+            else
+            {
+              key = 'default';
+              itype = '';
+            }
+            ikey = window.app.resources.uuid + "_" + key;
+
+            (function(ikey, itype, key, index)
+            {
+              tmp[ikey] = function(callback, index)
+              {
+                setTimeout(function()
+                {
+                  // call
+                  $.ajax(
+                  {
+                    url: host  + '/askatars/' 
+                               + window.app.resources.uuid 
+                               + '/slots?start=' 
+                               + config.timeline.settings.ranges.period.bstart 
+                               + '&end=' 
+                               + config.timeline.settings.ranges.period.bend 
+                               + itype
+                  }).success(
+                  function(data)
+                  {
+                    slots[window.app.resources.uuid][key] = data;
+                    // TODO
+                    //
+                    window.app.calls.slots[window.app.resources.uuid] = true;
+                    // callback
+                    callback(null, true);
+                  }).fail(function()
+                  {
+                    // TODO
+                    //
+                    window.app.calls.slots[window.app.resources.uuid] = false;
+                  })
+                }, (index * 100) + 100)
+              }
+              $.extend(members, tmp)
+            })(ikey, itype, key, index)
+          })
+
+          async.series(members, function(err, results)
+          {
+            window.app.slots = slots;
+            // save
+            localStorage.setItem('slots', JSON.stringify(slots));
+
+            //console.log('-> 1. fetchUserTimeline', results);
+
+            callbackUserSlots(null, results)
+          })
+
+        }, 100)
+      },
+
+      groups: function(callback)
+      {
+        setTimeout(function()
+        {
+          //$scope.fetchGroupTimelines();
+
+          callback(null, true)
+        }, 300)
+      },
+
+      members: function(callback)
+      {
+        setTimeout(function()
+        {
+          //$scope.fetchMemberTimelines();
+
+          callback(null, true)
+        }, 500)
+      }
+
+    },
+    function(err, results)
+    {
+      console.log('-> 5. fetchPlanboards', JSON.stringify(results))
+      return results
+      document.location = "#/dashboard";
+    })
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // fetch members slots
+  $scope.fetchUserTimeline = function()
+  {
+
+    // TODO
+    window.app.results.slots.user = {};
+    //
+
+    // init vars
+    var user,
+        members = {},
+        tmp = {},
+        slots = {},
+        key, 
+        itype, 
+        ikey, 
+        params = [];
+        //params = ['&type=both'];
+    params.unshift(null);
+
+    // REMOVE
+    window.app.resources = {};
+    window.app.resources.uuid = "4780aldewereld";
+    //var sessie = '1335b29a48a378c24a571e796d1a5ff9f54b76e0035b4d4baded22352cb0dfcc';
+      $.ajaxSetup(
+      {
+        contentType: 'application/json',
+        xhrFields: { 
+          withCredentials: true
+        },
+        beforeSend: function (xhr)
+        {
+          xhr.setRequestHeader('X-SESSION_ID', $scope.getSession())
+        } 
+      })
+    // REMOVE
+
+    slots[window.app.resources.uuid] = {};
+
+    // TODO
+    //
+    // register call
+    window.app.calls.slots = {};
+
+    // loop through params
+    $.each(params, function(index, param)
+    {
+      if (param)
+      {
+        key = param.substr(6);
+        itype = param;
+      }
+      else
+      {
+        key = 'default';
+        itype = '';
+      }
+      ikey = window.app.resources.uuid + "_" + key;
+
+      (function(ikey, itype, key, index)
+      {
+        tmp[ikey] = function(callback, index)
+        {
+          setTimeout(function()
+          {
+            // call
+            $.ajax(
+            {
+              url: host  + '/askatars/' 
+                         + window.app.resources.uuid 
+                         + '/slots?start=' 
+                         + config.timeline.settings.ranges.period.bstart 
+                         + '&end=' 
+                         + config.timeline.settings.ranges.period.bend 
+                         + itype
+            }).success(
+            function(data)
+            {
+              slots[window.app.resources.uuid][key] = data;
+              // TODO
+              //
+              window.app.calls.slots[window.app.resources.uuid] = true;
+              // callback
+              callback(null, true);
+            }).fail(function()
+            {
+              // TODO
+              //
+              window.app.calls.slots[window.app.resources.uuid] = false;
+            })
+          }, (index * 100) + 100)
+        }
+        $.extend(members, tmp)
+      })(ikey, itype, key, index)
+    })
+
+    async.series(members, function(err, results)
+    {
+      window.app.slots = slots;
+      // save
+      localStorage.setItem('slots', JSON.stringify(slots));
+
+      // TODO
+      window.app.results.slots.user = results;
+      //
+
+      console.log('-> 1. fetchUserTimeline', results);
+    })
+
+    //console.log('-> 2. results', results);
+
+    console.log('-> 3. returning', JSON.stringify(window.app.results.slots.user));
+    return window.app.results.slots.user
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // fetch plaboards
+  $scope.fetchPlanboards_ = function()
+  {
+    async.waterfall([
+
+      // get user slots
+      function(callback)
+      {
+        callback(null, 'user');
+      },
+
+      // fetch group slots
+      function(user, callback)
+      {
+        // reset en init params
+        var params = [];
+        // process divisions
+        if (divisions.length > 0)
+        {
+          $.each(divisions, function(index, value)
+          {
+            var param = '&stateGroup=' + value;
+            params.push(param);
+          })
+        }
+        params.unshift(null);
+        // init vars
+        var groups = {},
+          tmp = {},
+          aggs = {},
+          key, stateGroup, ikey;
+        // loop through the groups
+        $.each(window.app.groups, function(index, group)
+        {
+          aggs[group.uuid] = {};
+          // TODO
+          //
+          window.app.calls.aggs = {};
+          //
+          // loop through params
+          $.each(params, function(index, param)
+          {
+            if (param)
+            {
+              var key = param.substr(12);
+              var stateGroup = param;
+            }
+            else
+            {
+              var key = 'default';
+              var stateGroup = '';
+            }
+            ikey = group.uuid + "_" + key;
+            (function(ikey, stateGroup, key, index)
+            {
+              tmp[ikey] = function(callback, index)
+              {
+                setTimeout(function()
+                {
+                  // call
+                  $.ajax(
+                  {
+                    url: host  + '/calc_planning/' 
+                               + group.uuid 
+                               + '?start=' 
+                               + config.timeline.settings.ranges.period.bstart 
+                               + '&end=' 
+                               + config.timeline.settings.ranges.period.bend 
+                               + stateGroup
+                  }).success(
+                  function(data)
+                  {
+                    aggs[group.uuid][key] = data;
+                    // TODO
+                    //
+                    window.app.calls.aggs[group.uuid] = true;
+                    // callback
+                    callback(null, true);
+                  }).fail(function()
+                  {
+                    // TODO
+                    //
+                    window.app.calls.aggs[group.uuid] = false;
+                  })
+                }, (index * 100) + 100)
+              }
+              $.extend(groups, tmp)
+            })(ikey, stateGroup, key, index)
+          })
+        })
+        async.series(groups, function(err, results)
+        {
+          window.app.aggs = aggs;
+          // save
+          localStorage.setItem('aggs', JSON.stringify(aggs));
+          // callback
+          callback(null, 'group');
+        })
+      },
+
+      // fetch members slots
+      function(group, callback)
+      {
+        // init vars
+        var members = {},
+            tmp = {},
+            slots = {},
+            key, 
+            itype, 
+            ikey, 
+            params = ['&type=both'];
+        params.unshift(null);
+        //
+        // loop through members
+        $.each(window.app.members, function(index, member)
+        {
+          slots[member.uuid] = {};
+          // TODO
+          //
+          window.app.calls.slots = {};
+          // loop through params
+          $.each(params, function(index, param)
+          {
+            if (param)
+            {
+              key = param.substr(6);
+              itype = param;
+            }
+            else
+            {
+              key = 'default';
+              itype = '';
+            }
+            ikey = member.uuid + "_" + key;
+            (function(ikey, itype, key, index)
+            {
+              tmp[ikey] = function(callback, index)
+              {
+                setTimeout(function()
+                {
+                  // call
+                  $.ajax(
+                  {
+                    url: host  + '/askatars/' 
+                               + member.uuid 
+                               + '/slots?start=' 
+                               + config.timeline.settings.ranges.period.bstart 
+                               + '&end=' 
+                               + config.timeline.settings.ranges.period.bend 
+                               + itype
+                  }).success(
+                  function(data)
+                  {
+                    slots[member.uuid][key] = data;
+                    // TODO
+                    //
+                    window.app.calls.slots[member.uuid] = true;
+                    // callback
+                    callback(null, true);
+                  }).fail(function()
+                  {
+                    // TODO
+                    //
+                    window.app.calls.slots[member.uuid] = false;
+                  })
+                }, (index * 100) + 100)
+              }
+              $.extend(members, tmp)
+            })(ikey, itype, key, index)
+          })
+        })
+
+        async.series(members, function(err, results)
+        {
+          window.app.slots = slots;
+          // save
+          localStorage.setItem('slots', JSON.stringify(slots));
+          // callback
+          callback(null, 'members');
+        })
+      }
+
+    ], function (err, result)
+    {
+       console.log('result', result)   
+    })
+    
+  }
 
 
 
@@ -601,7 +1203,7 @@ var app = function($scope)
 
 
   // fetch group calc timeline
-  $scope.fetchGroupTimelines = function()
+  $scope.fetchGroupTimelines_ = function()
   {
     // reset en init params
     var params = [];
@@ -691,7 +1293,7 @@ var app = function($scope)
   }
 
   // fetch indv. timeline data
-  $scope.fetchMemberTimelines = function()
+  $scope.fetchMemberTimelines_ = function()
   {
     // TODO
     //
@@ -790,6 +1392,10 @@ var app = function($scope)
     })
     
   }
+
+
+
+
 
   // MESSAGES ----------------------------------------------------------------------
   // fetch messages

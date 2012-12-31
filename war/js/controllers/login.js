@@ -16,6 +16,14 @@ var loginCtrl = function($scope)
   }
 
 
+  /*
+  var timer = $.timer(function() {
+          console.log('This message was sent by a timer.');
+  }).set({ time : 5000, autostart : true });
+  */
+
+
+
 	$.ajaxSetup(
 	{
 	  contentType: 'application/json',
