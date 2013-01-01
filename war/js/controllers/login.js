@@ -1,8 +1,18 @@
 'use strict';
 /* Login controller */
 
-var loginCtrl = function($scope)
+var loginCtrl = function($scope, sharedProperties, secondOne)
 {
+  console.log('shared', sharedProperties.getProperty());
+
+  sharedProperties.setProperty('New Firstname ');
+
+  console.log(secondOne.getProperty());
+
+  //$scope.prop2 = "Second";
+  //$scope.both = sharedProperties.getProperty() + $scope.prop2;
+  //console.log('--> both:', $scope.both);
+
   // check browser
   $scope.checkBrowser();
 
@@ -91,9 +101,11 @@ var loginCtrl = function($scope)
     {
       // save cookie
       $scope.setSession(data["X-SESSION_ID"]);
+
       // presentation
       $('#loginForm').hide();
       $('#preloader').show();
+      
       // start preloading
       $scope.fetchDependencies();
     })
@@ -350,4 +362,4 @@ var loginCtrl = function($scope)
 
 }
 
-loginCtrl.$inject = ['$scope'];
+loginCtrl.$inject = ['$scope', 'sharedProperties', 'secondOne'];
