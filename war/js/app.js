@@ -1,14 +1,16 @@
 'use strict';
 
-// Declare app level module which depends on filters, and services
-angular.module('App', 
-  [ 'App.filters', 
-    'App.services', 
-    'App.directives' ]).
-  config(['$routeProvider',
+// let's declare app and dependencies and run initials
+angular.module('WebPaige', 
+  [ 'WebPaige.filters', 
+    'WebPaige.services', 
+    'WebPaige.factories', 
+    'WebPaige.directives' ])
+  //
+  // configure app
+  .config(['$routeProvider',
   function($routeProvider)
   {
-
     $routeProvider.when('/login',
     {
       templateUrl: 'views/login.html',
@@ -55,17 +57,38 @@ angular.module('App',
     {
       redirectTo: '/login'
     })
-  }]
-)
+
+  }])
+  //
+  // run initials
+  .run(function($rootScope, $location)
+  {    
+    // some start-up functions
+
+    // TODO
+    // register listener to watch route changes
+    /*
+    $rootScope.$on( "$routeChangeStart", function(event, next, current) {
+      if ( $rootScope.loggedUser == null ) {
+        // no logged user, we should be going to #login
+        if ( next.templateUrl == "partials/login.html" ) {
+          // already going to #login, no redirect needed
+        } else {
+          // not going to #login, we should redirect now
+          $location.path( "/login" );
+        }
+      }         
+    })
+    */
+  })
+
+
 
 
 
 // App controller
-var app = function($scope)
+var app = function($rootScope, $scope)
 {
-
-  //console.log('scope', $scope);
-
   window.app.calls = {};
 
   $scope.config = config;
@@ -141,6 +164,8 @@ var app = function($scope)
     )
   }
 
+
+  
   // ajax error handler
   $scope.ajaxErrorHandler = function(jqXHR, exception, options)
   {
@@ -182,97 +207,26 @@ var app = function($scope)
     $('.notifications').notify(options).show()
   }
 
-  // deeep link preventer
-  $scope.preventDeepLink = function()
-  {
-    if (!$scope.checkSession())
-      window.location = "index.html";
-  }
 
-  // check browser
-  // TODO
-  // remove jQuery togglers
-  $scope.checkBrowser = function()
-  {
-    var N = navigator.appName,
-        ua = navigator.userAgent,
-        tem;
 
-    var browser = ua.match(/(opera|chrome|safari|firefox|msie)\/?\s*(\.?\d+(\.\d+)*)/i);
 
-    if (browser && (tem = ua.match(/version\/([\.\d]+)/i)) != null) 
-      browser[2] = tem[1];
 
-    browser = browser ? [browser[1], browser[2]] : [N, navigator.appVersion, '-?'];
 
-    browser = browser[0].toLowerCase();
 
-    $.each($scope.config.blacklisted, function(index, banned)
-    {
-      if (browser === banned)
-      {
-        $('#loginForm').hide();
-        $scope.config.knrmAccounts = false;
-        $('#browseHappy').show();
-      }
-    })
-  }
 
-  // SESSIONS ---------------------------------------------------------------------
-  // check session
-  $scope.checkSession = function()
-  {
-    if($scope.sessionId == null)
-    {
-      var values;
-      var pairs = document.cookie.split(";");
 
-      for(var i=0; i<pairs.length; i++)
-      {
-        values = pairs[i].split("=");
 
-        if(values[0].trim() == "ask")
-        {
-          var session         = JSON.parse(values[1]);
-          $scope.sessionId    = session.id;
-          $scope.sessionTime  = session.time;
-          break;
-        }
-      }
-    }
 
-    if($scope.sessionId == null)
-      return false;
 
-    var time  = new Date();
-    var now   = time.getTime();
 
-    if( (now - $scope.sessionTime) > (60 * 60 * 1000) )
-    {   
-      return false;
-    }
-    return true;
-  }
-  
-  // get session
-  $scope.getSession = function()
-  {
-    $scope.checkSession();
-    $scope.setSession($scope.sessionId);
-    return $scope.sessionId;
-  }
 
-  // set session
-  $scope.setSession = function(sessionId)
-  {      
-    var time            = new Date();
-    $scope.sessionId    = sessionId;
-    $scope.sessionTime  = time.getTime();
-    var session         = new Object();
-    session.id          = $scope.sessionId;
-    session.time        = $scope.sessionTime;
-    document.cookie     = "ask=" + JSON.stringify(session);
-  }
+
+
+
+
+
+
+
 
   // PRELOAD DEPENDENCIES ---------------------------------------------------------
   // fetch user resources
@@ -1441,4 +1395,4 @@ var app = function($scope)
 
 }
 
-app.$inject = ['$scope'];
+app.$inject = ['$rootScope', '$scope']

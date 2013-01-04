@@ -245,9 +245,6 @@ var ui = {
 
 
 
-
-
-
 // application window variable container for processed data
 //window.app = {};
 
@@ -275,27 +272,6 @@ var ui = {
     
 //  timeline: []
 // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

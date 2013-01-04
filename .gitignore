@@ -1,2 +1,6 @@
 .DS_Store
 war/WEB-INF
+node_modules/
+npm-debug.log
+package.json
+server.js

@@ -14,8 +14,13 @@
   <link href="css/styles.css" rel="stylesheet">
   
   <style>
-    [ng-cloak] {
+    @charset "UTF-8";
+    [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
       display: none;
+    }
+
+    ng\:form {
+      display: block;
     }
   </style>
 
@@ -35,6 +40,7 @@
       'js/lib/validation/jquery.validate.js',
       'js/lib/bootstrap/bootstrap.js',
       'js/lib/bootstrap/bootstrap-notify.js',
+      'js/lib/underscore-min.js',
       'js/config.js',
       'js/app.js',
       'js/services.js',
@@ -52,7 +58,7 @@
       'js/lib/jquery/jquery.timer.js',
     ], function() 
     {
-      angular.bootstrap(document, ['App'])
+      angular.bootstrap(document, ['WebPaige'])
     })
   </script>
   

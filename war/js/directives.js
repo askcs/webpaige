@@ -1,7 +1,7 @@
 'use strict';
 
 /* Directives */
-angular.module('App.directives', []).
+angular.module('WebPaige.directives', []).
   directive('appVersion', ['version', function(version)
   {
     return function(scope, elm, attrs)

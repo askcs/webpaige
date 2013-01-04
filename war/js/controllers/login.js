@@ -1,21 +1,28 @@
 'use strict';
 /* Login controller */
 
-var loginCtrl = function($scope, sharedProperties, secondOne)
+var loginCtrl = function($rootScope, $scope, App, Session, Store, Notify)
 {
-  console.log('shared', sharedProperties.getProperty());
+  Notify.me('test me!');
+  Notify.me('second one');
+  Notify.me('thirdie!');
+  
+  console.log('not', $rootScope.messages);
 
-  sharedProperties.setProperty('New Firstname ');
+  Notify.test('This is just so awesome!');
 
-  console.log(secondOne.getProperty());
-
-  //$scope.prop2 = "Second";
-  //$scope.both = sharedProperties.getProperty() + $scope.prop2;
-  //console.log('--> both:', $scope.both);
-
+  // TODO : get rid of jQuery togglers
   // check browser
-  $scope.checkBrowser();
+  if ( App.checkBrowser($scope.config.blacklisted) )
+  {
+    $('#loginForm').hide();
+    $scope.config.knrmAccounts = false;
+    $('#browseHappy').show();
+  }
 
+
+  // TODO : use native JSON functions of angular
+  // and Store service
   var logindata = localStorage.getItem('logindata');
   if (logindata)
   {
@@ -26,25 +33,15 @@ var loginCtrl = function($scope, sharedProperties, secondOne)
   }
 
 
-  /*
-  var timer = $.timer(function() {
-          console.log('This message was sent by a timer.');
-  }).set({ time : 5000, autostart : true });
-  */
-
-
-
 	$.ajaxSetup(
 	{
 	  contentType: 'application/json',
 	  xhrFields: { 
 	    withCredentials: true
 	  },
-    beforeSend: function (xhr)
-    {
-      xhr.setRequestHeader('X-SESSION_ID', $scope.getSession())
-    } 
   })
+
+
 
 
   // real knrm users for testing
@@ -60,12 +57,16 @@ var loginCtrl = function($scope, sharedProperties, secondOne)
     $scope.auth(uuid, pass)
   }
 
+
+
+
+
   // login trigger
   $scope.login = function()
   {
     // reset alerts
     $('#alertDiv').hide()
-    // checks
+    // check
     if (!$scope.logindata ||
         !$scope.logindata.username || 
         !$scope.logindata.password)
@@ -83,8 +84,13 @@ var loginCtrl = function($scope, sharedProperties, secondOne)
       remember: $scope.logindata.remember
     }))
     // auth
-    $scope.auth($scope.logindata.username, $scope.md5($scope.logindata.password))
+    $scope.auth( $scope.logindata.username, $scope.md5($scope.logindata.password ))
   }
+
+
+
+
+
 
   // authorize login
   $scope.auth = function(uuid, pass)
@@ -100,7 +106,15 @@ var loginCtrl = function($scope, sharedProperties, secondOne)
     .success(function(data)
     {
       // save cookie
-      $scope.setSession(data["X-SESSION_ID"]);
+      //$scope.setSession(data["X-SESSION_ID"]);
+      $rootScope.session = Session.set(data["X-SESSION_ID"]);
+
+      $.ajaxSetup(
+      {
+        headers: {
+          'X-SESSION_ID': Session.get($rootScope.session)
+        } 
+      })
 
       // presentation
       $('#loginForm').hide();
@@ -108,6 +122,9 @@ var loginCtrl = function($scope, sharedProperties, secondOne)
       
       // start preloading
       $scope.fetchDependencies();
+
+      // resources
+
     })
     .fail(function(jqXHR, exception, options)
     {
@@ -128,6 +145,11 @@ var loginCtrl = function($scope, sharedProperties, secondOne)
         .removeAttr('disabled')
     })    
   }
+
+
+
+
+
 
   // md5 engine
   $scope.md5 = function(string)
@@ -362,4 +384,4 @@ var loginCtrl = function($scope, sharedProperties, secondOne)
 
 }
 
-loginCtrl.$inject = ['$scope', 'sharedProperties', 'secondOne'];
+loginCtrl.$inject = ['$rootScope', '$scope', 'App', 'Session', 'Store', 'Notify'];
