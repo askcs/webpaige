@@ -1,7 +1,35 @@
 'use strict';
 
 
-angular.module('WebPaige.factories', [], 
+/*
+//define the service
+App.factory('myService', ['myOtherService', '$location', function(myOtherService, $location) {
+  return function(input) {
+    //do something with the input using the myOtherService or the $location objects.
+    return input;
+  };
+}]);
+
+//use the service within the controller
+var HomeCtrl = function($scope, myService) {
+  var input = '123';
+  input = myService(input);
+};
+HomeCtrl.$inject = ['$scope','myService'];
+
+//use the service a directive
+App.directive('myDirective', ['myService',function(myService) {
+  return {
+    link: function($scope, element, attrs) {
+      var input = '123';
+      input = myService(input);
+    }
+  }
+}]);
+*/
+
+
+angular.module('App.factories', [], 
   function($provide)
   {
     $provide.factory('Notify', 
@@ -60,7 +88,7 @@ angular.module('WebPaige.factories', [],
 */
 
 /* Services */
-angular.module('WebPaige.services', [])
+angular.module('App.services', [])
 
   //
   // Session handler

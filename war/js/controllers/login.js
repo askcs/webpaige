@@ -3,13 +3,13 @@
 
 var loginCtrl = function($rootScope, $scope, App, Session, Store, Notify)
 {
-  Notify.me('test me!');
-  Notify.me('second one');
-  Notify.me('thirdie!');
+  //Notify.me('test me!');
+  //Notify.me('second one');
+  //Notify.me('thirdie!');
   
-  console.log('not', $rootScope.messages);
+  //console.log('not', $rootScope.messages);
 
-  Notify.test('This is just so awesome!');
+  //Notify.test('This is just so awesome!');
 
   // TODO : get rid of jQuery togglers
   // check browser

@@ -1,94 +1,215 @@
+/*jslint node: true */
 'use strict';
 
 // let's declare app and dependencies and run initials
-angular.module('WebPaige', 
-  [ 'WebPaige.filters', 
-    'WebPaige.services', 
-    'WebPaige.factories', 
-    'WebPaige.directives' ])
+var WebPaige = angular.module('WebPaige', ['App.filters', 'App.services', 'App.factories']);
+  
   //
   // configure app
-  .config(['$routeProvider',
-  function($routeProvider)
+  WebPaige.config(['$routeProvider','$locationProvider',
+  function($routeProvider, $location)
   {
+    // TODO
+    // turn this on later
+    //$location.html5Mode(true);
+
     $routeProvider.when('/login',
     {
       templateUrl: 'views/login.html',
       Ctrl: loginCtrl
-    })
+    });
 
     $routeProvider.when('/logout',
     {
       templateUrl: 'views/logout.html',
       Ctrl: logoutCtrl
-    })
+    });
 
     $routeProvider.when('/dashboard',
     {
       templateUrl: 'views/dashboard.html',
       Ctrl: dashboardCtrl
-    })
+    });
 
     $routeProvider.when('/messages',
     {
       templateUrl: 'views/messages.html',
       Ctrl: messagesCtrl
-    })
+    });
 
     $routeProvider.when('/groups',
     {
       templateUrl: 'views/groups.html',
       Ctrl: groupsCtrl
-    })
+    });
 
     $routeProvider.when('/profile',
     {
       templateUrl: 'views/profile.html',
       Ctrl: profileCtrl
-    })
+    });
 
     $routeProvider.when('/settings',
     {
       templateUrl: 'views/settings.html',
       Ctrl: settingsCtrl
-    })
+    });
     
     $routeProvider.otherwise(
     {
       redirectTo: '/login'
-    })
+    });
 
-  }])
+  }]);
+
+
+
+
   //
   // run initials
-  .run(function($rootScope, $location)
-  {    
-    // some start-up functions
+  WebPaige.run(['$rootScope', 
+  function($rootScope)
+  {
+    window.app.calls = {};
 
-    // TODO
-    // register listener to watch route changes
-    /*
-    $rootScope.$on( "$routeChangeStart", function(event, next, current) {
-      if ( $rootScope.loggedUser == null ) {
-        // no logged user, we should be going to #login
-        if ( next.templateUrl == "partials/login.html" ) {
-          // already going to #login, no redirect needed
-        } else {
-          // not going to #login, we should redirect now
-          $location.path( "/login" );
+    $rootScope.config = config;
+
+    // position notifications
+    $('.notifications').addClass( config.notifier.position );
+    
+    // DEFAULTS -------------------------------------------------------------------
+    // defaults for validator
+    jQuery.validator.setDefaults(
+    {
+      errorClass: config.validator.errorClass,
+      validClass: config.validator.validClass,
+      errorElement: config.validator.errorElement,
+      focusInvalid: config.validator.focusInvalid,
+      errorContainer: $( config.validator.errorContainer ),
+      errorLabelContainer: $( config.validator.errorLabelContainer ),
+      onsubmit: config.validator.onsubmit,
+      ignore: config.validator.ignore,
+      ignoreTitle: config.validator.ignoreTitle
+    });
+
+    // defaults for notifier
+    jQuery.fn.notify.defaults = {
+      type: config.notifier.type,
+      closable: config.notifier.closable,
+      transition: config.notifier.transition,
+      fadeOut: {
+        enabled: config.notifier.fadeOut.enabled,
+        delay: config.notifier.fadeOut.delay
+      },
+      message: config.notifier.message,
+      onClose: function () {},
+      onClosed: function () {}
+    };
+
+    //$scope.config = config;
+    $rootScope.ui = ui[config.lang];
+
+    // set language
+    $rootScope.setLang = function(language)
+    {
+      $rootScope.ui = ui[language];
+      // re-set validation messages
+      jQuery.extend(
+        jQuery.validator, 
+        {
+          messages: {
+            required: $rootScope.ui.error.required,
+            remote: $rootScope.ui.error.remote,
+            email: $rootScope.ui.error.email,
+            url: $rootScope.ui.error.url,
+            date: $rootScope.ui.error.date,
+            dateISO: $rootScope.ui.error.dateISO,
+            number: $rootScope.ui.error.number,
+            digits: $rootScope.ui.error.digits,
+            creditcard: $rootScope.ui.error.creditcard,
+            equalTo: $rootScope.ui.error.equalTo,
+            accept: $rootScope.ui.error.accept,
+            maxlength: jQuery.validator.format( $rootScope.ui.error.maxlength ),
+            minlength: jQuery.validator.format( $rootScope.ui.error.minlength ),
+            rangelength: jQuery.validator.format( $rootScope.ui.error.rangelength ),
+            range: jQuery.validator.format( $rootScope.ui.error.range ),
+            max: jQuery.validator.format( $rootScope.ui.error.max ),
+            min: jQuery.validator.format( $rootScope.ui.error.min )       
+          }
         }
-      }         
-    })
-    */
-  })
+      )
+    };
+
+  
+    // ajax error handler
+    $rootScope.ajaxErrorHandler = function(jqXHR, exception, options)
+    {
+      switch (jqXHR.status)
+      {
+        case 0:
+          $rootScope.notify( { message: $rootScope.ui.error.ajax.noConnection } )
+        break;
+        case 400:
+          $rootScope.notify( { message: $rootScope.ui.error.ajax.badRequest } )
+        break;
+        case 404:
+          $rootScope.notify( { message: $rootScope.ui.error.ajax.notFound } )
+        break;
+        case 500:
+          $rootScope.notify( { message: $rootScope.ui.error.ajax.serverError } )
+        break;
+        default:
+          switch (exception)
+          {
+            case 'parser error':
+              $rootScope.notify( { message: $rootScope.ui.error.ajax.parserError } )
+            break;
+            case 'timeout':
+              $rootScope.notify( { message: $rootScope.ui.error.ajax.timeout } )
+            break;
+            case 'abort':
+              $rootScope.notify( { message: $rootScope.ui.error.ajax.abort } )
+            break;
+            default:
+              $rootScope.notify( { message: $rootScope.ui.error.ajax.uncaughtError + jqXHR.responseText } )
+          }
+      }
+    }
+
+    // notifier
+    $rootScope.notify = function(options)
+    {
+      $('.notifications').notify(options).show()
+    }
+
+  }]);
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * This main controller is depreciated
+ */
 // App controller
 var app = function($rootScope, $scope)
 {
+  /*
   window.app.calls = {};
 
   $scope.config = config;
@@ -108,8 +229,8 @@ var app = function($rootScope, $scope)
     errorLabelContainer: $( config.validator.errorLabelContainer ),
     onsubmit: config.validator.onsubmit,
     ignore: config.validator.ignore,
-    ignoreTitle: config.validator.ignoreTitle,
-  })
+    ignoreTitle: config.validator.ignoreTitle
+  });
 
   // defaults for notifier
   jQuery.fn.notify.defaults = {
@@ -121,19 +242,17 @@ var app = function($rootScope, $scope)
       delay: config.notifier.fadeOut.delay
     },
     message: config.notifier.message,
-    onClose: function () 
-    {
-    },
-    onClosed: function () 
-    {      
-    }
-  }
+    onClose: function () {},
+    onClosed: function () {}
+  };
 
   //$scope.config = config;
   $scope.ui = ui[config.lang];
+  */
 
   // APP ------------------------------------------------------------------------
   // set language
+  /*
   $scope.setLang = function(language)
   {
     $scope.ui = ui[language];
@@ -158,15 +277,16 @@ var app = function($rootScope, $scope)
           rangelength: jQuery.validator.format( $scope.ui.error.rangelength ),
           range: jQuery.validator.format( $scope.ui.error.range ),
           max: jQuery.validator.format( $scope.ui.error.max ),
-          min: jQuery.validator.format( $scope.ui.error.min )        
+          min: jQuery.validator.format( $scope.ui.error.min )       
         }
       }
     )
-  }
-
+  };
+  */
 
   
   // ajax error handler
+  /*
   $scope.ajaxErrorHandler = function(jqXHR, exception, options)
   {
     switch (jqXHR.status)
@@ -200,12 +320,24 @@ var app = function($rootScope, $scope)
         }
     }
   }
+  */
 
   // notifier
+  /*
   $scope.notify = function(options)
   {
     $('.notifications').notify(options).show()
   }
+  */
+
+
+
+
+
+
+
+
+
 
 
 

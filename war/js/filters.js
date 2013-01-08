@@ -1,11 +1,9 @@
 'use strict';
 
 /* Filters */
-angular.module('WebPaige.filters', []).
-  filter('interpolate', ['version', function(version)
-  {
-    return function(text)
-    {
-      return String(text).replace(/\%VERSION\%/mg, version);
-    }
-  }]);
+angular.module('App.filters', []).
+filter('interpolate', ['version', function(version) {
+	return function(text) {
+		return String(text).replace(/\%VERSION\%/mg, version);
+	}
+}]);
