@@ -2613,7 +2613,8 @@ links.Timeline.prototype.onMouseDown = function(event) {
         this.customTime :
         undefined;
 
-    params.addItem = (options.editable && event.ctrlKey);
+    //params.addItem = (options.editable && event.ctrlKey);
+    params.addItem = (options.editable && event.shiftKey);
     if (params.addItem) {
         // create a new event at the current mouse position
         var x = params.mouseX - params.frameLeft;

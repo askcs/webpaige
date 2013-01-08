@@ -1382,65 +1382,71 @@ function renderMemberSlots(member, name, mid, flag)
 	}
 	else
 	{
-	  webpaige.con(
-	  options = {
-	    path: '/askatars/' + member.uuid + '/slots?' + window.range + '&type=both',
-	    loading: 'De beschiebaarheiden worden opgeladen..',
-	    label: member,
-	    session: session.getSession()
-	  },
-	  function (data, label)
-	  {
-	
-	  	if (webpaige.getRole() == 1)
-	  	{
-		  	var header = '<a onclick="reRenderMembers(\'' + label.uuid + '\', \'' + label.name + '\');">' + label.name + '</a>';
-	  	}
-	  	else
-	  	{
-		  	var header = label.name;
-	  	}
-	    var slots = data;
-	    timeline3.addItem(
-	    {
-	      'start': new Date(0),
-	      'end': new Date(0),
-	      'content': 'available',
-	      'group': '<span style="display:none;">' + label.name + ':false:true</span>' + header + '<div style="display:none;">c</div>'
-	    });
-	    for (var i in slots)
-	    {
-	      var content = colorState(slots[i].text);
-	      timeline3.addItem(
-	      {
-	        'start': new Date(slots[i].start * 1000),
-	        'end': new Date(slots[i].end * 1000),
-	        'content': content,
-	        'group': '<span style="display:none;">' + label.name + ':false:true</span>' + header + '<div style="display:none;">c</div>'
-	      });
-	    }
-	    
+
+    webpaige.con(
+    options = {
+      path: '/askatars/' + member.uuid + '/slots?' + window.range + '&type=both',
+      loading: 'De beschiebaarheiden worden opgeladen..',
+      label: member,
+      session: session.getSession()
+    },
+    function (data, label)
+    {
+  
+      if (webpaige.getRole() == 1)
+      {
+        var header = '<a onclick="reRenderMembers(\'' + label.uuid + '\', \'' + label.name + '\');">' + label.name + '</a>';
+      }
+      else
+      {
+        var header = label.name;
+      }
+      var slots = data;
+
+      var resources = JSON.parse(localStorage.getItem('resources'));
+      //console.log('-> r:', resources.uuid, '-> m:', member.uuid);
+      if (resources.uuid !== member.uuid)
+      {
+        timeline3.addItem(
+        {
+          'start': new Date(0),
+          'end': new Date(0),
+          'content': 'available',
+          'group': '<span style="display:none;">' + label.name + ':false:true</span>' + header + '<div style="display:none;">c</div>'
+        });
+        for (var i in slots)
+        {
+          var content = colorState(slots[i].text);
+          timeline3.addItem(
+          {
+            'start': new Date(slots[i].start * 1000),
+            'end': new Date(slots[i].end * 1000),
+            'content': content,
+            'group': '<span style="display:none;">' + label.name + ':false:true</span>' + header + '<div style="display:none;">c</div>'
+          });
+        }
+      }
+         
+      window.currentMembers --;
+      
+      if (window.currentMembers == 0)
+      {
+        //console.log('finally the last one');
+        $('#memberTimeline').show();
+        $('#memberTimelineLoading').hide();
+        fixMemberTimeline();
+        window.flag = true;
+      }
+      else
+      {
+        var per = 100 - Math.round((window.currentMembers * 100) / window.totalMembers);
+        $('#memberLoadingPercentage').text(per);
+        //console.log('current members: ', window.currentMembers, per);
+        window.flag = false;
+      }
+      
+    });
 	    	
-    	window.currentMembers --;
-    	
-    	if (window.currentMembers == 0)
-    	{
-    		//console.log('finally the last one');
-    		$('#memberTimeline').show();
-    		$('#memberTimelineLoading').hide();
-    		fixMemberTimeline();
-    		window.flag = true;
-    	}
-    	else
-    	{
-    		var per = 100 - Math.round((window.currentMembers * 100) / window.totalMembers);
-    		$('#memberLoadingPercentage').text(per);
-    		//console.log('current members: ', window.currentMembers, per);
-    		window.flag = false;
-    	}
-	    	
-	    	
-	  });
 	}
 }
 // Slot makeups

@@ -1,3 +1,9 @@
 .DS_Store
 war/WEB-INF/
 
+_snippets/
+node_modules/
+npm-debug.log
+package.json
+project/
+server.js
