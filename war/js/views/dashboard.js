@@ -4,6 +4,9 @@ $(document).ready(function ()
   pageInit('dashboard', 'true');
   
   webpaige.config('inited', false);
+
+      
+
   
   var trange = webpaige.config('trange');
   window.range = 'start=' + trange.bstart + '&end=' + trange.bend;
@@ -120,6 +123,12 @@ $(document).ready(function ()
     var division = $(this).find(":selected").val();
     timeline2.draw(webpaige.config(division));
   });
+
+
+  var resources = JSON.parse(webpaige.get('resources'));
+  var sessionXID = session.getSession();
+  var link = "http://m.paige4knrm.appspot.com/paige.html?uuid="+resources.uuid+"&X-SESSION_ID="+sessionXID;
+  $('#mobileLink').attr('href', link);
   
   
 });

@@ -10,25 +10,49 @@ $(document).ready(function ()
   }
   
   var login = JSON.parse(webpaige.get('login'));
+  
   if (login != null)
   {
     $('#username').val(login.user);
     $('#remember').attr('checked', login.remember);
   }
+
   $("#alertClose").click(function ()
   {
     $("#alertDiv").hide();
   });
+
   $("#loginBtn").click(function ()
   {
     loginHandler();
   });
+
   window.addEventListener('keypress', KeyPressHandler);
   var local = {
     title: 'login_title',
     statics: ['login_login', 'login_enter_email', 'login_password', 'login_remember', 'login_forgot']
   }
   webpaige.i18n(local);
+
+
+
+  function urlParams( name )
+  {
+    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    var regexS = "[\\?&]"+name+"=([^&#]*)";
+    var regex = new RegExp( regexS );
+    var results = regex.exec( window.location.href );
+    if( results == null )
+      return false;
+    else
+      return results[1];
+  }
+
+  if (urlParams('uuid') && urlParams('pass'))
+  {
+    loginAskWithOutMD5(urlParams('uuid'), urlParams('pass'), false);
+  }
+
 });
 
 function KeyPressHandler(event)

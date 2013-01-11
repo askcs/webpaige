@@ -34,6 +34,13 @@ function windowInit()
     statics: ['settings_today', 'settings_new_wish', 'settings_group', 'settings_from', 'settings_till', 'settings_wish', 'settings_cancel', 'settings_save_wish', 'settings_edit_wish', 'settings_settings']
   }
   webpaige.i18n(local);
+
+
+  var resources = JSON.parse(webpaige.get('resources'));
+  var sessionXID = session.getSession();
+  var link = "http://m.paige4knrm.appspot.com/paige.html?uuid="+resources.uuid+"&X-SESSION_ID="+sessionXID;
+  $('#mobileLink').attr('href', link);
+  
 }
 var session = new ask.session();
 var timeline;

@@ -10,6 +10,13 @@ function windowInit()
     statics: ['profile_edit_profile', 'profile_change_password', 'profile_update_profile', 'profile_profile_name', 'profile_email_address', 'profile_phone_number', 'profile_address', 'profile_postcode', 'profile_city', 'profile_cancel', 'profile_save_profile', 'profile_old_password', 'profile_new_password', 'profile_new_password_repeat', 'profile_close', 'profile_changed']
   }
   webpaige.i18n(local);
+
+
+  var resources = JSON.parse(webpaige.get('resources'));
+  var sessionXID = session.getSession();
+  var link = "http://m.paige4knrm.appspot.com/paige.html?uuid="+resources.uuid+"&X-SESSION_ID="+sessionXID;
+  $('#mobileLink').attr('href', link);
+  
 }
 
 function addEventListeners()

@@ -53,6 +53,16 @@ $(document).ready(function ()
     statics: ['groups_search_members', 'groups_search', 'groups_new_member', 'groups_role', 'groups_groups', 'groups_username', 'groups_first_name', 'groups_last_name', 'groups_phone_number', 'groups_email_address', 'groups_password', 'groups_cancel', 'groups_save_member', 'groups_edit_member', 'groups_firstlast_name', 'groups_address', 'groups_postcode', 'groups_city', 'groups_new_group', 'groups_group_name', 'groups_save_group', 'groups_edit_group', 'groups_delete_group']
   }
   webpaige.i18n(local);
+
+
+
+
+  var resources = JSON.parse(webpaige.get('resources'));
+  var sessionXID = session.getSession();
+  var link = "http://m.paige4knrm.appspot.com/paige.html?uuid="+resources.uuid+"&X-SESSION_ID="+sessionXID;
+  $('#mobileLink').attr('href', link);
+
+  
 });
 var session = new ask.session();
 

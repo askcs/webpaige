@@ -199,6 +199,7 @@ webpaige.prototype.con = function(options, callback)
     	if (options.session != null)
     	{
       	xhr.setRequestHeader('X-SESSION_ID', options.session);
+      	//console.log('inside init call ->', options.session);
     	}
       return true;
     },

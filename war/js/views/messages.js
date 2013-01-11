@@ -30,6 +30,12 @@ function windowInit()
     statics: ['messages_compose', 'messages_compose_a_message', 'messages_message_type', 'messages_sms', 'messages_intern_message', 'messages_email', 'messages_receiver', 'messages_subject', 'messages_message', 'messages_cancel', 'messages_send_message', 'messages_reply_message', 'messages_date', 'messages_messages', 'messages_inbox', 'messages_outbox', 'messages_trash']
   }
   webpaige.i18n(local);
+
+
+  var resources = JSON.parse(webpaige.get('resources'));
+  var sessionXID = session.getSession();
+  var link = "http://m.paige4knrm.appspot.com/paige.html?uuid="+resources.uuid+"&X-SESSION_ID="+sessionXID;
+  $('#mobileLink').attr('href', link);
 }
 
 function addEventListeners()
