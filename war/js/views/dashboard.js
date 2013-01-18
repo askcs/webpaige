@@ -857,6 +857,64 @@ function getSlots(uuid)
   function (data, label)
   {
     var slots = data;
+
+
+
+
+
+    /**
+     * Cehck for the slots which occurs
+     * from saturday to sunday in the reoccuring table
+     * solution is to split them to two parts s taking midnight
+     * as a reference
+     * @type {Array}
+     */
+    var checks = [ 
+      Date.parse('next sunday').getTime() / 1000, 
+      Date.parse('next sunday').addWeeks(1).getTime() / 1000, 
+      Date.parse('last sunday').getTime() / 1000, 
+      Date.parse('last sunday').addWeeks(-1).getTime() / 1000
+    ];
+
+    var tests = slots,
+        procs = [];
+
+    $.each(checks, function(index, check)
+    {
+      $.each(slots, function(index2, slot)
+      {
+        if (slot.start < check && 
+            slot.end > check && 
+            slot.recursive == true)
+        {
+          procs.push(
+            {
+              count: slot.count,
+              end: slot.end,
+              recursive: slot.recursive,
+              start: check,
+              text: slot.text,
+              type: slot.type,
+              wish: slot.wish
+            });
+          slot.end = check;
+        }
+      }) 
+    })
+
+    $.each(procs, function(index, proc)
+    {
+      slots.push(proc);
+    })
+
+
+
+
+
+
+
+
+
     timeline_data = new google.visualization.DataTable();
     timeline_data.addColumn('datetime', 'start');
     timeline_data.addColumn('datetime', 'end');
