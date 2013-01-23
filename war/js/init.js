@@ -26,7 +26,11 @@ function pageInit(active, logged)
 		navbar.append('<a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse"></a> <a class="brand" href="dashboard.html">KNRM</a>');
 	
 		var usermenu = $('<div class="btn-group pull-right"></div>');
-		usermenu.append('<a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-user"></i> ' + resources.name + ' <span class="caret"></span></a>');
+		
+		if( resources && resources.name )
+			usermenu.append('<a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-user"></i> ' + resources.name + ' <span class="caret"></span></a>');
+		else
+			usermenu.append('<a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-user"></i> ' + "MISSING" + ' <span class="caret"></span></a>');
 		navbar.append(usermenu);
 		
 		var userdrop = $('<ul class="dropdown-menu"></ul>');
@@ -86,8 +90,11 @@ function pageInit(active, logged)
 	  
 	  
 	  
-	  // setup user name
-  	$(".d_username").html(resources.name);
+    // setup user name
+	  	if( resources && resources.name )
+	  		$(".d_username").html(resources.name);
+	  	else
+	  		$(".d_username").html("MISSING");
 	}
 	else
 	{
@@ -166,7 +173,11 @@ webpaige.prototype.config = function(key, value)
 		else
 		{
 			//console.log(config[key]);
-			return config[key];
+			console.log( config );
+			if( config && config[key] )
+				return config[key];
+			else
+				return "MISSING";
 		}
 /* 	} */
 }

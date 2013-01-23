@@ -9,6 +9,16 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<welcome-file>login.html</welcome-file>
 	</welcome-file-list>
 	
+	   <servlet>
+                <servlet-name>forward</servlet-name>
+                <servlet-class>pipe</servlet-class>
+        </servlet>
+        <servlet-mapping>
+                <servlet-name>forward</servlet-name>
+                <url-pattern>/proxy/*</url-pattern>
+        </servlet-mapping>
+        
+        
 	    <mime-mapping>
     <extension>manifest</extension>
     <mime-type>text/cache-manifest</mime-type>
