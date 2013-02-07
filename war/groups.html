@@ -53,16 +53,6 @@
         </div>
         <!--/.well -->
         
-        <!--
-        <div class="well sidebar-nav">
-        	<div class="btn-group" style="margin-top:5px; margin-left:15px; margin-bottom:5px;">
-          	<a data-toggle="modal" href="#newGroup" class="btn"><i class="icon-list-alt"></i> New group</a>
-          	<a data-toggle="modal" href="#newMember" onclick="addNewMember()" class="btn"><i class="icon-user"></i> New member</a>
-          </div>
-        </div>
-        -->
-        <!--/.well -->
-        
         <div class="well sidebar-nav">
         	<div id="groupsNav"></div>
         </div>
@@ -80,7 +70,7 @@
                 <label class="control-label"><span class="groups_role"></span></label>
                 <div class="controls docs-input-sizes">
                   <select id="roles" name="role">
-	                  <option value="3">Volunteer</option>
+	                  <option value="3">Vrijwillliger</option>
 	                  <option value="2">Teamleider</option>
 	                  <option value="1">Planner</option>
                   </select>
@@ -92,19 +82,18 @@
                 <div class="controls docs-input-sizes">
                   <select class="chzn-select" data-placeholder="Selecteer een groep.." multiple style="width:530%" tabindex="4"></select>
                 </div>
-              </div>            
-              
+              </div>    
 		          
 		          <div class="control-group" style="float:left; margin-right: 20px;">
 		            <label class="control-label"><span class="groups_first_name"></span></label>
 		            <div class="controls docs-input-sizes">
-		              <input id="fname" placeholder="First name" type="text">
+		              <input id="fname" placeholder="Voornaam" type="text">
 		            </div>
 		          </div>
 		          <div class="control-group">
 		            <label class="control-label"><span class="groups_last_name"></span></label>
 		            <div class="controls docs-input-sizes">
-		              <input id="lname" placeholder="Last name" type="text">
+		              <input id="lname" placeholder="Achternaam" type="text">
 		            </div>
 		          </div>
 		          <div class="control-group" style="clear: both;">
@@ -116,13 +105,19 @@
 		          <div class="control-group">
 		            <label class="control-label"><span class="groups_email_address"></span></label>
 		            <div class="controls docs-input-sizes">
-		              <input id="email" class="span12" placeholder="Email address" type="text">
+		              <input id="email" class="span12" placeholder="Emailadres" type="text">
+		            </div>
+		          </div>
+		          <div class="control-group">
+		            <label class="control-label">Inlognaam</label>
+		            <div class="controls docs-input-sizes">
+		              <input id="loginname" class="span12" placeholder="Inlognaam" type="text">
 		            </div>
 		          </div>
 		          <div class="control-group">
 		            <label class="control-label"><span class="groups_password"></span></label>
 		            <div class="controls docs-input-sizes">
-		              <input id="pass" class="span12" placeholder="Password" type="password">
+		              <input id="pass" class="span12" placeholder="Wachtwoord" type="password">
 		            </div>
 		          </div>
               <div class="clear"></div>
@@ -147,19 +142,21 @@
                 <label class="control-label"><span class="groups_role"></span></label>
                 <div class="controls docs-input-sizes">
                   <select id="roles" name="role">
-	                  <option value="3">Volunteer</option>
+	                  <option value="3">Vrijwillliger</option>
 	                  <option value="2">Teamleider</option>
 	                  <option value="1">Planner</option>
                   </select>
                 </div>
               </div>  
             
+<!--
               <div id="groupsListEdit" class="control-group">
                 <label class="control-label"><span class="groups_groups"></span></label>
                 <div class="controls docs-input-sizes">
                   <select class="chzn-select" data-placeholder="Selecteer een groep.." multiple style="width:530%" tabindex="4"></select>
                 </div>
               </div> 
+-->
               
 		          <div class="control-group">
 		            <label class="control-label"><span class="groups_username"></span></label>
@@ -204,15 +201,6 @@
                   <input id="city" placeholder="" type="text">
                 </div>
               </div>
-              
-              <!--
-              <div class="control-group" style="float:left;">
-                <label class="control-label">Country</label>
-                <div class="controls docs-input-sizes">
-                  <input id="country" class="span3" placeholder="" type="text">
-                </div>
-              </div>
-              -->
               
               <div class="clear"></div>
             </div>
@@ -278,8 +266,29 @@
         <div id="content"></div>
         
       </div><!--/span-->
+
+      <div class="span12" style="text-align:center">
+        <a id="mobileLink" href="">Mobiele versie</a>
+      </div>
       
     </div><!--/row-->
   </div><!--/container-->
+  
+  
+  <script type="text/javascript">
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-36532309-1']);
+	  _gaq.push(['_setDomainName', 'ask-cs.com']);
+	  _gaq.push(['_setAllowLinker', true]);
+	  _gaq.push(['_trackPageview']);
+	
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	</script>
+
+
 </body>
 </html>

@@ -35,7 +35,7 @@
       <div class="span12 well">
       
         <div class="btn-group btn-hanging">
-          <a class="btn" onclick="composeMessage()"><i class="icon-plus-sign"></i> <span class="messages_compose"></span></a>
+          <a id="composeBtn" class="btn" onclick="composeMessage()"><i class="icon-plus-sign"></i> <span class="messages_compose"></span></a>
         </div>
         
         <div class="modal hide" id="composeMessage">
@@ -55,14 +55,6 @@
                   	<input id="email" name="email" type="checkbox" value="true"> <span class="messages_email"></span>
 	                </div>
 	              </div>
-	              <!--
-	              <div id="groups" class="control-group">
-	                <label class="control-label">Groups</label>
-	                <div class="controls docs-input-sizes">
-	                  <select class="chzn-select" data-placeholder="Choose a group.." multiple style="width:530%" tabindex="4"></select>
-	                </div>
-	              </div>
-	              -->
 	              <div id="" class="control-group receivers">
 	                <label class="control-label"><span class="messages_receiver"></span></label>
 	                <div class="controls docs-input-sizes">
@@ -157,14 +149,12 @@
         </div>
         
         <h2><span class="entypo eMedium">w</span> <span class="messages_messages"></span></h2>
-        <!-- <hr> -->
         <br />
         
         <div class="tabbable">
         
           <ul class="nav nav-tabs">
             <li id="inbox"><a><span class="messages_inbox"></span></a></li>
-            <!-- <li id="outbox"><a><span class="messages_outbox"></span></a></li> -->
             <li id="trash"><a><span class="messages_trash"></span></a></li>
           </ul>
           
@@ -176,8 +166,29 @@
         </div><!-- /tabbable -->
         
       </div><!--/span-->
+
+      <div class="span12" style="text-align:center">
+        <a id="mobileLink" href="">Mobiele versie</a>
+      </div>
       
     </div><!--/row-->
   </div><!--/container-->
+  
+  
+  <script type="text/javascript">
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-36532309-1']);
+	  _gaq.push(['_setDomainName', 'ask-cs.com']);
+	  _gaq.push(['_setAllowLinker', true]);
+	  _gaq.push(['_trackPageview']);
+	
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	</script>
+
+
 </body>
 </html>

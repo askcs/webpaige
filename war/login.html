@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title></title>
+  <title>KNRM Web Administratie :: Login</title>
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   
   <link href="img/favicon.ico" rel="shortcut icon">
@@ -28,77 +28,102 @@
 	<div id="navbar"></div>
   <div class="container-fluid">
     <div class="row-fluid">
+
+
     
-    	<div id="content">
-	    	<div id="live">
+    
+      <div id="loginForm" class="span3">
+        <form class="well">
+          <div id="alertDiv" class="alert alert-error">
+            <button id="alertClose" class="close" type="button">×</button><span id="alertMessage">{Alert Message}</span>
+          </div>
+          <h2><span class="entypo eMedium">+</span> Login</h2>
+          <hr>
+          <div class="control-group">
+            <label class="control-label">Vul uw gebruikersnaam in</label>
+            <div class="controls docs-input-sizes">
+              <input id="username" class="span12" placeholder="Inlognaam" type="text">
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label">Wachtwoord</label>
+            <div class="controls docs-input-sizes">
+              <input id="password" class="span12" placeholder="Wachtwoord" type="password">
+            </div>
+          </div>
+          <label class="checkbox"><input id="remember" type="checkbox"> Onthoud mij</label><br>
+          <a class="btn" href="#" id="loginBtn"><span class="login_login"></span></a>
+          <img id="ajaxLoader" alt="Loading" src="img/ajax-loader.gif" style="margin-left:5px; height:20px;">
+        </form>
+
+        <a href="http://m.paige4knrm.appspot.com/paige.html">Mobiele versie</a>
+      
+      </div><!--/span-->
+
+
 	    
-		      <div class="span3">
-		        <form class="well">
-		          <div id="alertDiv" class="alert alert-error">
-		            <button id="alertClose" class="close" type="button">×</button><span id="alertMessage">{Alert Message}</span>
-		          </div>
-		          <h2><span class="entypo eMedium">+</span> <span class="login_login"></span></h2>
-		          <hr>
-		          <div class="control-group">
-		            <label class="control-label"><span class="login_enter_email"></span></label>
-		            <div class="controls docs-input-sizes">
-		              <input id="username" class="span12" type="text">
-		            </div>
-		          </div>
-		          <div class="control-group">
-		            <label class="control-label"><span class="login_password"></span></label>
-		            <div class="controls docs-input-sizes">
-		              <input id="password" class="span12" placeholder="Password" type="password">
-		            </div>
-		          </div>
-		          <label class="checkbox"><input id="remember" type="checkbox"> <span class="login_remember"></span></label><br>
-		          <a class="btn" href="#" id="loginBtn"><span class="login_login"></span></a>
-		          <img id="ajaxLoader" alt="Loading" src="img/ajax-loader.gif" style="margin-left:5px; height:20px;">
-		          <br><br>
-		          <a class="" href="forgot_password.html"><span class="login_forgot"></span></a>
+      <div id="browseHappy" class="span9" style="margin-top: 40px;">
+      
+      	<h1>Helaas bieden wij geen ondersteuning voor deze browser.</h1>
+      	<h3>Waarom niet? </h3>
+      	<br />
+      	<p>KNRM Paige is gebaseerd op de nieuwste technologie. Daardoor werkt KNRM Paige nog niet op alle browser optimaal. Wij proberen ondersteuning te bieden voor alle moderne browsers. Op dit moment kunt u KNRM Paige gebruiken met een van de onderstaande browsers.</p>
+      	
+      	<br /><br />
+      
+	      <ul id="browserlist" class="wrap">
+					<li id="chrome">
+						<a href="http://www.google.com/chrome" title="Google Chrome">
+							<div class="icon"></div>
+							<h2>Google Chrome</h2>
 							<!--
-		          <br><br>or<br><br>
-		          <h4>Signin with your Google account</h4><br>
-		          <a href="#"><img src="img/signin_google_btn.png"></a>
-							-->
-		        </form>
-		      </div><!--/span-->
-		
-		
-		      
-<!--
-		      <div class="span3">
-		        <form class="well">
-		          <h2><span class="entypo eMedium">-</span> Accounts</h2>
-		          <hr>
-		          <p>Login as;
-		          	<ul>
-		          		<li><a onclick="loginAs('planner')">Planner</a></li>
-		          		<li><a onclick="loginAs('schipper')">Schipper</a></li>
-		          		<li><a onclick="loginAs('volunteer')">Opstapper</a></li>
-		          	</ul>
-		          </p>
-		          
-		          <p><i>This part will be removed later!</i></p>
-		        </form>
-		      </div>
+<p class="info">“De snelste browser op aarde. Het is veilig, krachtig en gemakkelijk te gebruiken, met een uitstekende bescherming van de privacy van Google.”</p>
 -->
-		      
+							<p class="website">Bezoek de website voor meer info</p>
+						</a>
+					</li><!-- #chrome -->
+					<li id="firefox">
+						<a href="http://www.firefox.com/" title="Mozilla Firefox">
+							<div class="icon"></div>
+							<h2>Mozilla Firefox</h2>
+							<!--
+<p class="info">“Uw online veiligheid is topprioriteit van Firefox. Firefox is gratis, en gemaakt om u te helpen het meeste uit het web.”</p>
+-->
+							<p class="website">Bezoek de website voor meer info</p>
+						</a>
+					</li><!-- #firefox -->
+					<li id="safari">
+						<a href="http://www.apple.com/safari/" title="Apple Safari">
+							<div class="icon"></div>
+							<h2>Safari</h2>
+							<!--
+<p class="info">“Safari voor Mac en Windows van Apple, 's werelds meest innovatieve browser.”</p>
+-->
+							<p class="website">Bezoek de website voor meer info</p>
+						</a>
+					</li><!-- #safari -->
+				</ul>
 		
-					<!--
-		      <div class="span3">
-		        <form class="well">
-		          <h3><span class="entypo eMedium">-</span> Register</h3>
-		          <hr>
-		          <p>Please follow the steps to register your account.</p><br>
-		           <a class="btn btn-success" href="register.html"><i class="icon-ok icon-white"></i> Register your account</a>
-		        </form>
-		      </div>
-		      
-	    	</div>
-    	</div>
+      </div><!--/span-->
       
     </div><!--/row-->
   </div><!--/container-->
+  
+  
+  <script type="text/javascript">
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-36532309-1']);
+	  _gaq.push(['_setDomainName', 'ask-cs.com']);
+	  _gaq.push(['_setAllowLinker', true]);
+	  _gaq.push(['_trackPageview']);
+	
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	</script>
+
+
 </body>
 </html>

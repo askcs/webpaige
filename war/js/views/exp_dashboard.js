@@ -4,12 +4,15 @@ $(document).ready(function ()
   pageInit('dashboard', 'true');
   
   webpaige.config('inited', false);
-
-      
-
   
   var trange = webpaige.config('trange');
   window.range = 'start=' + trange.bstart + '&end=' + trange.bend;
+  
+  var guuid = webpaige.config('firstGroupUUID');
+  var gname = webpaige.config('firstGroupName');
+  webpaige.config('guuid', guuid);
+  webpaige.config('gname', gname);
+  
   
   renderGroupsList();
   
@@ -36,38 +39,35 @@ $(document).ready(function ()
   $('#eplanningFrom').datetimepicker(dtoptions);
   $('#eplanningTill').datetimepicker(dtoptions);
   
+  
+  preloader();
+  
+/*
   timelineInit();
-  var guuid = webpaige.config('firstGroupUUID');
-  var gname = webpaige.config('firstGroupName');
-  webpaige.config('guuid', guuid);
-  webpaige.config('gname', gname);
-  
   groupTimelineInit(guuid, gname);
-  
-  
-  
   membersTimelineInit(guuid);
+*/
   
-  //$('#memberTimeline').hide();
-  //setTimeout($('#memberTimeline').show(), 10000);
   
   $('#groupAvBtn').addClass('active');
-  
-  
   $("#groupsList").change(function ()
   {
 	webpaige.config('inited', false);
     $('#divisions option[value="both"]').attr('selected', 'selected');
-    timelineInit();
     var guuid = $(this).find(":selected").val();
     var gname = $(this).find(":selected").text();
     webpaige.config('guuid', guuid);
     webpaige.config('gname', gname);
+    
+    preloader();
+    
+/*
+    timelineInit();
     groupTimelineInit(guuid, gname);
     membersTimelineInit(guuid);
+*/
+    
   });
-  
-  
   $('#newEventBtn').click(function ()
   {
   
@@ -87,48 +87,32 @@ $(document).ready(function ()
     //console.log('user: ', user);
     $('#userWho').val(real.uuid);
     
-  
-	  var ctimest = new Date.now().getTime();
-	  ctimest = Math.round(ctimest);
-	  ctimest = new Date(ctimest).toString("dd-M-yyyy HH:mm");
-  
-	  $('#newEvent #planningFrom').val(ctimest);
-    
-  
-	  var ctimeend = new Date.now().addHours(1).getTime();
-	  ctimeend = Math.round(ctimeend);
-	  ctimeend = new Date(ctimeend).toString("dd-M-yyyy HH:mm");
-  
-	  $('#newEvent #planningTill').val(ctimeend);
-  
-    
     $('#newEvent').modal('show');
   });
-  
-  
+/*
   $(window).bind('resize', function ()
   {
     timeline.redraw();
     timeline2.redraw();
     timeline3.redraw();
   });
+*/
   
   var local = {
     title: 'dashboard_title',
     statics: ['dashboard_today', 'dashboard_new_availability', 'dashboard_status', 'dashboard_available', 'dashboard_available_noord', 'dashboard_available_zuid', 'dashboard_unavailable', 'dashboard_from', 'dashboard_till', 'dashboard_weekly', 'dashboard_cancel', 'dashboard_save_planning', 'dashboard_edit_availability', 'dashboard_delete_planning', 'dashboard_save_planning', 'dashboard_planboard']
   }
   webpaige.i18n(local);
+  
+  
+  webpaige.config('division', 'default');
+  
   $("#divisions").change(function ()
   {
     var division = $(this).find(":selected").val();
-    timeline2.draw(webpaige.config(division));
+    webpaige.config('division', division);
+    //timeline2.draw(webpaige.config(division));
   });
-
-
-  var resources = JSON.parse(webpaige.get('resources'));
-  var sessionXID = session.getSession();
-  var link = "http://m.paige4knrm.appspot.com/paige.html?uuid="+resources.uuid+"&X-SESSION_ID="+sessionXID;
-  $('#mobileLink').attr('href', link);
   
   
 });
@@ -140,12 +124,17 @@ function reRenderMembers(mid, mname)
 {
   var guuid = $("#groupsList").find(":selected").val();
   var gname = $("#groupsList").find(":selected").text();
-  timelineInit(mid);
   
   $('#mytimeline .timeline-frame').append('<span id="tmlabel" class="label label-info" style="position:absolute; top:10px; left:10px; z-index:2000;">' + mname + '</span>');
   
+  preloader(mid);
+  
+/*
+  timelineInit(mid);
   groupTimelineInit(guuid, gname);
   membersTimelineInit(guuid, mid);	
+*/
+  
 }
   
   
@@ -154,7 +143,6 @@ var timeline;
 var timeline2;
 var timeline3;
 var timeline_selected = null;
-
 // Submitters
 function planSubmit()
 {
@@ -168,7 +156,7 @@ function planSubmit()
   else planningReoccuring = "false";
   
   
-  //console.log('1:', 'planningFrom',planningFrom, 'planningTill', planningTill);
+  console.log('1:', 'planningFrom',planningFrom, 'planningTill', planningTill);
   
   
   var planningFrom = Date.parseExact(planningFrom, "d-M-yyyy HH:mm");
@@ -177,7 +165,7 @@ function planSubmit()
   var planningTill = planningTill.getTime();
   
   
-  //console.log('2:', 'planningFrom',planningFrom, 'planningTill', planningTill);
+  console.log('2:', 'planningFrom',planningFrom, 'planningTill', planningTill);
   
   
   var state = '';
@@ -259,7 +247,6 @@ function deletePlanSubmit()
   deleteSlotModal(oldslot.from, oldslot.till, oldslot.reoc, oldslot.type);
   $('#editEventForm')[0].reset();
 }
-
 // Timeline initators
 function timelineInit(uuid)
 {
@@ -322,67 +309,28 @@ function onRangeChanged3()
   timeline.setVisibleChartRange(range.start, range.end);
   timeline2.setVisibleChartRange(range.start, range.end);
 }
-
-
-function fixMemberTimeline()
-{
-	var range = timeline.getVisibleChartRange();
-  var s = new Date(range.start).getTime();
-  var e = new Date(range.end).getTime();
-  timeline3.setVisibleChartRange(s, e);
-}
-
-
 // Timeline events
 function timelineOnAdd()
 {
-  timeline.cancelAdd();  
+  timeline.cancelAdd();
+  
   
   //var resources = JSON.parse(webpaige.get('resources'));
   //$('#userWho').val(resources.uuid);
   
   
   var sel = timeline.getSelection();
-  
-  //console.log('sel', sel);
-  
   var row = sel[0].row;
-  
-  //console.log('row', row);
-  
-  var curItem = timeline.getItem(row);  
-  
-  var selDateStart = new Date(curItem.start.getTime());
-  	//console.log('1', selDate);
-  selDateStart = Math.round(selDateStart);
-  	//console.log('2', selDate);
-  selDateStart = new Date(selDateStart).toString("dd-M-yyyy HH:mm");
-  	//console.log('3', selDate);
-  $('#newEvent #planningFrom').val(selDateStart);
-  
-  var selDateEnd = new Date(curItem.end.getTime());
-  	//console.log('1', selDate);
-  selDateEnd = Math.round(selDateEnd);
-  	//console.log('2', selDate);
-  selDateEnd = new Date(selDateEnd).toString("dd-M-yyyy HH:mm");
-  	//console.log('3', selDate);
-  $('#newEvent #planningTill').val(selDateEnd);
-  
-  
-  //console.log('curItem', curItem);
-  
+  var curItem = timeline.getItem(row);
   var user = $.trim(timeline.getItem(row).group.split('>')[3].split('<')[0]);
   user = user.split(':');
   var real = {
     uuid: user[0],
     reoc: user[1]
   };
-  
-  //console.log('user', real);
-  
   $('#userWho').val(real.uuid);
   
-  $('#newEvent input#planningReoccuring')[0].checked = eval(real.reoc);
+  
   
   $('#newEvent').modal('show');
   $('#tmlabel').hide();
@@ -422,19 +370,9 @@ function timelineOnDelete()
 
 function timelineOnSelect()
 {
-	//console.log('timeline', timeline);
-	
   var sel = timeline.getSelection();
-  
-	//console.log('sel', sel);
-	
-	if (sel.length > 0)
-	{
-	  var row = sel[0].row;
-		//console.log('row', row);
-	  timeline_selected = timeline.getItem(row);
-	}
-		
+  var row = sel[0].row;
+  timeline_selected = timeline.getItem(row);
 }
 
 function timelineOnChange()
@@ -452,7 +390,6 @@ function timelineOnChange()
   updateSlot(timeline_selected, newItem, real);
   $('#tmlabel').hide();
 }
-
 // Timeline Members events
 function timelineOnAdd2()
 {
@@ -556,25 +493,28 @@ function timelineOnChange2()
   
   if (real.lock === "false")
   {
+  
   	//console.log('action is allowed');
+  
 		//console.log(timeline_selected, newItem, real); 
+  
 		updateSlot(timeline_selected, newItem, real); 
   }
   else
   {
+  
   	//console.log('not allowed');
+  
 	  timeline3.cancelChange();
   }
 }
-
-
 // Timeline CRUD's
 function addSlot(from, till, reoc, value, user)
 {
   // resources ?
   var resources = JSON.parse(webpaige.get('resources'));
   var now = parseInt((new Date()).getTime());
-  //console.log('passed values', from, till, reoc, value, user, now);
+  console.log('passed values', from, till, reoc, value, user, now);
   
   
   if (from < now && till < now)
@@ -600,19 +540,14 @@ function addSlot(from, till, reoc, value, user)
 
     function (data, label)
     {
-    	//console.log('slot added');
       getSlots();
       getGroupSlots(label.guuid, label.gname);
-      //getMemberSlots(label.guuid);
-      //fixMemberTimeline();
-  
+      getMemberSlots(label.guuid);
     });
   }
   
   
 }
-
-
 // check delete slot
 function deleteSlot(from, till, reoc, value, user)
 {
@@ -634,12 +569,9 @@ function deleteSlot(from, till, reoc, value, user)
     },
     function (data, label)
     {
-    	//console.log('slot deleted');
-    	
       getSlots();
       getGroupSlots(label.guuid, label.gname);
-      //getMemberSlots(label.guuid);
-      //fixMemberTimeline();
+      getMemberSlots(label.guuid);
     });
   }
   else
@@ -675,12 +607,9 @@ function deleteSlotModal(from, till, reoc, value)
 
     function (data, label)
     {
-    	//console.log('slot deleted from modal');
-    	
       getSlots();
       getGroupSlots(label.guuid, label.gname);
-      //getMemberSlots(label.guuid);
-      //fixMemberTimeline();
+      getMemberSlots(label.guuid);
     });
   }
   else
@@ -720,13 +649,9 @@ function updateSlotModal()
       {
         webpaige.message("De beschikbaarheid is gewijzigd!");
       }
-      
-    	//console.log('slot updated from modal');
-    	
       getSlots();
       getGroupSlots(label.guuid, label.gname);
-      //getMemberSlots(label.guuid);
-      //fixMemberTimeline();    
+      getMemberSlots(label.guuid);
     });
   }
   else
@@ -763,12 +688,9 @@ function updateSlot(oldSlot, newSlot, user)
 
     function (data, label)
     {
-    	//console.log('slot updated');
-    	
       getSlots();
       getGroupSlots(label.guuid, label.gname);
-      //getMemberSlots(label.guuid);
-      //fixMemberTimeline();    
+      getMemberSlots(label.guuid);
     });
   }
   else
@@ -813,11 +735,9 @@ function editSlotModal(efrom, etill, ereoc, evalue, user)
       eoldSlotValue = 'com.ask-cs.State.Unreached';
       break;
   }
-  
   efrom = new Date(efrom.getTime());
   eoldSlotFrom = Math.round(efrom / 1000);
   efrom = efrom.toString("dd-M-yyyy HH:mm");
-  
   $('#eplanningFrom').val(efrom);
   etill = new Date(etill.getTime());
   eoldSlotTill = Math.round(etill / 1000);
@@ -832,11 +752,14 @@ function editSlotModal(efrom, etill, ereoc, evalue, user)
     uuid: user.uuid
   };
 }
-
-
 // Timeline slots
 function getSlots(uuid)
 {
+
+	$('#mytimeline').hide();
+	$('#groupTimelineHolder').hide();
+	$('#memberTimeline').hide();
+	
 	if (uuid == undefined)
 	{
   	var resources = JSON.parse(webpaige.get('resources'));
@@ -846,6 +769,7 @@ function getSlots(uuid)
 	{
   	var xid = uuid;		
 	}
+	
   webpaige.con(
   options = {
     path: '/askatars/' + xid + '/slots?' + window.range,
@@ -857,64 +781,7 @@ function getSlots(uuid)
   function (data, label)
   {
     var slots = data;
-
-
-
-
-
-    /**
-     * Cehck for the slots which occurs
-     * from saturday to sunday in the reoccuring table
-     * solution is to split them to two parts s taking midnight
-     * as a reference
-     * @type {Array}
-     */
-    var checks = [ 
-      Date.parse('next sunday').getTime() / 1000, 
-      Date.parse('next sunday').addWeeks(1).getTime() / 1000, 
-      Date.parse('last sunday').getTime() / 1000, 
-      Date.parse('last sunday').addWeeks(-1).getTime() / 1000
-    ];
-
-    var tests = slots,
-        procs = [];
-
-    $.each(checks, function(index, check)
-    {
-      $.each(slots, function(index2, slot)
-      {
-        if (slot.start < check && 
-            slot.end > check && 
-            slot.recursive == true)
-        {
-          procs.push(
-            {
-              count: slot.count,
-              end: slot.end,
-              recursive: slot.recursive,
-              start: check,
-              text: slot.text,
-              type: slot.type,
-              wish: slot.wish
-            });
-          slot.end = check;
-        }
-      }) 
-    })
-
-    $.each(procs, function(index, proc)
-    {
-      slots.push(proc);
-    })
-
-
-
-
-
-
-
-
-
+    
     timeline_data = new google.visualization.DataTable();
     timeline_data.addColumn('datetime', 'start');
     timeline_data.addColumn('datetime', 'end');
@@ -928,19 +795,19 @@ function getSlots(uuid)
       
       var content = colorState(slots[i].text);
       
+      if (slots[i].recursive) {
+	      var xgroup = '<span style="display:none;">b</span>Wekelijkse terugkerend<span style="display:none;">' + xid + ':true</span>';
+      }
+      else
+      {
+	      var xgroup = '<span style="display:none;">a</span>Planning<span style="display:none;">' + xid + ':false</span>';
+      }
+      
       timeline_data.addRow([
       new Date(slots[i].start * 1000),
       new Date(slots[i].end * 1000),
       content,
       slots[i].recursive ? '<span style="display:none;">b</span>Wekelijkse terugkerend<span style="display:none;">' + xid + ':true</span>' : '<span style="display:none;">a</span>Planning<span style="display:none;">' + xid + ':false</span>']);
-   
-      /*
-      timeline_data.addRow([
-      new Date(slots[i].start * 1000),
-      new Date(slots[i].end * 1000),
-      content,
-      '<span style="display:none;">c</span>Combined<span style="display:none;">' + resources.uuid + ':false</span>']);
-      */
       
     }
     
@@ -977,15 +844,17 @@ function getSlots(uuid)
       'content': 'available',
       'group': '<span style="display:none;">a</span>Planning<span style="display:none;">' + xid + ':false</span>'
     });
-    /*
-    timeline.addItem(
-    {
-      'start': new Date(0),
-      'end': new Date(0),
-      'content': 'available',
-      'group': '<span style="display:none;">c</span>Combined<span style="display:none;">' + resources.uuid + ':false</span>'
-    });
-    */
+
+	
+    $('#mytimeline').show();
+
+
+
+
+
+
+
+
 
 		if (webpaige.config('inited') == true) {
     timeline.setVisibleChartRange(trange.start, trange.end);
@@ -993,7 +862,14 @@ function getSlots(uuid)
     timeline.setVisibleChartRange((new Date).add({days: -1}), (new Date).add({days: +13}));
     }
     
-    fixMemberTimeline();
+    
+    
+    
+    
+    
+    
+    
+    
     
   });
 }
@@ -1033,12 +909,12 @@ function getGroupSlots(guuid, gname)
       height = Math.round(num / maxNum * 80 + 20);
       if (xcurrent < xwish)
       {
-        var color = '#a0a0a0';
+        var color = '#a93232';
         var span = '';
       }
       else if (xcurrent == xwish)
       {
-        var color = '#ba6a24';
+        var color = '#e0c100';
         var span = '';
       }
       else if (xcurrent > xwish)
@@ -1046,28 +922,28 @@ function getGroupSlots(guuid, gname)
         switch (num)
         {
           case 1:
-            var color = '#415e6b';
+            var color = '#4f824f';
             break;
           case 2:
-            var color = '#3d5865';
+            var color = '#477547';
             break;
           case 3:
-            var color = '#3d5865';
+            var color = '#436f43';
             break;
           case 4:
-            var color = '#344c58';
+            var color = '#3d673d';
             break;
           case 5:
-            var color = '#2f4550';
+            var color = '#396039';
             break;
           case 6:
-            var color = '#2c424c';
+            var color = '#335833';
             break;
           case 7:
-            var color = '#253943';
+            var color = '#305330';
             break;
           default:
-            var color = '#486877';
+            var color = '#294929';
         }
         var span = '<span class="badge badge-inverse">' + num + '</span>';
       }
@@ -1079,7 +955,7 @@ function getGroupSlots(guuid, gname)
       var actual = '<div class="bar" style="' + style + '" ' + ' title="Huidig aantal beschikbaar: ' + num + ' personen">' + span + '</div>';
       var item = {
         'group': label,
-        'groupsWidth': '150px',
+        //'groupsWidth': '150px',
         'start': Math.round(data[i].start * 1000),
         'end': Math.round(data[i].end * 1000),
         'content': requirement + actual
@@ -1119,41 +995,41 @@ function getGroupSlots(guuid, gname)
         height = Math.round(num / maxNum * 80 + 20);
         if (xcurrent < xwish)
         {
-	        var color = '#a0a0a0';
-	        var span = '';
-	      }
-	      else if (xcurrent == xwish)
-	      {
-	        var color = '#ba6a24';
+          var color = '#a93232';
+          var span = '';
+        }
+        else if (xcurrent == xwish)
+        {
+          var color = '#e0c100';
           var span = '';
         }
         else if (xcurrent > xwish)
         {
           switch (num)
           {
-          case 1:
-            var color = '#415e6b';
-            break;
-          case 2:
-            var color = '#3d5865';
-            break;
-          case 3:
-            var color = '#3d5865';
-            break;
-          case 4:
-            var color = '#344c58';
-            break;
-          case 5:
-            var color = '#2f4550';
-            break;
-          case 6:
-            var color = '#2c424c';
-            break;
-          case 7:
-            var color = '#253943';
-            break;
-          default:
-            var color = '#486877';
+            case 1:
+              var color = '#4f824f';
+              break;
+            case 2:
+              var color = '#477547';
+              break;
+            case 3:
+              var color = '#436f43';
+              break;
+            case 4:
+              var color = '#3d673d';
+              break;
+            case 5:
+              var color = '#396039';
+              break;
+            case 6:
+              var color = '#335833';
+              break;
+            case 7:
+              var color = '#305330';
+              break;
+            default:
+              var color = '#294929';
           }
           var span = '<span class="badge badge-inverse">' + num + '</span>';
         }
@@ -1165,7 +1041,7 @@ function getGroupSlots(guuid, gname)
         var actual = '<div class="bar" style="' + style + '" ' + ' title="Huidig aantal beschikbaar: ' + num + ' personen">' + span + '</div>';
         var item = {
           'group': label,
-          'groupsWidth': '150px',
+          //'groupsWidth': '150px',
           'start': Math.round(data[i].start * 1000),
           'end': Math.round(data[i].end * 1000),
           'content': requirement + actual
@@ -1206,41 +1082,41 @@ function getGroupSlots(guuid, gname)
         height = Math.round(num / maxNum * 80 + 20);
         if (xcurrent < xwish)
         {
-	        var color = '#a0a0a0';
-	        var span = '';
-	      }
-	      else if (xcurrent == xwish)
-	      {
-	        var color = '#ba6a24';
+          var color = '#a93232';
+          var span = '';
+        }
+        else if (xcurrent == xwish)
+        {
+          var color = '#e0c100';
           var span = '';
         }
         else if (xcurrent > xwish)
         {
           switch (num)
           {
-          case 1:
-            var color = '#415e6b';
-            break;
-          case 2:
-            var color = '#3d5865';
-            break;
-          case 3:
-            var color = '#3d5865';
-            break;
-          case 4:
-            var color = '#344c58';
-            break;
-          case 5:
-            var color = '#2f4550';
-            break;
-          case 6:
-            var color = '#2c424c';
-            break;
-          case 7:
-            var color = '#253943';
-            break;
-          default:
-            var color = '#486877';
+            case 1:
+              var color = '#4f824f';
+              break;
+            case 2:
+              var color = '#477547';
+              break;
+            case 3:
+              var color = '#436f43';
+              break;
+            case 4:
+              var color = '#3d673d';
+              break;
+            case 5:
+              var color = '#396039';
+              break;
+            case 6:
+              var color = '#335833';
+              break;
+            case 7:
+              var color = '#305330';
+              break;
+            default:
+              var color = '#294929';
           }
           var span = '<span class="badge badge-inverse">' + num + '</span>';
         }
@@ -1252,7 +1128,7 @@ function getGroupSlots(guuid, gname)
         var actual = '<div class="bar" style="' + style + '" ' + ' title="Huidig aantal beschikbaar: ' + num + ' personen">' + span + '</div>';
         var item = {
           'group': label,
-          'groupsWidth': '150px',
+          //'groupsWidth': '150px',
           'start': Math.round(data[i].start * 1000),
           'end': Math.round(data[i].end * 1000),
           'content': requirement + actual
@@ -1279,6 +1155,21 @@ function getGroupSlots(guuid, gname)
     google.visualization.events.addListener(timeline2, 'rangechange', onRangeChanged2);
     timeline2.draw(ndata, options);
     
+	$('#groupTimelineHolder').show();
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     if (webpaige.config('inited') == true) {
     timeline2.setVisibleChartRange(trange.start, trange.end);
     } else {
@@ -1286,17 +1177,23 @@ function getGroupSlots(guuid, gname)
     }
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
   });
 }
 
 function getMemberSlots(uuid, mid)
 {
-	$('#memberLoadingPercentage').text('0');
-	$('#memberTimeline').hide();
-	$('#memberTimelineLoading').show();
-	
-	//console.log('loading members');
-
   webpaige.con(
   options = {
     path: '/network/' + uuid + '/members',
@@ -1309,35 +1206,17 @@ function getMemberSlots(uuid, mid)
   {
   	if (data.length > 0)
   	{
-	  	//$('#memberTimeline').show();
+	  	$('#memberTimeline').show();
 	    timeline_data3 = new google.visualization.DataTable();
 	    timeline_data3.addColumn('datetime', 'start');
 	    timeline_data3.addColumn('datetime', 'end');
 	    timeline_data3.addColumn('string', 'content');
 	    timeline_data3.addColumn('string', 'group');
 	    var members = data;
-	    
-	    window.totalMembers = members.length;
-	    window.currentMembers = members.length;
-	    
-	    //console.log('total members: ', window.totalMembers);
-	    
 	    for (var i in members)
 	    {
-	    
-	    	
-	    	//var lastOne = (i == (members.length - 1)) ? true : false;
-	      
-	      
-	      
-	    	
 	    	renderMemberSlots(members[i], members[i].name, false);
-	    	
-	    	
-	    	
-	      //if (window.lastOne === true) console.log('last one');
-	    	
-	    	/*
+/*
 	    	if (mid == members[i].uuid)
 	    	{
 		    	renderMemberSlots(members[i], members[i].name, true);
@@ -1346,8 +1225,7 @@ function getMemberSlots(uuid, mid)
 	    	{
 		    	renderMemberSlots(members[i], members[i].name, false)
 	    	}
-	    	*/
-	    	
+*/
 	    }
 	    var trange = webpaige.config('trange');
 	    if (webpaige.getRole() == 1)
@@ -1378,13 +1256,14 @@ function getMemberSlots(uuid, mid)
 	        'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2 // about three months in milliseconds,
 	      };
 	    }
-	    
-	    window.timeline_data3 = timeline_data3;
-	    window.timeline_data3options = options;
-	    
-	    // if (timeline3.draw(timeline_data3, options)) console.log('yes man');
 	    timeline3.draw(timeline_data3, options);
-
+	    
+	    
+	    
+	    
+	    
+	    
+	    
 	    
 	    if (webpaige.config('inited') == true) {
 	    timeline3.setVisibleChartRange(trange.start, trange.end);
@@ -1393,7 +1272,14 @@ function getMemberSlots(uuid, mid)
 	    timeline3.setVisibleChartRange((new Date).add({days: -1}), (new Date).add({days: +13}));
 	    //webpaige.config('inited', true);
 	    }
-
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
 	    
   	}
   	else
@@ -1404,9 +1290,8 @@ function getMemberSlots(uuid, mid)
   });
 }
 
-function renderMemberSlots(member, name, mid, flag)
+function renderMemberSlots(member, name, mid)
 {	
-	
 	if (mid != false)
 	{
 	  webpaige.con(
@@ -1443,79 +1328,52 @@ function renderMemberSlots(member, name, mid, flag)
 	        'content': content,
 	        'group': slots[i].recursive ? '<span style="display:none;">' + label.uuid + ':true:false</span>' + label.name + ' <div style="display:none;">b</div>(W)' : '<span style="display:none;">' + label.uuid + ':false:false</span>' + label.name + ' <div style="display:none;">a</div>(P)'
 	      });
-	      
 	    }
 	  });
 	}
 	else
 	{
-
-    webpaige.con(
-    options = {
-      path: '/askatars/' + member.uuid + '/slots?' + window.range + '&type=both',
-      loading: 'De beschiebaarheiden worden opgeladen..',
-      label: member,
-      session: session.getSession()
-    },
-    function (data, label)
-    {
-  
-      if (webpaige.getRole() == 1)
-      {
-        var header = '<a onclick="reRenderMembers(\'' + label.uuid + '\', \'' + label.name + '\');">' + label.name + '</a>';
-      }
-      else
-      {
-        var header = label.name;
-      }
-      var slots = data;
-
-      var resources = JSON.parse(localStorage.getItem('resources'));
-      //console.log('-> r:', resources.uuid, '-> m:', member.uuid);
-      if (resources.uuid !== member.uuid)
-      {
-        timeline3.addItem(
-        {
-          'start': new Date(0),
-          'end': new Date(0),
-          'content': 'available',
-          'group': '<span style="display:none;">' + label.name + ':false:true</span>' + header + '<div style="display:none;">c</div>'
-        });
-        for (var i in slots)
-        {
-          var content = colorState(slots[i].text);
-          timeline3.addItem(
-          {
-            'start': new Date(slots[i].start * 1000),
-            'end': new Date(slots[i].end * 1000),
-            'content': content,
-            'group': '<span style="display:none;">' + label.name + ':false:true</span>' + header + '<div style="display:none;">c</div>'
-          });
-        }
-      }
-         
-      window.currentMembers --;
-      
-      if (window.currentMembers == 0)
-      {
-        //console.log('finally the last one');
-        $('#memberTimeline').show();
-        $('#memberTimelineLoading').hide();
-        fixMemberTimeline();
-        window.flag = true;
-      }
-      else
-      {
-        var per = 100 - Math.round((window.currentMembers * 100) / window.totalMembers);
-        $('#memberLoadingPercentage').text(per);
-        //console.log('current members: ', window.currentMembers, per);
-        window.flag = false;
-      }
-      
-    });
-	    	
+	  webpaige.con(
+	  options = {
+	    path: '/askatars/' + member.uuid + '/slots?' + window.range + '&type=both',
+	    loading: 'De beschiebaarheiden worden opgeladen..',
+	    label: member,
+	    session: session.getSession()
+	  },
+	  function (data, label)
+	  {
+	  	if (webpaige.getRole() == 1)
+	  	{
+		  	var header = '<a onclick="reRenderMembers(\'' + label.uuid + '\', \'' + label.name + '\');">' + label.name + '</a>';
+	  	}
+	  	else
+	  	{
+		  	var header = label.name;
+	  	}
+	    var slots = data;
+	    timeline3.addItem(
+	    {
+	      'start': new Date(0),
+	      'end': new Date(0),
+	      'content': 'available',
+	      'group': '<span style="display:none;">' + label.name + ':false:true</span>' + header + '<div style="display:none;">c</div>'
+	    });
+	    for (var i in slots)
+	    {
+	      var content = colorState(slots[i].text);
+	      timeline3.addItem(
+	      {
+	        'start': new Date(slots[i].start * 1000),
+	        'end': new Date(slots[i].end * 1000),
+	        'content': content,
+	        'group': '<span style="display:none;">' + label.name + ':false:true</span>' + header + '<div style="display:none;">c</div>'
+	      });
+	    }
+	  });
 	}
 }
+
+
 // Slot makeups
 function colorState(state)
 {
@@ -1646,7 +1504,6 @@ function goToday()
   getSlots();
   getGroupSlots(label.guuid, label.gname);
   getMemberSlots(label.guuid);
-  //fixMemberTimeline(); 
 }
 // Timeline navigations
 function timelineZoomIn()
@@ -1685,11 +1542,11 @@ function timelineMoveLeft()
   
   var now = Date.today().getTime() / 1000;
   
-  //console.log(trange, now);
+  console.log(trange, now);
   
   if (now > trange.bstart && now < trange.bend)
   {
-	  //console.log('you are in the right week');
+	  console.log('you are in the right week');
 	  webpaige.config('inited', false);
   }
   else
@@ -1722,11 +1579,11 @@ function timelineMoveRight()
   
   var now = Date.today().getTime() / 1000;
   
-  //console.log(trange, now);
+  console.log(trange, now);
   
   if (now > trange.bstart && now < trange.bend)
   {
-	  //console.log('you are in the right week');
+	  console.log('you are in the right week');
 	  webpaige.config('inited', false);
   }
   else
@@ -1737,4 +1594,526 @@ function timelineMoveRight()
   getSlots();
   getGroupSlots(label.guuid, label.gname);
   getMemberSlots(label.guuid);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Preloader controller */
+
+var preloader = function(uuid)
+{	
+
+	$('#loading span').show();
+	$('#mytimeline').hide();
+	
+	console.log('loading began');
+	
+	$.ajaxSetup(
+	{
+	  contentType: 'application/json',
+	  xhrFields: { 
+	  	withCredentials: true
+	  },
+	  beforeSend: function(xhr)
+	  {
+	  	xhr.setRequestHeader('X-SESSION_ID', session.getSession());
+	  }		
+	})
+
+	window.app = {
+		userslots: [],
+		slots: {},
+		aggs: {},
+		settings: {},
+		timeline: []
+	}
+
+  //var now = parseInt((new Date()).getTime() / 1000);
+  
+  var trange = webpaige.config('trange');
+  //window.range = 'start=' + trange.bstart + '&end=' + trange.bend;
+  
+  /*
+  var period = {
+	  bstart: (now - 86400 * 7 * 1),
+	  bend: (now + 86400 * 7 * 1),
+	  start: Date.today().add({ days: -5 }),
+	  end: Date.today().add({ days: 5 })
+  }
+  */
+  
+  var period = {
+	  bstart: trange.bstart,
+	  bend: trange.bend,
+	  start: trange.start,
+	  end: trange.end
+  }
+  
+  window.app.settings = { 
+  	ranges: {
+		  period: period,
+		  reset: period
+	  }
+  }
+	
+	var divisions = [
+		'knrm.StateGroup.BeschikbaarNoord',
+		'knrm.StateGroup.BeschikbaarZuid',
+	]
+
+	if (uuid == undefined)
+	{
+  	var resources = JSON.parse(webpaige.get('resources'));
+  	var xid = resources.uuid;
+	}
+	else
+	{
+  	var xid = uuid;		
+	}
+	
+	var sequence1 = [
+    
+    function(callback)
+    {
+      setTimeout(function()
+      {
+      
+      	$('#timeloading span').text('Loading user slots..');
+      	
+				//var resources = JSON.parse(webpaige.get('resources'));
+				var userslots = [];
+			  $.ajax(
+				{
+					url: host + '/askatars/' 
+										+ xid 
+										+ '/slots?start=' 
+										+ window.app.settings.ranges.period.bstart 
+										+ '&end=' 
+										+ window.app.settings.ranges.period.bend
+				})
+				.success(
+				function(data)
+				{																
+					window.app.userslots = data;
+					var res = {'userslots': true}
+	    		callback(null, res);
+				})
+      }, 100);	
+    },
+	
+    function(res, callback)
+    {
+      setTimeout(function()
+      {	
+      
+      	$('#timeloading').text('Loading group agg slots..');
+      	
+				var params = [];
+				if (divisions.length > 0)
+				{
+					$.each(divisions, function(index, value)
+					{
+						var param = '&stateGroup=' + value;
+						params.push(param);
+					})
+				}
+				params.unshift(null);
+				var groups = {},
+				tmp = {},
+				aggs = {},
+				key,
+				stateGroup,
+				ikey;
+				var group = webpaige.config('guuid');
+				aggs[group] = {};
+				$.each(params, function(index, param)
+				{
+					if (param)
+					{
+						var key = param.substr(12);
+						var stateGroup = param;
+					}
+					else
+					{
+						var key = 'default';
+						var stateGroup = '';
+					}
+					ikey = group + "_" + key;
+					(function(ikey, stateGroup, key, index)
+					{
+						tmp[ikey] = function(callback, index)
+						{
+							setTimeout(function()
+							{
+							  $.ajax(
+								{
+									url: host + '/calc_planning/' 
+														+ group 
+														+ '?start=' 
+														+ window.app.settings.ranges.period.bstart 
+														+ '&end=' 
+														+ window.app.settings.ranges.period.bend
+														+ stateGroup
+								})
+								.success(
+								function(data)
+								{		
+									aggs[group][key] = data;
+					    		callback(null, 'done');
+								})
+							}, (index * 100) + 100) 
+						}													
+						$.extend(groups, tmp)
+					}) (ikey, stateGroup, key, index)
+				})
+					
+				async.series(groups,
+				function(err, results)
+				{
+					window.app.aggs = aggs;	
+					res = {'aggs': true};
+					callback(null, res);
+				});			
+      }, 200);
+    }];
+    
+    var sequence2 = [
+    function(res, callback)
+    {
+      setTimeout(function()
+      {
+      
+      	$('#timeloading span').text('Loading members..');
+      	
+				var group = webpaige.config('guuid');
+			  $.ajax(
+				{
+					url: host + '/network/' + group + '/members?fields=[role]',
+				})
+				.success(
+				function(data)
+				{	
+					window.app.members = data;
+					res = {'members': true};
+	    		callback(null, res);
+	    	})
+      }, 300);	
+    },
+    
+    function(res, callback)
+    {
+      setTimeout(function()
+      {	
+      
+      	$('#timeloading span').text('Loading group member slots..');
+      	
+				var members = {},
+				tmp = {},
+				slots = {},
+				key,
+				itype,
+				ikey,
+				//params = [];
+				params = ['&type=both'];
+				params.unshift(null);
+				
+				$.each(window.app.members, function (index, member)
+				{
+					slots[member.uuid] = {};
+					$.each(params, function(index, param)
+					{
+						if (param)
+						{
+							key = param.substr(6);
+							itype = param;
+						}
+						else {
+							key = 'default';
+							itype = '';
+						}
+						ikey = member.uuid + "_" + key;
+						(function(ikey, itype, key, index)
+						{
+							tmp[ikey] = function(callback, index)
+							{
+								setTimeout(function()
+								{
+								
+									//console.log(member.name);
+									
+								  $.ajax(
+									{
+										url: host + '/askatars/' 
+															+ member.uuid 
+															+ '/slots?start=' 
+															+ window.app.settings.ranges.period.bstart 
+															+ '&end=' 
+															+ window.app.settings.ranges.period.bend
+															+ itype
+									})
+									.success(
+									function(data)
+									{																
+										slots[member.uuid][key] = data;
+						    		callback(null, 'done');
+									})
+								}, (index * 100) + 100) 
+							}					
+							$.extend(members, tmp)
+						}) (ikey, itype, key, index)
+					})
+				})
+				
+				async.series(members,
+				function(err, results)
+				{			
+					window.app.slots = slots;
+					localStorage.setItem('slots', JSON.stringify(slots));	
+					res = {'memberslots': true};
+					callback(null, res);
+				})
+			
+      }, 400);				
+
+    }    
+    
+	];
+	
+	
+	var sequence = sequence1.concat(sequence2);
+	//var sequence = sequence1;
+	
+	
+	async.waterfall(sequence,
+	function(err, results)
+	{
+		console.log('it is done!');
+      
+    $('#timeloading').hide();
+    $('#mytimeline').show();
+		
+		renderTimeline(xid);
+		
+	})
+	
+}
+
+
+function renderTimeline(xid)
+{
+		
+		var timedata = [];
+		
+		
+		//userslots
+		var userslots = window.app.userslots;
+    for (var i in userslots)
+    {
+      var resources = JSON.parse(webpaige.get('resources'));
+      var content = colorState(userslots[i].text);
+      
+      if (userslots[i].recursive) {
+	      var xgroup = '<span style="display:none;">b</span>Wekelijkse terugkerend<span style="display:none;">' + xid + ':true</span>';
+      }
+      else
+      {
+	      var xgroup = '<span style="display:none;">a</span>Planning<span style="display:none;">' + xid + ':false</span>';
+      }
+			timedata.push({
+				start: new Date(userslots[i].start * 1000),
+				end: new Date(userslots[i].end * 1000),
+				group: xgroup,
+				content: content,
+				editable: true
+			})	
+    }
+      
+		timedata.push({
+			start: new Date(0),
+			end: new Date(0),
+			group: '<span style="display:none;">b</span>Wekelijkse terugkerend<span style="display:none;">' + xid + ':true</span>',
+			content: 'available',
+			editable: true
+		})	
+    
+		timedata.push({
+			start: new Date(0),
+			end: new Date(0),
+			group: '<span style="display:none;">a</span>Planning<span style="display:none;">' + xid + ':false</span>',
+			content: 'available',
+			editable: true
+		})	
+		
+		
+		// agg slots
+	  var guuid = webpaige.config('guuid');
+	  var gname = webpaige.config('gname');
+	  var division = webpaige.config('division');
+	  
+	  switch(division)
+	  {
+		  case 'default':
+		  	var divi = 'default';
+		  break;
+		  case 'north':
+		  	var divi = 'knrm.StateGroup.BeschikbaarNoord';
+		  break;
+		  case 'south':
+		  	var divi = 'knrm.StateGroup.BeschikbaarZuid';
+		  break;
+	  }
+	  
+	  
+	  var density = ['#294929', '#4f824f', '#477547', '#436f43', '#3d673d', '#396039', '#335833', '#305330'];
+	  
+	  
+	  var agg = window.app.aggs;
+		
+		var group = agg[guuid][divi];
+		
+		var maxh = 0;
+		
+		$.each(group, function(index, slot)
+		{
+			if (slot.wish > maxh) maxh = slot.wish;
+		})	
+	
+		$.each(group, function(index, slot)
+		{
+		  var maxNum = maxh;
+		  var num = slot.wish;
+		  var xwish = num;
+		  
+		  // a percentage, with a lower bound on 20%
+		  var height = Math.round(num / maxNum * 80 + 20);
+		  
+		  var minHeight = height;
+		  var style = 'height:' + height + 'px;';
+		  //'title="Minimum aantal benodigden: ' + num + ' personen"><span>' + num + '</span></div>';
+		  var requirement = '<div class="requirement" style="' + style + '" ' + 'title="Minimum aantal benodigden: ' + num + ' personen"></div>';
+		  num = slot.wish + slot.diff;
+		  var xcurrent = num;
+		  
+		  // a percentage, with a lower bound on 20%
+		  height = Math.round(num / maxNum * 80 + 20);
+		  
+		  if (xcurrent < xwish)
+		  {
+		    var color = '#a93232';
+		    //var span = '';
+		  }
+		  else if (xcurrent == xwish)
+		  {
+		    var color = '#e0c100';
+		    //var span = '';
+		  }
+		  else if (xcurrent > xwish)
+		  {
+		  	var color = (num < 0 || num > 7) ? density[0] : density[num];
+		    //var span = '<span class="badge badge-inverse">' + num + '</span>';
+		  }
+		  if (xcurrent > xwish)
+		  {
+		    height = minHeight;
+		  }
+		  style = 'height:' + height + 'px;' + 'background-color: ' + color + ';';
+		  var actual = '<div class="bar" style="' + style + '" ' + ' title="Huidig aantal beschikbaar: ' + num + ' personen"></div>';
+		  //var actual = '<div class="bar" style="' + style + '" ' + ' title="Huidig aantal beschikbaar: ' + num + ' personen">' + span + '</div>';
+		  
+		  timedata.push({
+		    group: gname,
+		    start: Math.round(slot.start * 1000),
+		    end: Math.round(slot.end * 1000),
+		    content: requirement + actual,
+		    className: 'group-aggs',
+				editable: false
+		  });     
+		})
+		
+		
+		// render users
+		var members = window.app.members;
+		
+		$.each(members, function(index, member)
+		{
+		
+			var slots = window.app.slots[member.uuid]['default'];
+			
+			$.each(slots, function(index, slot)
+			{
+			     
+				timedata.push({
+					start: new Date(0),
+					end: new Date(0),
+					group: '<span style="display:none;">' + member.uuid + ':true:false</span>' + member.name + ' <div style="display:none;">b</div>(W)',
+					content: 'available'
+				})	
+		    
+				timedata.push({
+					start: new Date(0),
+					end: new Date(0),
+					group: '<span style="display:none;">' + member.uuid + ':false:false</span>' + member.name + ' <div style="display:none;">a</div>(P)',
+					content: 'available'
+				})	
+		    
+		    for (var i in slots)
+		    {
+		      var content = colorState(slots[i].text);
+		      
+		      if (slots[i].recursive) {
+			      var group = '<span style="display:none;">' + member.uuid + ':true:false</span>' + member.name + ' <div style="display:none;">b</div>(W)';
+		      } else {
+		      	var group = '<span style="display:none;">' + member.uuid + ':false:false</span>' + member.name + ' <div style="display:none;">a</div>(P)';
+		      }
+		    
+					timedata.push({
+						start: new Date(slots[i].start * 1000),
+						end: new Date(slots[i].end * 1000),
+						group: group,
+						content: content
+					})	
+		      
+		    }
+			
+			})
+			
+		})
+		
+		
+		// render timeline
+		var trange = webpaige.config('trange');
+		
+	  var options = {
+	    'axisOnTop': true,
+	    'width': '100%',
+	    'height': 'auto',
+	    'selectable': true,
+	    'editable': true,
+	    'style': 'box',
+	    'groupsWidth': '150px',
+	    'eventMarginAxis': 0,
+      
+      'min': new Date(trange.start), // lower limit of visible range
+      'max': new Date(trange.end), // upper limit of visible range
+      
+	    'intervalMin': 1000 * 60 * 60 * 1,
+	    'intervalMax': 1000 * 60 * 60 * 24 * 7 * 2
+	  };
+	  timeline = new links.Timeline(document.getElementById('mytimeline'));
+	  timeline.draw(timedata, options);  
 }
