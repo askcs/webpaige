@@ -16,9 +16,10 @@ function windowInit()
   $('#messageSender').click(function ()
   {
     $('#composeMessage').modal('hide');
-    var receivers = $('#receivers').val();
-    var title = $('#title').val();
-    var message = $('textarea#message').val();
+    var receivers = $('#reply select').val();
+    var title = $('#reply #title').val();
+    var message = $('#reply textarea').val();
+    console.log(receivers, title,message);
     resetForms();
     sendMessage(receivers, title, message);
   });
@@ -60,12 +61,21 @@ function composeMessage()
   $('#composeMessage').modal('show');
 }
 
-function sendMessage()
+function sendMessage(receivers, title, message)
 {
   $('#composeMessage').modal('hide');
-  var receivers = $('#compose select').val();
+  if(receivers == null){
+      receivers = $('#compose select').val();  
+  }
+  
   var subject = $('#compose #title').val();
   var content = $('#compose textarea').val();
+  if(typeof title != "undefined"){
+      subject = title;
+  }
+  if(typeof message != "undefined"){
+      content = message;
+  }
   var sms = $('input#sms[name="sms"]:checked').val();
   var paigem = $('input#paigem[name="paigem"]:checked').val();
   var email = $('input#email[name="email"]:checked').val();
@@ -78,20 +88,20 @@ function sendMessage()
   for (var n in receivers)
   receivers[n] = '"' + receivers[n] + '"';
   var query = '{"members":[' + receivers + '],"content":"' + content + '","subject":"' + subject + '","types":[' + types + ']}';
-  webpaige.con(
-  options = {
-    type: 'post',
-    path: '/question/sendDirectMessage',
-    json: query,
-    loading: 'Het bericht wordt verstuurd..',
-    message: 'Het bericht is verstuurd!',
-    session: session.getSession()
-  },
-
-  function (data)
-  {
-    loadMessages('inbox');
-  });
+  
+  webpaige.con( 
+        options = {
+        type: 'post',
+        path: '/question/sendDirectMessage',
+        json: query,
+        loading: 'Het bericht wordt verstuurd..',
+        message: 'Het bericht is verstuurd!',
+        session: session.getSession()},
+        function (data){
+            $('#replyMessage').modal('hide');
+            loadMessages('inbox');
+        }
+  );
 }
 
 function replyMessage(uuid)
@@ -166,8 +176,10 @@ function displayMessage(uuid, type)
         }
         $('#messageReceiver').html(responders);
       }
-      var datetime = new Date(messages[n].creationTime);
-      $('#messageDate').html(datetime.toString("ddd dd MMM yyyy HH:mm"));
+      var datetime = Math.round(messages[n].creationTime);
+      datetime = new Date(datetime).toString("dd-M-yyyy HH:mm");
+      
+      $('#messageDate').html(datetime);
       if (messages[n].subject != null)
       {
         var subject = messages[n].subject;
