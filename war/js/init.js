@@ -4,114 +4,7 @@ function relogin() {
 }
 
 
-function pageInit(active, logged)
-{
-	webpaige = new webpaige();	
-	
-	$('body').append('<div id="status"></div>');
-	$('body').append('<div id="alert"></div>');
-	
-	var menuItems = new Array;		
-	//var menuItems = ['dashboard', 'messages', 'groups'];
-	var menuItems = ['planboard', 'berichten', 'groepen'];
-	var menuLinks = ['dashboard', 'messages', 'groups']
-	 	
-  //var user = JSON.parse(localStorage.getItem('user'));
-  var resources = JSON.parse(webpaige.get('resources'));
-   
-	var navbar = $('<div class="navbar navbar-inner container-fluid"></div>');
-	
-	if (logged == 'true')
-	{
-		navbar.append('<a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse"></a> <a class="brand" href="dashboard.html">KNRM</a>');
-	
-		var usermenu = $('<div class="btn-group pull-right"></div>');
-		
-		if( resources && resources.name )
-			usermenu.append('<a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-user"></i> ' + resources.name + ' <span class="caret"></span></a>');
-		else
-			usermenu.append('<a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-user"></i> ' + "MISSING" + ' <span class="caret"></span></a>');
-		navbar.append(usermenu);
-		
-		var userdrop = $('<ul class="dropdown-menu"></ul>');
-		userdrop.append('<li><a href="profile.html"><i class="icon-user"></i> Profiel</a></li>');
-		
-		if (webpaige.getRole() == 1)
-			userdrop.append('<li><a href="settings.html"><i class="icon-cog"></i> Instellingen</a></li>');
-			
-		userdrop.append('<li class="divider"></li>');
-		userdrop.append('<li><a onclick="webpaige.logout()"><i class="icon-off"></i> Uitloggen</a></li>');
-		usermenu.append(userdrop);
-		
-		var navcollapse = $('<div class="nav-collapse"></div>');
-		var nav = $('<ul class="nav"></ul>');
-		var highlighter;
-		
-		/*
-		var unread = webpaige.config('unreadMessages');
-		if (unread != undefined)
-		{
-			if (unread != 0)
-			{
-				unread =  ' <span class="badge badge-warning">' + unread + '</span>';
-			}
-		}
-		else
-		{
-			unread = '';
-		}
-		*/
-		
-		for(var i in menuItems)
-		{
-			if (menuLinks[i] != 'groups' || webpaige.config('userRole') < 2)
-			{
-				if (active == menuItems[i])
-					highlighter = '<li class="active">'; else highlighter = '<li>';
-					/*
-					if (menuItems[i] == 'messages')
-					{
-						var menu = menuItems[i].charAt(0).toUpperCase() + menuItems[i].slice(1) + ' ' + unread;
-					}
-					else
-					{
-					*/
-						var menu = menuItems[i].charAt(0).toUpperCase() + menuItems[i].slice(1);
-					/* 				
-					}
-					*/
-				nav.append(highlighter + '<a href="' + menuLinks[i] + '.html">' + menu + '</a></li>');
-				
-			}
-		}
-		
-		navcollapse.append(nav);
-	  navbar.append(navcollapse);
-	  
-	  
-	  
-    // setup user name
-	  	if( resources && resources.name )
-	  		$(".d_username").html(resources.name);
-	  	else
-	  		$(".d_username").html("MISSING");
-	}
-	else
-	{
-		navbar.append('<a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse"></a> <a class="brand" href="login.html">WebPaige</a>');
-	}
-	$('#navbar').html(navbar);
-  
-  //$('title').html('WebPaige :: ' + active.charAt(0).toUpperCase() + active.slice(1));
-}
-
-
-
-
-
-
-
-webpaige = function()
+function Webpaige()
 {
   this.options = {
   	host: host,
@@ -125,6 +18,9 @@ webpaige = function()
   	label: 'not_labeled',
   	400: null,
   };  
+  
+  
+  
 	window.data = [];
 	if (localStorage)
 	{
@@ -137,20 +33,20 @@ webpaige = function()
 }
 
 
-webpaige.prototype.get = function(label)
+Webpaige.prototype.get = function(label)
 {
 	return localStorage.getItem(label);
 }
 
 
-webpaige.prototype.set = function(label, data)
+Webpaige.prototype.set = function(label, data)
 {
 	window.data[label] = data;
 	localStorage.setItem(label, data);
 }
 
 
-webpaige.prototype.config = function(key, value)
+Webpaige.prototype.config = function(key, value)
 {
 	/*
 	if (webpaige.get('config') == null)
@@ -173,7 +69,6 @@ webpaige.prototype.config = function(key, value)
 		else
 		{
 			//console.log(config[key]);
-			console.log( config );
 			if( config && config[key] )
 				return config[key];
 			else
@@ -183,22 +78,25 @@ webpaige.prototype.config = function(key, value)
 }
 
 
-webpaige.prototype.remove = function(label)
+Webpaige.prototype.remove = function(label)
 {
 	localStorage.removeItem(label);
 }
 
 
-webpaige.prototype.clear = function(label)
+Webpaige.prototype.clear = function(label)
 {
 	localStorage.clear();
 }
 
 
-webpaige.prototype.con = function(options, callback)
+Webpaige.prototype.con = function(options, callback)
 {
 	var w = this;
 	options = $.extend({}, this.options, options);
+	
+	if(console)console.log("ajax rqst: "+ options.host + options.path); 
+	
   $.ajax(
   {
     url: options.host + options.path,
@@ -283,7 +181,7 @@ webpaige.prototype.con = function(options, callback)
 }
 
 
-webpaige.prototype.stats = function(loading)
+Webpaige.prototype.stats = function(loading)
 {
 	$('#loading').remove();
 	var loading = '<div id="loading"><img alt="Loading" src="img/ajax-loader-snake.gif"><span id="loading">' + loading + '</span></div>';
@@ -292,13 +190,13 @@ webpaige.prototype.stats = function(loading)
 }
 
 
-webpaige.prototype.loaded = function()
+Webpaige.prototype.loaded = function()
 {
 	$('#status').hide();
 }
 
 
-webpaige.prototype.message = function(message)
+Webpaige.prototype.message = function(message)
 {
 	$('#message').remove();
 	$('#alert').append('<div id="message">Success! ' + message + "</div>");
@@ -307,7 +205,7 @@ webpaige.prototype.message = function(message)
 }
 
 
-webpaige.prototype.alert = function(message)
+Webpaige.prototype.alert = function(message)
 {
 	$('#message').remove();
 	$('#alert').append('<div id="message">Error! ' + message + "</div>");
@@ -316,7 +214,7 @@ webpaige.prototype.alert = function(message)
 }
 
 
-webpaige.prototype.logout = function()
+Webpaige.prototype.logout = function()
 {
 	webpaige.con(
 		options = {
@@ -337,13 +235,13 @@ webpaige.prototype.logout = function()
 }
 
 
-webpaige.prototype.getRole = function()
+Webpaige.prototype.getRole = function()
 {
 	return webpaige.config('userRole');		
 }
 
 
-webpaige.prototype.i18n = function(local)
+Webpaige.prototype.i18n = function(local)
 {
 	this.local = {
 		//language: 'en_EN',
@@ -371,7 +269,7 @@ webpaige.prototype.i18n = function(local)
 }
 
 
-webpaige.prototype.whoami = function()
+Webpaige.prototype.whoami = function()
 {
   var N = navigator.appName,
       ua = navigator.userAgent,
@@ -383,6 +281,121 @@ webpaige.prototype.whoami = function()
 }
 
 
+/////////////////////
+
+var webpaige = null;
+
+function pageInit(active, logged)
+{
+	webpaige = new Webpaige();	
+	
+	$('body').append('<div id="status"></div>');
+	$('body').append('<div id="alert"></div>');
+	
+	var menuItems = new Array;		
+	//var menuItems = ['dashboard', 'messages', 'groups'];
+	var menuItems = ['planboard', 'berichten', 'groepen'];
+	var menuLinks = ['dashboard', 'messages', 'groups']
+	 	
+  //var user = JSON.parse(localStorage.getItem('user'));
+  var resources = JSON.parse(webpaige.get('resources'));
+   
+	var navbar = $('<div class="navbar navbar-inner container-fluid"></div>');
+	
+	if (logged == 'true')
+	{
+		navbar.append('<a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse"></a> <a class="brand" href="dashboard.html">KNRM</a>');
+	
+		var usermenu = $('<div class="btn-group pull-right"></div>');
+		
+		if( resources && resources.name )
+			usermenu.append('<a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-user"></i> ' + resources.name + ' <span class="caret"></span></a>');
+		else
+			usermenu.append('<a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-user"></i> ' + "MISSING" + ' <span class="caret"></span></a>');
+		navbar.append(usermenu);
+		
+		var userdrop = $('<ul class="dropdown-menu"></ul>');
+		userdrop.append('<li><a href="profile.html"><i class="icon-user"></i> Profiel</a></li>');
+		
+		if (webpaige.getRole() == 1)
+			userdrop.append('<li><a href="settings.html"><i class="icon-cog"></i> Instellingen</a></li>');
+			
+		userdrop.append('<li class="divider"></li>');
+		userdrop.append('<li><a onclick="webpaige.logout()"><i class="icon-off"></i> Uitloggen</a></li>');
+		usermenu.append(userdrop);
+		
+		var navcollapse = $('<div class="nav-collapse"></div>');
+		var nav = $('<ul class="nav"></ul>');
+		var highlighter;
+		
+		/*
+		var unread = webpaige.config('unreadMessages');
+		if (unread != undefined)
+		{
+			if (unread != 0)
+			{
+				unread =  ' <span class="badge badge-warning">' + unread + '</span>';
+			}
+		}
+		else
+		{
+			unread = '';
+		}
+		*/
+		
+		for(var i in menuItems)
+		{
+			if (menuLinks[i] != 'groups' || webpaige.config('userRole') < 2)
+			{
+				if (active == menuItems[i])
+					highlighter = '<li class="active">'; else highlighter = '<li>';
+					/*
+					if (menuItems[i] == 'messages')
+					{
+						var menu = menuItems[i].charAt(0).toUpperCase() + menuItems[i].slice(1) + ' ' + unread;
+					}
+					else
+					{
+					*/
+				
+						var menu = "MISSING";
+						
+						if( typeof menuItems[i] == 'string' || menuItems[i] instanceof String )
+						{
+							// avoid advanced string functions for ie8
+							menu = menuItems[i].substring(0,1).toUpperCase() + menuItems[i].substring(1);
+						}
+						else
+							if(console)console.log("wrong "+ menuItems[i] );	//ie8 test, tymon
+						
+					/* 				
+					}
+					*/
+				nav.append(highlighter + '<a href="' + menuLinks[i] + '.html">' + menu + '</a></li>');
+				
+			}
+		}
+		
+		navcollapse.append(nav);
+		
+		navbar.append(navcollapse);
+	  
+	  
+	  
+    // setup user name
+	  	if( resources && resources.name )
+	  		$(".d_username").html(resources.name);
+	  	else
+	  		$(".d_username").html("MISSING");
+	}
+	else
+	{
+		navbar.append('<a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse"></a> <a class="brand" href="login.html">WebPaige</a>');
+	}
+	$('#navbar').html(navbar);
+  
+  //$('title').html('WebPaige :: ' + active.charAt(0).toUpperCase() + active.slice(1));
+}
 
 
 

@@ -1,6 +1,25 @@
 //var host='http://10.200.200.100:8888/ns_knrm';
-var host='http://3rc2.ask-services.appspot.com/ns_knrm';
+var host='http://3rc2.ask-services.appspot.com/ns_knrmtest';
 //var host = 'http://localhost:9000/ns_knrm';
+
+
+// change port hosts n stuff to avoid CORS, tymon
+var browser = function()
+{
+  var N = navigator.appName,
+      ua = navigator.userAgent,
+      tem;
+  var M = ua.match(/(opera|chrome|safari|firefox|msie)\/?\s*(\.?\d+(\.\d+)*)/i);
+  if (M && (tem = ua.match(/version\/([\.\d]+)/i)) != null) M[2] = tem[1];
+  M = M ? [M[1], M[2]] : [N, navigator.appVersion, '-?'];
+  return M;
+}()[0].toLowerCase();;
+if (browser == 'msie')
+{
+	  if(console)console.log("will attempt proxy..");
+	  host='/proxy/ns_knrmtest';
+}
+
 
 if (ask == undefined)
   var ask = {};
@@ -25,10 +44,22 @@ ask.session = function(callback)
 		return true;
 	}	
 	var values;
+	
+	// cookie not set? 
+	if( document.cookie.length == 0 )return;
+	
 	var pairs = document.cookie.split(";");
 	for(var i=0; i<pairs.length;i++)
 	{
 		values=pairs[i].split("=");
+		
+		//more ie8 shim
+		if( !values[0].trim )
+		{
+			String.prototype.trim = function(){return this.replace(/^\s+|\s+$/g, "");};
+			console.log("tymon[" + values[0].trim() + "]" );
+		}
+		
 		if(values[0].trim()=="ask-session")
 		{
 			var session=JSON.parse(values[1]);

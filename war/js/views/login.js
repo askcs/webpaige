@@ -2,11 +2,11 @@ $(document).ready(function ()
 {
   pageInit('login', 'false');
   
-  var browser = (webpaige.whoami())[0].toLowerCase();  
+  var browser = (webpaige.whoami())[0].toLowerCase();
   if (browser == 'msie')
   {
-	  $('#loginForm').hide();
-	  $('#browseHappy').show();
+	  // $('#loginForm').hide();
+	  // $('#browseHappy').show();
   }
   
   var login = JSON.parse(webpaige.get('login'));
@@ -26,6 +26,15 @@ $(document).ready(function ()
   {
     loginHandler();
   });
+  
+  
+  // ie8 shims needed, tymon
+  if( !window.addEventListener )
+  {
+	  window.attachEvent("onkeypress", KeyPressHandler );
+  }
+  else
+  
 
   window.addEventListener('keypress', KeyPressHandler);
   var local = {

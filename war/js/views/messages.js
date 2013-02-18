@@ -1,3 +1,11 @@
+
+// ie8 shims needed, tymon
+if( !window.addEventListener )
+{
+	window.attachEvent('onload', windowInit );
+}
+else
+
 window.addEventListener('load', windowInit, false);
 
 function windowInit()

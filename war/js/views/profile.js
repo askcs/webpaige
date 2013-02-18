@@ -1,3 +1,11 @@
+
+// ie8 shims needed, tymon
+if( !window.addEventListener )
+{
+	window.attachEvent('onload', windowInit );
+}
+else
+	
 window.addEventListener('load', windowInit, false);
 
 function windowInit()
@@ -21,6 +29,14 @@ function windowInit()
 
 function addEventListeners()
 {
+	// ie8 shims needed, tymon
+	if( !window.addEventListener )
+	{
+		document.getElementById('alertClose').attachEvent('onclick', closeAlerts );
+		document.getElementById('updateProfileTrigger').attachEvent('onclick', updateProfile );
+		return;
+	}
+	
   document.getElementById('alertClose').addEventListener('click', closeAlerts, false);
   document.getElementById('updateProfileTrigger').addEventListener('click', updateProfile, false);
 }

@@ -109,8 +109,11 @@ $(document).ready(function ()
   $(window).bind('resize', function ()
   {
     timeline.redraw();
-    timeline2.redraw();
-    timeline3.redraw();
+    
+    if(timeline2 && timeline2.redraw )
+    	timeline2.redraw();
+    if(timeline3 && timeline3.redraw )
+    	timeline3.redraw();
   });
   
   var local = {
