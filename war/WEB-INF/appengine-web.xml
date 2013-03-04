@@ -13,5 +13,6 @@
        <exclude path="design/*.html" />
        <exclude path="**/.svn/" />
 	</static-files> 
-		<threadsafe>true</threadsafe>
+	<threadsafe>true</threadsafe>
+	<public-root>/public</public-root>
 </appengine-web-app>
