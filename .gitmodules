@@ -1,0 +1,3 @@
+[submodule "war/public"]
+	path = war/public
+	url = https://github.com/askcs/webpaigebase.git
